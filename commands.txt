@@ -17,3 +17,6 @@ git branch -D devde // delete branch
 npm run dev
 ^C
 // back
+
+cloudflared tunnel --url http://localhost:5000
+uvicorn main:app --reload --port 5000
