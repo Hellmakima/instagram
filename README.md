@@ -3,6 +3,8 @@
 A full-stack Instagram-like app built with FastAPI, MongoDB, and Next.js.  
 Lightweight, modular, and ready to scale.
 
+_*This file hath been wrought by GPT. Pray, forgive any follies or errours thou mayst find therein.*_
+
 ---
 
 ## ⚙️ Tech Stack
