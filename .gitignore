@@ -10,6 +10,7 @@ node_modules/
 .next/
 .env.local
 .env.*
+npm-debug.log*
 
 # Logs
 *.log
@@ -20,3 +21,6 @@ Thumbs.db
 
 # Others
 *.swp
+*.swo
+.idea/
+.vscode/
