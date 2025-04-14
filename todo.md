@@ -8,18 +8,20 @@ Contains the todo list for the project
 
 ## High Priority
 
-- research CSRF tokens, proper location to store the access nad refresh tokens. see how real instagram does it, look up git repos for implementation, and tatakae
+- once done with token stuff, add user profile page. Start looking into how to implement it (DB, session, etc)
+  or
+- go with email verification and password reset
 
 ## Research
 
+- CSRF tokens, proper location to store the access nad refresh tokens. see how real instagram does it, look up git repos for implementation, and tatakae
 - data validation on frontend as well as backend?
+- do we need redis for session storage?
+- IP validation helpers
 
 ## Medium Priority
 
-- clean api_tesr.rest
-- add rate-limiting to /login endpoint
-- look up "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1"
-- make nextjs pages for login, register, and profile
+- make a index page to list all the endpoints
 - add password related stuff [change password, forgot password, reset password]
 - add user related stuff [create user, delete user, update user]
 - add user-specific endpoints
@@ -33,21 +35,24 @@ Contains the todo list for the project
 
 ## Low Priority
 
-- Add rate-limiting to /login endpoint
-- I use models dir for validation.
-- add "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" if you feel like it
-- implement frontend properly
-  - used :any to remove red squiggles
-  - implemented for .js not .tsx
 - Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens on logout and stuff
   - add req logs for imp endpoints with source IP
 
 ## Before Deployment
 
+- remove CORS
+- nginx to bring it all together
 - use docker
 - test on wsl
-- remove CORS
+- deploy!!!
 
 ## ocassionally
 
 - search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
+
+## eventually
+
+- Add rate-limiting to critical endpoints
+- Add proper logging
+- I use models dir for validation. mabe fix this
+- set up a common page for 404 page not found

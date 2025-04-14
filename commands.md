@@ -44,7 +44,7 @@ _Runs on port 3000_
 ### First Run
 
 ```bash
-npm install
+npm i
 npm run dev
 ```
 
@@ -77,17 +77,12 @@ uvicorn app.main:app --reload --port 5000
 uvicorn app.main:app --reload --port 5000
 ```
 
-### Testing on HTML
-
-```bash
-../backend/frontend_test/py host.py
-```
-
 ---
 
 ## Cloudflared
 
 ```bash
+npm i -g cloudflared
 cloudflared tunnel --url http://localhost:5000
 ```
 
