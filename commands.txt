@@ -1,3 +1,8 @@
+// login with git GUI.
+
+// always pull first.
+git pull origin main
+
 git add .
 git commit -m "your message"
 git push origin main // main is branch name
@@ -17,6 +22,5 @@ git branch -D devde // delete branch
 npm run dev
 ^C
 // back
-
 cloudflared tunnel --url http://localhost:5000
 uvicorn main:app --reload --port 5000
