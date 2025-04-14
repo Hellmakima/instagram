@@ -1,0 +1,19 @@
+git add .
+git commit -m "your message"
+git push origin main // main is branch name
+
+git pull origin main
+
+npx create-next-app@latest frontend
+
+git branch // to check branch
+git branch devde // devde is new branch name
+git checkout devde // change branch
+// merge/ pull from github web interface
+git branch -D devde // delete branch
+
+
+// fro
+npm run dev
+^C
+// back
