@@ -1,4 +1,4 @@
-# Dev Setup Guide
+# Dev Setup Guide (_for myself_)
 
 ## Git Workflow
 
@@ -83,7 +83,7 @@ npx create-next-app@latest frontend
 
 ---
 
-## Setup Tools
+## Setup Tools for REST
 
 ### VS Code
 1. Install `REST Client` extension.

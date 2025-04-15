@@ -1,22 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordBearer
+from .utils import create_token, verify_token
+from pydantic import BaseModel
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+router = APIRouter()
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+class LoginRequest(BaseModel):
+    username: str
+    password: str
 
-@router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    # Placeholder logic, replace with real checks
-    if form_data.username == "admin" and form_data.password == "secret":
-        return {"access_token": "fake-token", "token_type": "bearer"}
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+@router.post("/token")
+def login(data: LoginRequest):
+    # check creds here
+    token = create_token({"sub": data.username})
+    return {"access_token": token, "token_type": "bearer"}
 
 @router.get("/me")
-def read_user(token: str = Depends(oauth2_scheme)):
-    # Placeholder logic, replace with real checks
-    return {"username": "admin"}
+def me(token: str = Depends(oauth2_scheme)):
+    payload = verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return {"user": payload["sub"]}
