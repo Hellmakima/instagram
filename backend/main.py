@@ -11,6 +11,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_routes.router)
+app.include_router(auth_routes.router, prefix="/auth")
 
 # uvicorn main:app --reload --port 5000

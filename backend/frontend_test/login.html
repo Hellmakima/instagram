@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-sm">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" name="username" id="username" required
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded shadow-sm" />
+      </div>
+
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" name="password" id="password" required
+          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded shadow-sm" />
+      </div>
+
+      <button type="submit"
+        class="w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700 focus:outline-none">
+        Sign In
+      </button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      const response = await fetch("http://localhost:5000/auth/token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Set token in cookie
+        document.cookie = `token=${data.access_token}; path=/; max-age=3600; SameSite=Lax`;
+
+        // Redirect to protected page
+        window.location.href = "me.html";
+      } else {
+        alert("Login failed: " + (data.detail || "Unknown error"));
+      }
+    });
+  </script>
+</body>
+</html>
