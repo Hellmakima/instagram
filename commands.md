@@ -62,7 +62,11 @@ uvicorn main:app --reload --port 5000
 ```bash
 "env_name"\Scripts\Activate
 uvicorn main:app --reload --port 5000
-# Ctrl+C to stop
+```
+
+### Testing on HTML
+```bash
+../backend/frontend_test/py host.py
 ```
 
 ---
