@@ -13,7 +13,8 @@ git pull origin main
 ```bash
 git add .
 git commit -m "your message"
-git push origin main  # main is the branch name
+git push origin main
+# main is the branch name
 ```
 
 ### Other Git Commands
@@ -49,12 +50,11 @@ npm run dev
 ## Backend
 
 ### First Run
-```bash
 py 3.13.2
+```bash
 py -m venv "env_name"
 "env_name"\Scripts\Activate
-pip install fastapi
-pip install python-multipart
+pip install -r pip_requirements.txt
 uvicorn main:app --reload --port 5000
 ```
 

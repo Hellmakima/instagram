@@ -23,4 +23,17 @@ Content-Type: application/json
     "username": "admin"
 }
 
-### get token
+### Get Token
+POST http://localhost:5000/token
+Content-Type: application/json
+
+{
+    "username": "sufi",
+    "password": "12345"
+}
+
+### Use Token
+GET http://localhost:5000/me
+Authorization: Bearer {{access_token}}
+
+devka is mad
