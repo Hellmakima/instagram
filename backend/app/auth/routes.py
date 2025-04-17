@@ -1,80 +1,89 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, Depends, HTTPException, Response, Request
 from .utils import create_token, verify_token, create_refresh_token
 from pydantic import BaseModel
 
 router = APIRouter()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 class LoginRequest(BaseModel):
     username: str
     password: str
 
 @router.post("/token")
-def login(data: LoginRequest, response: Response):
-    # Replace this with your real user authentication logic
+def login(data: LoginRequest, response: Response, request: Request):
+    print("Sending cookies:", response.headers)
+    # Simulated authentication (replace with real check)
     access_token = create_token({"sub": data.username})
     refresh_token = create_refresh_token({"sub": data.username})
-    
-    # Set access token as HttpOnly cookie with SameSite and Secure flags
+
+    domain = request.url.hostname  # dynamic domain for portability
+
+    cookie_settings = {
+        "httponly": True,
+        "secure": True,
+        "samesite": "None",
+        "domain": domain,
+        "path": "/",
+    }
+
     response.set_cookie(
         key="access_token",
         value=access_token,
-        httponly=True,      # Can't access via JS
-        secure=True,        # Only sent over HTTPS
-        samesite="Strict",  # Or use "Lax" if more lenient behavior is needed
-        max_age=60*60,      # Token expiration in seconds (1 hour)
+        max_age=60 * 60,
+        **cookie_settings
     )
-    
-    # Optionally store the refresh token as a cookie too
+
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
-        httponly=True,      # Can't access via JS
-        secure=True,        # Only sent over HTTPS
-        samesite="Strict",  # Or use "Lax"
-        max_age=60*60*24,   # Longer expiration for refresh token (1 day)
+        max_age=60 * 60 * 24,
+        **cookie_settings
     )
 
     return {"message": "Login successful"}
 
-class RefreshRequest(BaseModel):
-    refresh_token: str
-
 @router.post("/refresh")
-def refresh(data: RefreshRequest, response: Response):
-    payload = verify_token(data.refresh_token)
+def refresh(response: Response, request: Request):
+    refresh_token = request.cookies.get("refresh_token")
+    if not refresh_token:
+        raise HTTPException(status_code=401, detail="Missing refresh token")
+
+    payload = verify_token(refresh_token)
     if not payload or payload.get("type") != "refresh":
         raise HTTPException(status_code=401, detail="Invalid refresh token")
-    
-    # Create a new access token
+
     new_access = create_token({"sub": payload["sub"]})
 
-    # Set the new access token as an HttpOnly cookie
+    domain = request.url.hostname
+
     response.set_cookie(
         key="access_token",
         value=new_access,
-        httponly=True,      # Can't access via JS
-        secure=True,        # Only sent over HTTPS
-        samesite="Strict",  # Or use "Lax" if more lenient behavior is needed
-        max_age=60*60,      # Token expiration in seconds (1 hour)
+        max_age=60 * 60,
+        httponly=True,
+        secure=True,
+        samesite="None",
+        domain=domain,
+        path="/",
     )
 
-    return {
-        "access_token": new_access,
-        "token_type": "bearer"
-    }
+    return {"access_token": new_access, "token_type": "bearer"}
 
 @router.get("/me")
-def me(token: str = Depends(oauth2_scheme)):
-    payload = verify_token(token)
-    if not payload:
-        raise HTTPException(status_code=401, detail="Invalid token")
+def me(request: Request):
+    print("In ME:", request.cookies)
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Missing token")
+
+    payload = verify_token(access_token)
+    if not payload or payload.get("type") != "access":
+        raise HTTPException(status_code=401, detail="Invalid or wrong token")
+
     return {"username": payload["sub"]}
 
-# Optional: Logout route to delete cookies
 @router.post("/logout")
-def logout(response: Response):
-    response.delete_cookie("access_token")
-    response.delete_cookie("refresh_token")
+def logout(response: Response, request: Request):
+    domain = request.url.hostname
+    response.delete_cookie("access_token", domain=domain, path="/")
+    response.delete_cookie("refresh_token", domain=domain, path="/")
     return {"message": "Logged out successfully"}

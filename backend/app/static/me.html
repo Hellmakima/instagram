@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Me Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      async function fetchMe() {
+        try {
+          let res = await fetch("/auth/me", { credentials: "include" });
+          if (res.status === 401) {
+            const refreshRes = await fetch("/auth/refresh", {
+              method: "POST",
+              credentials: "include",
+            });
+            if (refreshRes.ok) {
+              res = await fetch("/auth/me", { credentials: "include" });
+            } else {
+              return window.location.replace("/login.html");
+            }
+          }
+          const data = await res.json();
+          document.getElementById("output").textContent = res.ok
+            ? JSON.stringify(data, null, 2)
+            : "Not authorized. Please login again.";
+        } catch (err) {
+          document.getElementById(
+            "output"
+          ).textContent = `Error: ${err.message}`;
+        }
+      }
+
+      // <— correct placement
+      window.onload = fetchMe;
+    </script>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">/me Endpoint Result</h2>
+      <pre id="output" class="bg-gray-100 p-4 rounded text-sm border"></pre>
+    </div>
+  </body>
+</html>

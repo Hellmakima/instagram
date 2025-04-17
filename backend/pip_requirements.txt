@@ -2,6 +2,7 @@ fastapi
 uvicorn[standard]
 python-jose[cryptography]
 pydantic
+python-dotenv
+aiofiles
 
 passlib[bcrypt]
-python-dotenv
