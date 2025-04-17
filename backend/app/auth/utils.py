@@ -1,25 +1,21 @@
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import jwt, JWTError
 from fastapi import HTTPException
-from dotenv import load_dotenv
 import os
 
-load_dotenv()
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY", "secret")
 ALGORITHM = "HS256"
-EXPIRE_MINUTES = 20
+ACCESS_EXPIRE_MINUTES = 60  # 1 hour
 REFRESH_EXPIRE_DAYS = 7
 
-def create_token(data: dict):
+def create_token(data: dict, is_refresh=False):
     data = data.copy()
-    data["exp"] = datetime.utcnow() + timedelta(minutes=EXPIRE_MINUTES)
-    data["type"] = "access"  # ✅ mark token type
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
-
-def create_refresh_token(data: dict):
-    data = data.copy()
-    data["exp"] = datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
-    data["type"] = "refresh"  # ✅ mark token type
+    if is_refresh:
+        data["exp"] = datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
+        data["type"] = "refresh"
+    else:
+        data["exp"] = datetime.utcnow() + timedelta(minutes=ACCESS_EXPIRE_MINUTES)
+        data["type"] = "access"
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
 def verify_token(token: str):

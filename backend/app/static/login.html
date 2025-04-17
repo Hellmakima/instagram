@@ -57,10 +57,8 @@
 
           const response = await fetch("/auth/token", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            credentials: "include", // this tells fetch to accept HttpOnly cookies
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({ username, password }),
           });
 

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, Request
-from .utils import create_token, verify_token, create_refresh_token
+from fastapi import APIRouter, HTTPException, Response, Request
 from pydantic import BaseModel
+from .utils import create_token, verify_token
 
 router = APIRouter()
 
@@ -9,81 +9,53 @@ class LoginRequest(BaseModel):
     password: str
 
 @router.post("/token")
-def login(data: LoginRequest, response: Response, request: Request):
-    print("Sending cookies:", response.headers)
-    # Simulated authentication (replace with real check)
-    access_token = create_token({"sub": data.username})
-    refresh_token = create_refresh_token({"sub": data.username})
+def login(data: LoginRequest, response: Response):
+    # Simulate user check here
+    access = create_token({"sub": data.username})
+    refresh = create_token({"sub": data.username}, is_refresh=True)
 
-    domain = request.url.hostname  # dynamic domain for portability
-
-    cookie_settings = {
+    cookie_opts = {
         "httponly": True,
         "secure": True,
-        "samesite": "None",
-        "domain": domain,
+        "samesite": "Lax",
         "path": "/",
     }
 
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        max_age=60 * 60,
-        **cookie_settings
-    )
-
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        max_age=60 * 60 * 24,
-        **cookie_settings
-    )
+    response.set_cookie("access_token", access, max_age=60 * 60, **cookie_opts)
+    response.set_cookie("refresh_token", refresh, max_age=60 * 60 * 24, **cookie_opts)
 
     return {"message": "Login successful"}
 
 @router.post("/refresh")
-def refresh(response: Response, request: Request):
-    refresh_token = request.cookies.get("refresh_token")
-    if not refresh_token:
-        raise HTTPException(status_code=401, detail="Missing refresh token")
+def refresh(request: Request, response: Response):
+    token = request.cookies.get("refresh_token")
+    payload = verify_token(token)
 
-    payload = verify_token(refresh_token)
-    if not payload or payload.get("type") != "refresh":
-        raise HTTPException(status_code=401, detail="Invalid refresh token")
+    if payload.get("type") != "refresh":
+        raise HTTPException(401, "Invalid refresh token")
 
-    new_access = create_token({"sub": payload["sub"]})
-
-    domain = request.url.hostname
+    new_access_token = create_token({"sub": payload["sub"]})
 
     response.set_cookie(
-        key="access_token",
-        value=new_access,
-        max_age=60 * 60,
-        httponly=True,
-        secure=True,
-        samesite="None",
-        domain=domain,
-        path="/",
+        "access_token", new_access_token, max_age=60 * 60, httponly=True, secure=True, samesite="Lax", path="/"
     )
 
-    return {"access_token": new_access, "token_type": "bearer"}
+    return {"message": "Token refreshed"}
 
 @router.get("/me")
 def me(request: Request):
-    print("In ME:", request.cookies)
     access_token = request.cookies.get("access_token")
     if not access_token:
-        raise HTTPException(status_code=401, detail="Missing token")
+        raise HTTPException(401, "Not logged in")
 
     payload = verify_token(access_token)
-    if not payload or payload.get("type") != "access":
-        raise HTTPException(status_code=401, detail="Invalid or wrong token")
+    if payload.get("type") != "access":
+        raise HTTPException(401, "Wrong token type")
 
-    return {"username": payload["sub"]}
+    return {"user": payload["sub"]}
 
 @router.post("/logout")
-def logout(response: Response, request: Request):
-    domain = request.url.hostname
-    response.delete_cookie("access_token", domain=domain, path="/")
-    response.delete_cookie("refresh_token", domain=domain, path="/")
-    return {"message": "Logged out successfully"}
+def logout(response: Response):
+    for name in ["access_token", "refresh_token"]:
+        response.delete_cookie(name, path="/")
+    return {"message": "Logged out"}

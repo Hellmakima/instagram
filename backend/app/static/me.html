@@ -7,7 +7,7 @@
     <script>
       async function fetchMe() {
         try {
-          let res = await fetch("/auth/me", { credentials: "include" });
+          const res = await fetch("/auth/me", { credentials: "include" });
           if (res.status === 401) {
             const refreshRes = await fetch("/auth/refresh", {
               method: "POST",
