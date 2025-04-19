@@ -1,0 +1,314 @@
+app/static/login.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-8 rounded shadow-md w-full max-w-sm">
+      <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+          <input
+            type="text"
+            name="username"
+            id="username"
+            autocomplete="username"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded shadow-sm"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            autocomplete="current-password"
+            required
+            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded shadow-sm"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-2 px-4 bg-indigo-600 text-white rounded hover:bg-indigo-700 focus:outline-none"
+        >
+          Sign In
+        </button>
+      </form>
+    </div>
+
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+
+          const csrfToken = document.cookie
+            .split("; ")
+            .find(row => row.startsWith("csrf_token"))
+            ?.split("=")[1];
+
+          const response = await fetch("/auth/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              // "X-CSRF-Token": csrfToken,
+              "X-CSRF-Token": localStorage.getItem("csrf_token"),
+            },
+            credentials: "include",
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            window.location.href = "/me.html";
+          } else {
+            alert("Login failed: " + (data.detail || "Unknown error"));
+          }
+        });
+    </script>
+  </body>
+</html>
+
+app/static/me.html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Me Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      async function fetchMe() {
+        try {
+          const res = await fetch("/auth/me", { credentials: "include" });
+          if (res.status === 401) {
+            const refreshRes = await fetch("/auth/refresh", {
+              method: "POST",
+              credentials: "include",
+            });
+            if (refreshRes.ok) {
+              // Retry fetching the /me endpoint with the new access token
+              const retryRes = await fetch("/auth/me", { credentials: "include" });
+              if (retryRes.ok) {
+                const data = await retryRes.json();
+                document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+              } else {
+                return window.location.replace("/login.html");
+              }
+            } else {
+              return window.location.replace("/login.html");
+            }
+          } else {
+            const data = await res.json();
+            document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+          }
+        } catch (err) {
+          document.getElementById("output").textContent = `Error: ${err.message}`;
+        }
+      }
+
+      async function logout() {
+        const res = await fetch("/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (res.ok) {
+          window.location.replace("/login.html");
+        } else {
+          alert("Error during logout");
+        }
+      }
+
+      window.onload = fetchMe;
+    </script>    
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+      <h2 class="text-xl font-bold mb-4">/me Endpoint Result</h2>
+      <pre id="output" class="bg-gray-100 p-4 rounded text-sm border"></pre>
+      <div class="mt-4">
+        <button
+          onclick="logout()"
+          class="w-full py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700 focus:outline-none"
+        >
+          Logout
+        </button>
+      </div>
+    </div>
+  </body>
+</html>
+
+app/auth/routes.py
+from fastapi import APIRouter, HTTPException, Response, Request
+from pydantic import BaseModel
+from .utils import create_token, verify_token, generate_csrf_token, verify_csrf_token
+
+router = APIRouter()
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+@router.post("/token")
+def login(data: LoginRequest, response: Response, request: Request):
+    # Verify CSRF token
+    # csrf_token = request.headers.get("X-CSRF-Token")
+    # verify_csrf_token(csrf_token, request)
+    
+    # Simulate user check here 
+    #TODO add verification of username and password
+    access = create_token({"sub": data.username})
+    refresh = create_token({"sub": data.username}, is_refresh=True)
+
+    cookie_opts = {
+        "httponly": True,
+        "secure": True,
+        "samesite": "Lax",
+        "path": "/",
+    }
+
+    response.set_cookie("access_token", access, max_age=60 * 60, **cookie_opts)
+    response.set_cookie("refresh_token", refresh, max_age=60 * 60 * 24, **cookie_opts)
+
+    csrf_token = generate_csrf_token()
+    response.set_cookie("csrf_token", csrf_token, max_age=60 * 60 * 24, **cookie_opts)
+
+    return {"message": "Login successful"}
+
+
+@router.post("/refresh")
+def refresh(request: Request, response: Response):
+    token = request.cookies.get("refresh_token")
+    if not token:
+        raise HTTPException(401, "No refresh token found")
+
+    # Verify the refresh token
+    payload = verify_token(token, "refresh")
+
+    # Generate a new access token
+    new_access_token = create_token({"sub": payload["sub"]})
+
+
+    # Set the new tokens as cookies
+    cookie_opts = {
+        "httponly": True,
+        "secure": True,
+        "samesite": "Lax",
+        "path": "/",
+    }
+    
+    # Set new tokens in cookies
+    response.set_cookie("access_token", new_access_token, max_age=60 * 60, **cookie_opts)
+    # # Optionally, generate a new refresh token (rotate it)
+    # new_refresh_token = create_token({"sub": payload["sub"]}, is_refresh=True)
+    # response.set_cookie("refresh_token", new_refresh_token, max_age=60 * 60 * 24, **cookie_opts)
+
+    return {"message": "Token refreshed"}
+
+
+@router.get("/me")
+def me(request: Request):
+    
+    # csrf_token = request.headers.get("X-CSRF-Token")
+    # verify_csrf_token(csrf_token, request)
+
+    access_token = request.cookies.get("access_token")
+    if not access_token:
+        raise HTTPException(401, "Not logged in")
+
+    payload = verify_token(access_token)
+    if payload.get("type") != "access":
+        raise HTTPException(401, "Wrong token type")
+
+    return {"user": payload["sub"]}
+
+@router.post("/logout")
+def logout(response: Response, request: Request):
+    # Verify CSRF token
+    csrf_token = request.headers.get("X-CSRF-Token")
+    print(csrf_token)
+    verify_csrf_token(csrf_token, request)
+    
+    for name in ["access_token", "refresh_token", "csrf_token"]:
+        response.delete_cookie(name, path="/")
+    return {"message": "Logged out"}
+
+app/auth/utils.py
+import os
+import secrets
+from datetime import datetime, timedelta
+from fastapi import HTTPException, Request
+from fastapi.responses import HTMLResponse
+from jose import jwt, JWTError
+
+SECRET_KEY = os.getenv("SECRET_KEY", "secret")
+CSRF_SECRET_KEY = os.getenv("CSRF_SECRET_KEY", "csrf_secret")
+ALGORITHM = "HS256"
+ACCESS_EXPIRE_MINUTES = 60  # 1 hour
+REFRESH_EXPIRE_DAYS = 7
+
+
+def generate_csrf_token() -> str:
+    """Generate a random CSRF token."""
+    return secrets.token_urlsafe(32)
+
+def verify_csrf_token(csrf_token: str, request: Request) -> bool:
+    """Verify the CSRF token sent in the request."""
+    cookie_csrf_token = request.cookies.get("csrf_token")
+    if not cookie_csrf_token:
+        raise HTTPException(status_code=400, detail="CSRF token missing")
+    
+    if csrf_token != cookie_csrf_token:
+        raise HTTPException(status_code=403, detail="Invalid CSRF token")
+    
+    return True
+
+
+def create_token(data: dict, is_refresh=False):
+    data = data.copy()
+    if is_refresh:
+        data["exp"] = datetime.utcnow() + timedelta(days=REFRESH_EXPIRE_DAYS)
+        data["type"] = "refresh"
+    else:
+        data["exp"] = datetime.utcnow() + timedelta(minutes=ACCESS_EXPIRE_MINUTES)
+        data["type"] = "access"
+    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_token(token: str, token_type: str = None):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if token_type and payload.get("type") != token_type:
+            raise HTTPException(status_code=401, detail="Invalid token type")
+        return payload
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+app/main.py
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from app.auth import routes as auth_routes
+
+app = FastAPI()
+
+# Including authentication routes with /auth prefix
+app.include_router(auth_routes.router, prefix="/auth")
+
+# Mount static files from app/static, serving as a single-page app (SPA) or assets
+app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
+
+# uvicorn main:app --reload --port 5000
+# uvicorn app.main:app --reload --port 5000
+

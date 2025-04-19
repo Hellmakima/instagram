@@ -1,0 +1,1 @@
+# app/redis_client.py → Redis connection setup
