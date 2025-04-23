@@ -1,43 +1,43 @@
-# 📸 InstaClone
+# InstaClone
 
-A full-stack Instagram clone, crafted with love, powered by **FastAPI**, **MongoDB**, and **Next.js**.  
-It’s modular, clean, and as scalable as your meme collection.
+A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.  
+’Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
 
-_*This file hath been wrought by the mighty powers of GPT. Pray, forgive any follies or errours thou mayst find herein. If ye find a bug, it was not my fault... or maybe it was... but I’ll fix it, I swear.*_
-
----
-
-## ⚙️ Tech Stack (It’s All The Cool Kids Are Using)
-
-| Layer     | Tech      | Notes                                      |
-|-----------|-----------|--------------------------------------------|
-| Frontend  | Next.js   | Because who needs "classic" React anymore? |
-| Backend   | FastAPI   | Fast, like your Wi-Fi when no one else is home |
-| DB        | MongoDB   | NoSQL, because SQL is for slowpokes     |
-| Auth      | TBD       | Local auth or Firebase — who needs to decide yet? |
-| Media     | TBD       | Firebase, Local Storage, or maybe just send them in an email? |
+_*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any follies or errours thou mayst uncover. If a gremlin be found, mayhap it be mine doing… or mayhap not… yet I vow to mend it, upon my honour.*_
 
 ---
 
-## 🚧 Current Progress
+## ⚙️ The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
 
-- **Frontend:** The login page (HTML) is looking *beautiful*, just missing a sprinkle of sparkle ✨. _No progress n NextJS_
-- **Backend:** Authentication (JWT tokens, baby!) is just started. Need to add some *sauce* (validation, hashing, mongo connection, etc.).
-- **Database:** MongoDB is set up, no data stored yet though. Feel free to test it with your schema.
-
----
-
-## 📜 License
-
-MIT — You can break it, bend it, and maybe even use it to send your uncles funny pictures of cats. But if you do, please don’t sue me. ✌️
+| Sphere     | Alchemy      | Scribblings                                      |
+|------------|--------------|--------------------------------------------------|
+| Forepart   | Next.js      | Forsooth, who now doth favour "classic" React?   |
+| Rearward   | FastAPI      | As swift as thine Wi-Fi, when none doth leech it |
+| Tome       | MongoDB      | NoSQL — for those who deem SQL a sluggish beast  |
+| Warding    | To Be Decreed| Mayhap Firebase, mayhap Local — 'tis a mystery yet |
+| Imagery    | Unchosen     | Perchance Firebase, or stored local — or sent by carrier pigeon? |
 
 ---
 
-## ✌️ Author
+## The State of Affairs
 
-Made by [@hellmakima](https://github.com/hellmakima) — Like a wizard, but with a keyboard 🧙‍♂️.
+- **In Sum:** ‘Tis barren.
+- **Forepart:** Only humble scrolls of static HTML hath been penned for trial and jest.
+- **Rearward:** A modest conjuration; the mage yet studies and doth experiment.
+- **Tome:** MongoDB hath been summoned… and then the mage grew weary.
 
 ---
 
-Feel free to add to the madness or fix anything that doesn’t work (I'm looking at you, media storage). This repo is like an open buffet: you can try it, tweak it, and take what you like. 
+## 📜 License Most Liberal
 
+MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee. ✌️
+
+---
+
+## ✌️ Scribe
+
+Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption 🧙‍♂️.
+
+---
+
+Thou art welcome to lend thy craft, mend the broken, or plunge into the enigma that is media storage. This repository be as an open feast: partake, peruse, and pilfer as thou pleaseth.
