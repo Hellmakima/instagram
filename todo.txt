@@ -1,15 +1,10 @@
-# TODO — InstaClone
+# TODO
 
-[*] Set up FastAPI router
-[*] Stub login route w/ dummy auth
-[ ] JWT token generation + verification
-[ ] Protect routes with auth
-[ ] Refresh tokens (optional)
-
-
-[ ] Hook real user DB for login
-[ ] MongoDB connection + models
+[*] Setup backend
 [ ] User schema + collection
-
-[ ] User profiles
-
+[ ] Hook real user DB for login
+[ ] Setup auth
+[ ] Setup test environment
+[ ] MongoDB connection + models
+[ ] JWT token generation + Refresh tokens
+[ ] CSRF tokens
