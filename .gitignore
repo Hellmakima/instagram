@@ -1,17 +1,8 @@
 # Python
 __pycache__/
 *.pyc
-.env
+# .env
 venv/
-*.sqlite3
-# backend/**/*.html
-
-# Node
-node_modules/
-.next/
-.env.local
-.env.*
-npm-debug.log*
 
 # Logs
 *.log

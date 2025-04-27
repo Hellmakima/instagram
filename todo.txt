@@ -2,40 +2,14 @@
 
 [*] Set up FastAPI router
 [*] Stub login route w/ dummy auth
-
-[ ] Hook real user DB for login
-[ ] Password hashing (bcrypt or similar)
 [ ] JWT token generation + verification
 [ ] Protect routes with auth
 [ ] Refresh tokens (optional)
 
+
+[ ] Hook real user DB for login
 [ ] MongoDB connection + models
 [ ] User schema + collection
-[ ] Post schema (text + image)
-[ ] Comment schema
 
-[ ] File upload (images)
-[ ] Local file storage or Firebase
-[ ] Compression / size limits
+[ ] User profiles
 
-[ ] Feed route (GET posts)
-[ ] Pagination
-[ ] Like / unlike logic
-[ ] Add / delete comments
-
-[ ] User profiles (GET/update)
-[ ] OAuth (Google/GitHub)
-
-[ ] Frontend: Auth pages (login/signup)
-[ ] Frontend: Feed page
-[ ] Frontend: Upload page
-[ ] Frontend: Profile page
-
-[ ] REST client tests
-[ ] .env handling
-[ ] Error handling / edge cases
-[ ] Deployment (maybe later)
-
-# Low-priority / stretch
-[ ] Story system
-[ ] CI/CD
