@@ -1,45 +1,64 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-# from fastapi.security import OAuth2PasswordBearer
-# from fastapi.encoders import jsonable_encoder
-# from sqlalchemy.orm import Session
-from app.core.security import get_password_hash, verify_password
-# from app.core.config import settings
+from fastapi.security import OAuth2PasswordRequestForm
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from bson import ObjectId
+
 from app.core.db import get_db
-from app.models.user import User
-from app.schemas.user import UserCreate, UserUpdate
+from app.core.config import settings
+from app.core.security import (
+    get_password_hash,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+)
+from app.schemas.user import UserCreate, User, Token
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
+def users_col(db: AsyncIOMotorDatabase):
+    return db[settings.MONGODB_NAME]["users"]
 
-# implemet the token stuff here and also in security.py
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+from app.schemas.user import UserCreate, User, Token, AuthResponse  # define AuthResponse
 
-# @router.post("/register", response_model=User)
-# def register_user(user: UserCreate, db: Session = Depends(get_db)):
-#     db_user = db.query(User).filter(User.email == user.email).first()
-#     if db_user:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Email already registered"
-#         )
-#     hashed_password = get_password_hash(user.password)
-#     db_user = User(email=user.email, hashed_password=hashed_password)
-#     db.add(db_user)
-#     db.commit()
-#     db.refresh(db_user)
-#     return db_user
+class AuthResponse(BaseModel):
+    user: User
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
 
-# @router.post("/login", response_model=User)
-# def login_user(user: UserCreate, db: Session = Depends(get_db), response):
-#     db_user = db.query(User).filter(User.email == user.email).first()
-#     if not db_user:
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Incorrect email or password"
-#         )
-#     if not verify_password(user.password, db_user.hashed_password):
-#         raise HTTPException(
-#             status_code=status.HTTP_400_BAD_REQUEST,
-#             detail="Incorrect email or password"
-#         )
-#     access_token = response.access_token
-#     return {"access_token": access_token, "token_type": "bearer"}
+@router.post("/register", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
+async def register(user_in: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
+    if await users_col(db).find_one({"username": user_in.username}):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "User exists")
+    data = user_in.dict()
+    data["hashed_password"] = get_password_hash(user_in.password)
+    res = await users_col(db).insert_one(data)
+    rec = await users_col(db).find_one({"_id": res.inserted_id})
+    rec["id"] = str(rec["_id"])
+
+    uid = rec["id"]
+    access_token = create_access_token(subject=uid)
+    refresh_token = create_refresh_token(subject=uid)
+
+    return AuthResponse(
+        user=User(**rec),
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
+
+
+@router.post("/login", response_model=Token)
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncIOMotorDatabase = Depends(get_db),
+):
+    user = await users_col(db).find_one({"username": form_data.username})
+    if not user or not verify_password(form_data.password, user["hashed_password"]):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    uid = str(user["_id"])
+    access_token = create_access_token(subject=uid)
+    refresh_token = create_refresh_token(subject=uid)
+    return Token(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        token_type="bearer",
+    )
