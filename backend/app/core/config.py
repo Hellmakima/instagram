@@ -9,7 +9,7 @@ class Settings:
     CSRF_SECRET: str = os.getenv("CSRF_SECRET")
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY")
     JWT_ALGORITHM: str = "HS256"
-    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-    JWT_REFRESH_TOKEN_EXPIRE_DAYS: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
 settings = Settings()

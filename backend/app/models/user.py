@@ -1,13 +1,15 @@
 from pydantic import BaseModel, Field
 from typing import Optional
-from datetime import datetime
+# from datetime import datetime
 
 class UserBase(BaseModel):
     username: str = Field(..., description="Username of the user")
     # No password here, we don't store plain text!
 
-class UserCreate(UserBase):
+
+class UserCreate(UserBase): # same can be used for update user.
     password: str = Field(..., description="Password for the user (during creation only)")
+
 
 class User(UserBase):
     id: str = Field(..., description="Unique identifier for the user (from MongoDB)")
