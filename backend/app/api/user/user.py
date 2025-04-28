@@ -1,3 +1,8 @@
+"""
+File: app/api/user/user.py
+
+Contains the user related endpoints
+"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from motor.motor_asyncio import AsyncIOMotorDatabase

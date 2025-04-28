@@ -1,3 +1,9 @@
+"""
+File: app/schemas/user.py
+
+Contains the user schema. Describes JSON Structures for frontend requests
+"""
+
 from pydantic import BaseModel, Field
 from typing import Optional
 
@@ -19,4 +25,6 @@ class User(UserBase):
         json_encoders = {
             # This is fine if you're using ObjectId inside other models
             # but honestly unnecessary here unless you directly have ObjectId fields
+        # ObjectId: str  # Convert ObjectId to string in JSON output
         }
+        allow_population_by_field_name = True

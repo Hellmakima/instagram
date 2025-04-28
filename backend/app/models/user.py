@@ -1,3 +1,8 @@
+"""
+File: app/models/user.py
+
+Contains the user model. Describe Database Schemas for backend DB server
+"""
 from pydantic import BaseModel, Field
 from typing import Optional
 # from datetime import datetime

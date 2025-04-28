@@ -1,3 +1,9 @@
+"""
+File: app/core/db.py
+
+Contains the database connection and related functions
+"""
+
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 try:

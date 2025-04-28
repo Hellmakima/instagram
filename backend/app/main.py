@@ -1,5 +1,13 @@
-# run: uvicorn app.main:app --reload --port 5000
+"""
+File: app/main.py
 
+Contains the FastAPI app
+Collects all the routers from api folder and mounts them to the app
+Serves static files from static folder
+Manages the database connection
+
+to run the app: uvicorn app.main:app --reload --port 5000
+"""
 # mongodb connection client
 from pymongo import MongoClient
 import os

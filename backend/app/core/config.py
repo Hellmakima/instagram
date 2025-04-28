@@ -1,3 +1,8 @@
+"""
+File: app/core/config.py
+
+Contains the settings for the project
+"""
 import os
 from dotenv import load_dotenv
 

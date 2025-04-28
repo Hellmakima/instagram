@@ -1,3 +1,8 @@
+"""
+File: app/api/router.py
+
+Combines all the routers from api folder making it easier to import
+"""
 # api/routes.py
 
 from fastapi import APIRouter

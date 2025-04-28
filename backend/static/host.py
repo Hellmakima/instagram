@@ -1,3 +1,8 @@
+"""
+File: static/host.py
+
+Serves the static files from static folder onto 8080 port
+"""
 print("localhost:8080/login.html")
 print("to run with cmd: python -m http.server 8080")
 # python -m http.server 8080

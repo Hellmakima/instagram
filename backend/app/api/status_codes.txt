@@ -1,3 +1,9 @@
+"""
+File: app/api/status_codes.txt
+
+Contains all the status codes that are used in the project
+"""
+
 100 Continue
 101 Switching Protocols
 102 Processing
