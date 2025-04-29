@@ -1,6 +1,6 @@
 # 🪞 InstaClone
 
-A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.  
+A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.
 ’Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
 
 _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any follies or errours thou mayst uncover. If a gremlin be found, mayhap it be mine doing… or mayhap not… yet I vow to mend it, upon my honour.*_
@@ -29,19 +29,19 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ## 🧙‍♂️ How to Summon This Beast (Getting Started)
 
-1. **Clone the Grimoire**  
+1. **Clone the Grimoire**
    `git clone https://github.com/hellmakima/instaclone.git`
 
-2. **Conjure a Virtual Realm**  
-   `python -m venv venv && source venv/bin/activate`  
+2. **Conjure a Virtual Realm**
+   `python -m venv venv && source venv/bin/activate`
    _(or `venv\Scripts\activate` if thou rideth Windows)_
 
-3. **Scribe the Runes (Install Deps)**  
+3. **Scribe the Runes (Install Deps)**
    `pip install -r backend/requirements.txt`
 
-4. **Kindle the Backfire (Run Backend)**  
-   `uvicorn app.main:app --reload --port 5000`  
-   Then venture to: [localhost:5000/docs](http://localhost:5000/docs#/)  
+4. **Kindle the Backfire (Run Backend)**
+   `uvicorn app.main:app --reload --port 5000`
+   Then venture to: [localhost:5000/docs#/](http://localhost:5000/docs#/)
    There shalt thou behold the holy scroll of endpoints.
 
 5. **Craft the Forepart (Next.js Frontend)**

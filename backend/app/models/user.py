@@ -15,9 +15,9 @@ class UserCreate(UserBase): # same can be used for update user.
     hashed_password: str = Field(..., description="Hashed password (stored in DB)")
 
 
-class User(UserBase): 
-    id: str = Field(..., description="Unique identifier for the user (from MongoDB)") 
-    hashed_password: str = Field(..., description="Hashed password (stored in DB)") 
+class User(UserBase):
+    id: str = Field(..., description="Unique identifier for the user (from MongoDB)")
+    hashed_password: str = Field(..., description="Hashed password (stored in DB)")
     # is_active: bool = Field(default=True, description="Whether the user is active")
     # created_at: datetime = Field(default_factory=datetime.utcnow, description="Timestamp of user creation")
 

@@ -197,5 +197,5 @@ fetch("/api/data", {
 
 ---
 
-_Updated: [4/27/2025]_  
+_Updated: [4/27/2025]_
 _References: OWASP, RFC 8725, Flask-JWT-Extended docs_

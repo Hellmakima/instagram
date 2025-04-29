@@ -28,14 +28,14 @@ def users_col(db: AsyncIOMotorDatabase):
 async def register(user: UserCreate, db: AsyncIOMotorDatabase = Depends(get_db)):
     if await users_col(db).find_one({"username": user.username}):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, 
+            status_code=status.HTTP_400_BAD_REQUEST,
             details="User exists"
         )
     data = user.dict()
     data["hashed_password"] = get_password_hash(user.password)
     res = await users_col(db).insert_one(data)
     rec = await users_col(db).find_one({"_id": res.inserted_id})
-    
+  
     token_data = TokenData(username=rec["username"])
     access_token = create_access_token(token_data)
     refresh_token = create_refresh_token(token_data)
@@ -55,7 +55,7 @@ async def login(
     user = await users_col(db).find_one({"username": form_data.username})
     if not user or not verify_password(form_data.password, user["hashed_password"]):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
         )
     token_data = TokenData(username=user["username"])
