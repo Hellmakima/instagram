@@ -1,6 +1,6 @@
 fastapi
 uvicorn[standard]
-# python-dotenv
+python-dotenv
 pymongo
 python-jose[cryptography]
 passlib[bcrypt]

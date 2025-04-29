@@ -1,3 +1,9 @@
+"""
+File: app/core/db.py
+
+Contains the database connection and related functions
+"""
+
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 try:
@@ -16,13 +22,10 @@ def get_db():
         print("Successfully connected to MongoDB!")
     except ConnectionFailure:
         print("Server not available")
-        # It's crucial to raise an exception or handle this error
-        # so your application doesn't proceed with a broken connection.
         raise  # Re-raise the ConnectionFailure exception
 
     db = client[settings.MONGODB_DB]
-    print(f"Database: {db}")  # Print the database object
-    # DO NOT close the client here.  The caller of get_db() should close it.
+    # DO NOT close the client here.
     return db
 
 def test_db_connection():
@@ -45,7 +48,7 @@ def test_db_connection():
         assert query_result["name"] == "Test User"  # Basic assertion to check data integrity
         print("Successfully inserted and retrieved data!")
 
-        # # 3. Clean up (optional, but good practice for testing)
+        # 3. Clean up (optional, but good practice for testing)
         collection.delete_one({"name": "Test User"})
         print("Deleted the test document.")
 
