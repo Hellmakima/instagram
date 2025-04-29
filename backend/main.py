@@ -1,3 +1,9 @@
+"""
+File: project/backend/main.py
+
+Youtube: @AkamaiDeveloper
+"""
+
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel
@@ -26,14 +32,14 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    username: str or None = None
+    username: str = None
 
 
 class User(BaseModel):
     username: str
-    email: str or None = None
-    full_name: str or None = None
-    disabled: bool or None = None
+    email: str = None
+    full_name: str = None
+    disabled: bool = None
 
 
 class UserInDB(User):
@@ -70,7 +76,7 @@ def authenticate_user(db, username: str, password: str):
     return user
 
 
-def create_access_token(data: dict, expires_delta: timedelta or None = None):
+def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta

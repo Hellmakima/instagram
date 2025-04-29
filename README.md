@@ -1,4 +1,4 @@
-# InstaClone
+# 🪞 InstaClone
 
 A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.  
 ’Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
@@ -9,13 +9,12 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ## ⚙️ The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
 
-| Sphere   | Alchemy       | Scribblings                                                      |
-| -------- | ------------- | ---------------------------------------------------------------- |
-| Forepart | Next.js       | Forsooth, who now doth favour "classic" React?                   |
-| Rearward | FastAPI       | As swift as thine Wi-Fi, when none doth leech it                 |
-| Tome     | MongoDB       | NoSQL — for those who deem SQL a sluggish beast                  |
-| Warding  | To Be Decreed | Mayhap Firebase, mayhap Local — 'tis a mystery yet               |
-| Imagery  | Unchosen      | Perchance Firebase, or stored local — or sent by carrier pigeon? |
+| Sphere   | Alchemy       | Scribblings                                        |
+| -------- | ------------- | -------------------------------------------------- |
+| Forepart | Next.js       | Forsooth, who now doth favour "classic" React?     |
+| Rearward | FastAPI       | As swift as thine Wi-Fi, when none doth leech it   |
+| Tome     | MongoDB       | NoSQL — for those who deem SQL a sluggish beast    |
+| Warding  | To Be Decreed | Mayhap Firebase, mayhap Local — 'tis a mystery yet |
 
 ---
 
@@ -28,11 +27,60 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ---
 
-## 📚 The Book of Spells
+## 🧙‍♂️ How to Summon This Beast (Getting Started)
 
-to run the app: `uvicorn app.main:app --reload --port 5000`
+1. **Clone the Grimoire**  
+   `git clone https://github.com/hellmakima/instaclone.git`
 
-go to `localhost:5000/docs` to see the API documentation and test it.
+2. **Conjure a Virtual Realm**  
+   `python -m venv venv && source venv/bin/activate`  
+   _(or `venv\Scripts\activate` if thou rideth Windows)_
+
+3. **Scribe the Runes (Install Deps)**  
+   `pip install -r backend/requirements.txt`
+
+4. **Kindle the Backfire (Run Backend)**  
+   `uvicorn app.main:app --reload --port 5000`  
+   Then venture to: [localhost:5000/docs](http://localhost:5000/docs#/)  
+   There shalt thou behold the holy scroll of endpoints.
+
+5. **Craft the Forepart (Next.js Frontend)**
+   ```
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   Seek [localhost:3000](http://localhost:3000) — the mirror realm awaits.
+
+---
+
+## 🛡️ Warding (Security & Auth)
+
+In days yet to come, the wards shall be woven. Here's the prophecy:
+
+- **Local Auth** – Thy own runes of login, hashed with bcrypt and stored with care.
+- **JWT Tokens** – Each bearer shall prove their claim, or be smote by 401s.
+
+For now?
+**None but trust and jest keep the gates.**
+
+---
+
+## References
+
+**Youtube:**
+
+- [@AkamaiDeveloper](https://www.youtube.com/embed/5GxQ1rLTwaU)
+
+**Udemy:**
+
+- [REST APIs with Flask and Python in 2025](https://www.udemy.com/course/rest-api-flask-and-python/)
+
+**Coding Partners:** _(The heart of the project)_
+
+- [@ChatGPT_chan](https://chatgpt.com/?temporary-chat=true)
+- [@Gemini_kun](https://gemini.google.com/app?hl=en-IN)
+- [@DeepSeek_san](https://chat.deepseek.com)
 
 ---
 
@@ -46,6 +94,10 @@ MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to de
 
 Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption 🧙‍♂️.
 
+> “If thou findest bugs, they are features in disguise. If not, blame the moon.”
+
 ---
 
-Thou art welcome to lend thy craft, mend the broken, or plunge into the enigma that is media storage. This repository be as an open feast: partake, peruse, and pilfer as thou pleaseth.
+Open to collabs, pull requests, lore suggestions, or random acts of digital necromancy.
+
+Thou art welcome to lend thy craft, mend the broken, or plunge into the enigma that is media storage. This repository be as an open feast: partake, peruse, and pilfer as thou pleaseth. Come, break bread and bytes.
