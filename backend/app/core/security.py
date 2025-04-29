@@ -12,6 +12,9 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.core.config import settings
 from app.schemas.auth import TokenData
+from typing import Any, Union
+from fastapi import HTTPException, status
+from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
@@ -57,7 +60,7 @@ def verify_token(token: str, token_type: str = "access") -> Union[str, None]:
         decoded_token = jwt.decode(
             token,
             settings.SECRET_KEY,
-            algorithms=[security.JWT_ALGORITHM],
+            algorithms=[settings.JWT_ALGORITHM],
         )
         if decoded_token["type"] != token_type:
             raise credentials_exception

@@ -7,7 +7,7 @@ class AuthResponse(BaseModel):
     token_type: str = "Bearer"
 
 class TokenData(BaseModel):
-    username: str or None = None
+    username: str
 
 class Token(BaseModel):
     access_token: str

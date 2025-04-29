@@ -4,63 +4,56 @@ File: app/core/db.py
 Contains the database connection and related functions
 """
 
-from pymongo import MongoClient
+# app/core/db.py
+
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.errors import ConnectionFailure
+import asyncio
+
 try:
-    from core.config import settings  # when used inside project
+    from app.core.config import settings
 except ImportError:
-    from config import settings  # when running directly
+    from config import settings
+
 try:
     from main import client  # when used inside project
 except ImportError:
-    client = MongoClient(settings.MONGODB_URI)  # when running directly
+    client: AsyncIOMotorClient = AsyncIOMotorClient(settings.MONGODB_URI)  # when running directly
+    
+async def get_db() -> AsyncIOMotorDatabase:
+    await client.admin.command("ping")
+    return client[settings.MONGODB_DB]
 
-def get_db():
-    try:
-        # The ismaster command is cheap and fast to run.
-        client.admin.command('ping')
-        print("Successfully connected to MongoDB!")
-    except ConnectionFailure:
-        print("Server not available")
-        raise  # Re-raise the ConnectionFailure exception
-
-    db = client[settings.MONGODB_DB]
-    # DO NOT close the client here.
-    return db
-
-def test_db_connection():
+async def test_db_connection():
     """
-    Tests the database connection by performing a simple insert and query.
+    Async test: insert, query, delete.
     """
     try:
-        db = get_db()  # Get the database connection
-        collection = db.test_collection  # Access a collection (or create if it doesn't exist)
+        db = await get_db()
+        coll = db.test_collection
 
-        # 1. Insert a test document
-        test_document = {"name": "Test User", "value": 123}
-        insert_result = collection.insert_one(test_document)
-        print(f"Inserted document with ID: {insert_result.inserted_id}")
+        # 1. Insert
+        test_doc = {"name": "Test User", "value": 123}
+        res = await coll.insert_one(test_doc)
+        print(f"Inserted ID: {res.inserted_id}")
 
-        # 2. Query for the test document
-        query_result = collection.find_one({"name": "Test User"})
-        print(f"Query result: {query_result}")
+        # 2. Query
+        found = await coll.find_one({"_id": res.inserted_id})
+        print(f"Found: {found}")
 
-        assert query_result["name"] == "Test User"  # Basic assertion to check data integrity
-        print("Successfully inserted and retrieved data!")
+        assert found["name"] == "Test User"
+        print("Data integrity OK")
 
-        # 3. Clean up (optional, but good practice for testing)
-        collection.delete_one({"name": "Test User"})
-        print("Deleted the test document.")
+        # 3. Cleanup
+        await coll.delete_one({"_id": res.inserted_id})
+        print("Cleaned up test doc")
 
     except ConnectionFailure as e:
-        print(f"Connection test failed: {e}")
-        #  The get_db() function now raises this, so you can handle it here.
+        print(f"Mongo ping failed: {e}")
     except Exception as e:
-        # Catch any other exceptions during the test.
-        print(f"An error occurred during the test: {e}")
+        print(f"Test failed: {e}")
     finally:
-        if 'client' in locals(): #check if client was defined
-            client.close() # Close connection
+        client.close()
 
-if __name__ == '__main__':
-    test_db_connection()
+if __name__ == "__main__":
+    asyncio.run(test_db_connection())

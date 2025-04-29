@@ -9,16 +9,18 @@ Manages the database connection
 to run the app: uvicorn app.main:app --reload --port 5000
 """
 # mongodb connection client
-from pymongo import MongoClient
 import os
+from motor.motor_asyncio import AsyncIOMotorClient
+from app.core.config import settings
 from dotenv import load_dotenv
 load_dotenv()
-client = MongoClient(os.getenv("MONGODB_URI"))
+# client = MongoClient(os.getenv("MONGODB_URI"))
+client: AsyncIOMotorClient = AsyncIOMotorClient(settings.MONGODB_URI)
 
 # fastapi app
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-# from app.api.router import router
+from app.api.router import router
 
 app = FastAPI()
 

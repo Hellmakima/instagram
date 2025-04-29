@@ -1,4 +1,4 @@
-# 🪞 InstaClone
+# InstaClone
 
 A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.
 ’Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
