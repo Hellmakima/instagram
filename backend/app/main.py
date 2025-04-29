@@ -18,17 +18,18 @@ client = MongoClient(os.getenv("MONGODB_URI"))
 # fastapi app
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from api.router import router
+# from app.api.router import router
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-app.include_router(router)
+# app.include_router(router)
 
 @app.get("/")
-async def root():
-    return {"message": "Hello from FastAPI!"}
+async def root(name: str="Sufiyan"):
+    return {"message": f"Hello from FastAPI",
+            "query": name}
 
 @app.on_event("shutdown")
 async def shutdown_event():

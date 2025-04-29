@@ -6,7 +6,7 @@ Combines all the routers from api folder making it easier to import
 # api/routes.py
 
 from fastapi import APIRouter
-from api.endpoints import users, posts, auth
+from app.api.user import user
 
 router = APIRouter()
 

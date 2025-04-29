@@ -8,14 +8,16 @@ GET {{url}}/search?q=hehe
 GET http://google.com
 
 
-### Get Token
-GET http://localhost:5000/auth/token
-Content-Type: application/json
+###
+GET http://localhost:5000/users/me/
 
-{
-    "username": "sufi",
-    "password": "12345"
-}
+
+
+### Get Token
+POST http://localhost:5000/token
+Content-Type: application/x-www-form-urlencoded
+
+username=tim&password=tim1234
 
 ### Use Token
 GET http://localhost:5000/auth/me

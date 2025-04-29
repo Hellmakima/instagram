@@ -9,13 +9,13 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ## ⚙️ The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
 
-| Sphere     | Alchemy      | Scribblings                                      |
-|------------|--------------|--------------------------------------------------|
-| Forepart   | Next.js      | Forsooth, who now doth favour "classic" React?   |
-| Rearward   | FastAPI      | As swift as thine Wi-Fi, when none doth leech it |
-| Tome       | MongoDB      | NoSQL — for those who deem SQL a sluggish beast  |
-| Warding    | To Be Decreed| Mayhap Firebase, mayhap Local — 'tis a mystery yet |
-| Imagery    | Unchosen     | Perchance Firebase, or stored local — or sent by carrier pigeon? |
+| Sphere   | Alchemy       | Scribblings                                                      |
+| -------- | ------------- | ---------------------------------------------------------------- |
+| Forepart | Next.js       | Forsooth, who now doth favour "classic" React?                   |
+| Rearward | FastAPI       | As swift as thine Wi-Fi, when none doth leech it                 |
+| Tome     | MongoDB       | NoSQL — for those who deem SQL a sluggish beast                  |
+| Warding  | To Be Decreed | Mayhap Firebase, mayhap Local — 'tis a mystery yet               |
+| Imagery  | Unchosen      | Perchance Firebase, or stored local — or sent by carrier pigeon? |
 
 ---
 
@@ -25,6 +25,14 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 - **Forepart:** Only humble scrolls of static HTML hath been penned for trial and jest.
 - **Rearward:** A modest conjuration; the mage yet studies and doth experiment.
 - **Tome:** MongoDB hath been summoned… and then the mage grew weary.
+
+---
+
+## 📚 The Book of Spells
+
+to run the app: `uvicorn app.main:app --reload --port 5000`
+
+go to `localhost:5000/docs` to see the API documentation and test it.
 
 ---
 

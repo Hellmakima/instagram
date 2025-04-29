@@ -6,13 +6,16 @@ JWT is used for authentication.
 """
 
 from datetime import datetime, timedelta
-from typing import Any, Union
+from typing import Any
 from jose import jwt
 from passlib.context import CryptContext
-from app.core.config import settings # Assuming you have this
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from app.core.config import settings
+from app.schemas.auth import TokenData
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-ALGORITHM = "HS256"
+oauth_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
+
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
@@ -21,36 +24,44 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 def create_access_token(
-    subject: Union[str, Any], expires_delta: timedelta = None
+    data: TokenData, 
+    expires_delta: timedelta = None
 ) -> str:
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)  # Use config
-    to_encode = {"exp": expire, "sub": str(subject), "type": "access"} #add type
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES) 
+    to_encode = {"exp": expire, "sub": data.to_dict(), "type": "access"} 
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
 def create_refresh_token(
-    subject: Union[str, Any], expires_delta: timedelta = None
+    data: TokenData, 
+    expires_delta: timedelta = None
 ) -> str:
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES) # Use config
-    to_encode = {"exp": expire, "sub": str(subject), "type": "refresh"}#add type
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+        expire = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    to_encode = {"exp": expire, "sub": data.to_dict(), "type": "refresh"}
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-def verify_token(token: str, token_type: str = "access") -> Union[str, None]: #added token_type
+def verify_token(token: str, token_type: str = "access") -> Union[str, None]: 
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
         decoded_token = jwt.decode(
             token,
             settings.SECRET_KEY,
-            algorithms=[ALGORITHM],
+            algorithms=[security.JWT_ALGORITHM],
         )
-        if decoded_token["type"] != token_type: #check type
-            return None
+        if decoded_token["type"] != token_type: 
+            raise credentials_exception
         return decoded_token["sub"]
     except jwt.JWTError:
-        return None
+        raise credentials_exception
+
