@@ -76,6 +76,10 @@ For now?
 
 - [REST APIs with Flask and Python in 2025](https://www.udemy.com/course/rest-api-flask-and-python/)
 
+**Website:**
+
+- [@fastapi](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
+
 **Coding Partners:** _(The heart of the project)_
 
 - [@ChatGPT_chan](https://chatgpt.com/?temporary-chat=true)

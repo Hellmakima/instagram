@@ -26,7 +26,7 @@ app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# app.include_router(router)
+app.include_router(router)
 
 @app.get("/")
 async def root(name: str="Sufiyan"):
