@@ -6,6 +6,7 @@ Contains the database connection and related functions
 
 # app/core/db.py
 
+from fastapi import Request
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo.errors import ConnectionFailure
 import asyncio
@@ -15,14 +16,12 @@ try:
 except ImportError:
     from config import settings
 
-try:
-    from main import client  # when used inside project
-except ImportError:
-    client: AsyncIOMotorClient = AsyncIOMotorClient(settings.MONGODB_URI)  # when running directly
-    
-async def get_db() -> AsyncIOMotorDatabase:
-    await client.admin.command("ping")
-    return client[settings.MONGODB_DB]
+async def get_db(request: Request) -> AsyncIOMotorDatabase:
+    """
+    Get MongoDB database from FastAPI app state.
+    Usage: Depends(get_db)
+    """
+    return request.app.state.client[settings.MONGODB_DB]
 
 async def test_db_connection():
     """
@@ -52,8 +51,6 @@ async def test_db_connection():
         print(f"Mongo ping failed: {e}")
     except Exception as e:
         print(f"Test failed: {e}")
-    finally:
-        client.close()
 
 if __name__ == "__main__":
     asyncio.run(test_db_connection())

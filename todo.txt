@@ -1,6 +1,9 @@
 # TODO
 
 [*] Setup backend
+[ ] implement validate_password
+Store refresh tokens server-side (currently stateless).
+Add rate-limiting to /login endpoint
 [ ] User schema + collection
 [ ] Hook real user DB for login
 [ ] Setup auth
