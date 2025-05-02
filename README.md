@@ -7,7 +7,7 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ---
 
-## ⚙️ The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
+## The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
 
 | Sphere   | Alchemy       | Scribblings                                        |
 | -------- | ------------- | -------------------------------------------------- |
@@ -27,7 +27,7 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ---
 
-## 🧙‍♂️ How to Summon This Beast (Getting Started)
+## How to Summon This Beast (Getting Started)
 
 1. **Clone the Grimoire**
    `git clone https://github.com/hellmakima/instaclone.git`
@@ -54,7 +54,7 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 ---
 
-## 🛡️ Warding (Security & Auth)
+## Warding (Security & Auth)
 
 In days yet to come, the wards shall be woven. Here's the prophecy:
 
@@ -82,21 +82,22 @@ For now?
 
 **Coding Partners:** _(The heart of the project)_
 
-- [@ChatGPT_chan](https://chatgpt.com/?temporary-chat=true)
-- [@Gemini_kun](https://gemini.google.com/app?hl=en-IN)
-- [@DeepSeek_san](https://chat.deepseek.com)
+- [@SuperMaven_senpai](https://marketplace.visualstudio.com/items?itemName=Supermaven.supermaven) - VS Code extention. All-time buddy, only speaks code.
+- [@ChatGPT_chan](https://chatgpt.com/?temporary-chat=true) For easy understanding of new things, Hallucinates a lot.
+- [@Gemini_kun](https://gemini.google.com/app?hl=en-IN) For standard procedures and deep research.
+- [@DeepSeek_san](https://chat.deepseek.com) When my brain noodls give up, he starts crunching his, very low availability though. The thoughts give a lot of insights too.
 
 ---
 
 ## 📜 License Most Liberal
 
-MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee. ✌️
+MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee.
 
 ---
 
 ## ✌️ Scribe
 
-Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption 🧙‍♂️.
+Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption.
 
 > “If thou findest bugs, they are features in disguise. If not, blame the moon.”
 
