@@ -7,14 +7,12 @@ Contains the database connection and related functions
 # app/core/db.py
 
 from fastapi import Request
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorDatabase
 from pymongo.errors import ConnectionFailure
 import asyncio
 
-try:
-    from app.core.config import settings
-except ImportError:
-    from config import settings
+from app.core.config import settings
+# from config import settings
 
 async def get_db(request: Request) -> AsyncIOMotorDatabase:
     """

@@ -5,13 +5,12 @@ Contains the authentication related endpoints
 """
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
-# from fastapi import Request
 from fastapi.security import OAuth2PasswordRequestForm
-# from bson import ObjectId
 
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from app.db.db import get_db
+from app.db.collections import users_col, refresh_tokens_col
 
-from app.core.db import get_db
 from app.core.config import settings
 from app.core.security import (
     get_password_hash,
@@ -19,9 +18,7 @@ from app.core.security import (
     create_access_token,
     create_refresh_token,
 )
-# from app.schemas.user import UserCreate, User
-from app.schemas.auth import AuthResponse, TokenData
-from app.db.collections import users_col, refresh_tokens_col
+from app.schemas.auth import AuthResponse, TokenData, UserCreate
 
 import logging
 from logging.config import dictConfig
@@ -31,16 +28,25 @@ LOG_CONFIG = {
     "formatters": {
         "default": {
             "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
-        }
+        },
     },
     "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": "app.log",  # Your log file here babe 💾
+            "formatter": "default",
+            "level": "INFO",
+        },
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "default",
-            "stream": "ext://sys.stdout",
-        }
+            "level": "INFO",
+        },
     },
-    "root": {"level": "INFO", "handlers": ["console"]},
+    "root": {
+        "handlers": ["file", "console"],
+        "level": "INFO",
+    },
 }
 
 dictConfig(LOG_CONFIG)
@@ -55,27 +61,45 @@ def validate_password(password: str):
         raise HTTPException(400, "Password must be ≥8 characters")
     # Add checks for uppercase, numbers, etc.
 
+
 @router.post(
     "/register",
     response_model=AuthResponse,
     status_code=status.HTTP_201_CREATED
 )
 async def register(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: UserCreate,
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
-    if await users_col(db).find_one({"username": form_data.username}):
+    try:
+        if await users_col(db).find_one({"username": form_data.username}):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User exists"
+            )
+    except HTTPException as e:
+        # Re-raise any HTTPExceptions coz User already exists
+        raise e
+    except Exception as e:
+        logger.error("Error checking user existence: %s", str(e))
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User exists"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error checking user"
         )
     validate_password(form_data.password)
     user_doc = {
         "username": form_data.username,
         "hashed_password": get_password_hash(form_data.password),
     }
-    res = await users_col(db).insert_one(user_doc)
-    rec = await users_col(db).find_one({"_id": res.inserted_id})
+    try:
+        res = await users_col(db).insert_one(user_doc)
+        rec = await users_col(db).find_one({"_id": res.inserted_id})
+    except Exception as e:
+        logger.error("Error saving user to DB: %s", str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error saving user"
+        )
 
     tok_data = TokenData(username=rec["username"])
     access_token = create_access_token(tok_data)
@@ -90,7 +114,12 @@ async def register(
         token_type="Bearer",
     )
 
-@router.post("/login", response_model=AuthResponse)
+
+@router.post(
+    "/login", 
+    response_model=AuthResponse,
+    status_code=status.HTTP_202_ACCEPTED
+)
 async def login(
     # request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -132,3 +161,5 @@ async def login(
         refresh_token=refresh_token,
         token_type="Bearer",
     )
+
+

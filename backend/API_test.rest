@@ -1,5 +1,5 @@
 @url = https://google.com
-# @url = http://localhost:5000
+@url = http://localhost:5000
 @access_token =
 
 GET {{url}}/search?q=hehe
@@ -14,14 +14,30 @@ GET http://localhost:5000/users/me/
 
 
 ### Get Token
-POST http://localhost:5000/token
+POST {{url}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "tim",
+  "password": "tim11234"
+}
+# Authorization: Bearer {{token}}
+
+# > {%
+#   const body = JSON.parse(response.body);
+#   client.global.set("access_token", body.access_token);
+# %}
+
+###
+POST http://localhost:5000/auth/login
 Content-Type: application/x-www-form-urlencoded
 
 username=tim&password=tim1234
 
-### Use Token
-GET http://localhost:5000/auth/me
-Authorization: Bearer {{access_token}}
+### Get current user details
+GET http://localhost:5000/user/me
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYyNzkxODAsInN1YiI6ImEiLCJ0eXBlIjoiYWNjZXNzIn0.Yg75NaA5eWUnUFadQTwUEadwHGep99vHtdJkyOvrCwE
+
 
 ###
 @url = http://localhost:5000
@@ -43,13 +59,13 @@ Content-Type: application/json
 
 ###
 
-# 💌 Example Authenticated GET Request
+# Example Authenticated GET Request
 GET {{url}}/protected-route
 Authorization: Bearer {{token}}
 
 ###
 
-# 🛠 Example POST with Auth
+# Example POST with Auth
 POST {{url}}/some-endpoint
 Authorization: Bearer {{token}}
 Content-Type: application/json

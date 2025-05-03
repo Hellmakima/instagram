@@ -1,5 +1,6 @@
 # TODO
 
+clean api_tesr.rest
 [*] Setup backend
 [ ] implement validate_password
 Store refresh tokens server-side (currently stateless).

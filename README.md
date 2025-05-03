@@ -1,7 +1,7 @@
 # InstaClone
 
 A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.
-’Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
+'Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
 
 _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any follies or errours thou mayst uncover. If a gremlin be found, mayhap it be mine doing… or mayhap not… yet I vow to mend it, upon my honour.*_
 

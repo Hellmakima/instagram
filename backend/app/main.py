@@ -6,7 +6,8 @@ Collects all the routers from api folder and mounts them to the app
 Serves static files from static folder
 Manages the database connection
 
-to run the app: uvicorn app.main:app --reload --port 5000
+to run the app in /backend> uvicorn app.main:app --reload --port 5000
+or run backend/app/main.py
 """
 
 # mongodb connection client
@@ -50,4 +51,4 @@ async def root(name: str="Sufiyan"):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=5000, reload=True)

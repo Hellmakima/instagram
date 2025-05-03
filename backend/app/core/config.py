@@ -2,24 +2,33 @@
 File: app/core/config.py
 
 Contains the settings for the project
+These are loaded from .env file.
 """
 from dotenv import load_dotenv
-from pydantic import BaseSettings, Field, ValidationError
+from pydantic import Field, ValidationError, field_validator
+from pydantic_settings import BaseSettings
 
 load_dotenv()
 
 class Settings(BaseSettings):
+    ENABLE_GENERAL_LOGGER: bool = Field(..., description="Enable General Logger")
     MONGODB_URI: str = Field(..., description="MongoDB URI")
     MONGODB_DB: str = Field(..., description="MongoDB Database")
     CSRF_SECRET: str = Field(..., description="CSRF Secret")
+    
     JWT_SECRET_KEY: str = Field(..., description="JWT Secret Key")
-    if not JWT_SECRET_KEY:
-        raise ValueError("JWT_SECRET_KEY environment variable missing")
     JWT_ALGORITHM: str = Field("HS256", description="JWT Algorithm")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(30, description="Access Token Expire Minutes")
-    
+
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(30, description="Refresh Token Expire Days")
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60, description="Refresh Token Expire Minutes")
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(None, description="Refresh Token Expire Minutes")
+
+    @field_validator('REFRESH_TOKEN_EXPIRE_MINUTES', mode='before')
+    @classmethod
+    def set_refresh_minutes(cls, v, info):
+        days = info.data.get('REFRESH_TOKEN_EXPIRE_DAYS', 30)
+        return days * 24 * 60 if v is None else v
+
     class Config:
         env_file = ".env"  # Load from .env file
         case_sensitive = True

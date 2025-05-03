@@ -11,7 +11,7 @@ _A comprehensive guide to securing JWT-based authentication and preventing commo
 **What it is**:
 
 - An attack where a malicious site tricks a logged-in user into performing unwanted actions on a legitimate site.
-- Exploits the browser’s automatic cookie inclusion in same-origin requests.
+- Exploits the browser's automatic cookie inclusion in same-origin requests.
 
 **Prevention**:
 
