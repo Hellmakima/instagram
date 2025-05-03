@@ -11,7 +11,7 @@ from pydantic_settings import BaseSettings
 load_dotenv()
 
 class Settings(BaseSettings):
-    ENABLE_GENERAL_LOGGER: bool = Field(..., description="Enable General Logger")
+    ENABLE_APP_LOGGER: bool = Field(..., description="Enable App Logging into flow.log")
     MONGODB_URI: str = Field(..., description="MongoDB URI")
     MONGODB_DB: str = Field(..., description="MongoDB Database")
     CSRF_SECRET: str = Field(..., description="CSRF Secret")

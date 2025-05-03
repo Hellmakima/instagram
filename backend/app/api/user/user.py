@@ -20,7 +20,6 @@ router = APIRouter(prefix="/user", tags=["user"])
 async def read_current_user(
     current_user: UserMe = Depends(get_current_user)
 ):
-    print('in me')
     """
     Temp function for testing
     Get details for the currently authenticated user

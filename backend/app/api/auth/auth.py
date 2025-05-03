@@ -33,7 +33,7 @@ LOG_CONFIG = {
     "handlers": {
         "file": {
             "class": "logging.FileHandler",
-            "filename": "app.log",  # Your log file here babe 💾
+            "filename": "app.log",
             "formatter": "default",
             "level": "INFO",
         },
