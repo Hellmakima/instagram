@@ -120,4 +120,4 @@ npx create-next-app@latest frontend
 { "keys": ["your_key_binding"], "command": "rest_request" }
 ```
 
-5. Or run via `Ctrl+Shift+P` → `REST Client: Send request`.
+5. Or run via `Ctrl+Shift+P` -> `REST Client: Send request`.

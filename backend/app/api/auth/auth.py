@@ -58,7 +58,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 def validate_password(password: str):
     if len(password) < 8:
-        raise HTTPException(400, "Password must be ≥8 characters")
+        raise HTTPException(400, "Password must be >= 8 characters")
     # Add checks for uppercase, numbers, etc.
 
 

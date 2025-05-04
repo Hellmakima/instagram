@@ -58,8 +58,8 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
 
 In days yet to come, the wards shall be woven. Here's the prophecy:
 
-- **Local Auth** – Thy own runes of login, hashed with bcrypt and stored with care.
-- **JWT Tokens** – Each bearer shall prove their claim, or be smote by 401s.
+- **Local Auth** - Thy own runes of login, hashed with bcrypt and stored with care.
+- **JWT Tokens** - Each bearer shall prove their claim, or be smote by 401s.
 
 For now?
 **None but trust and jest keep the gates.**

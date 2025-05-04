@@ -60,7 +60,7 @@ def validate_csrf():
 
 2. **Token Lifespan**:
 
-   - Short-lived access tokens (15–30 mins).
+   - Short-lived access tokens (15-30 mins).
    - Long-lived refresh tokens (stored server-side).
 
 3. **Signing**:

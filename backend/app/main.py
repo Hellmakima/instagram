@@ -1,5 +1,5 @@
 """
-File: app/main.py
+### File: **app/main.py**
 
 Contains the FastAPI app
 Collects all the routers from api folder and mounts them to the app
@@ -21,6 +21,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from app.api.router import router
 from contextlib import asynccontextmanager
+import app.utils.loggers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,8 +46,13 @@ app.include_router(router)
 
 @app.get("/")
 async def root(name: str="Sufiyan"):
+    """
+    Test endpoint
+    call with http://localhost:5000/?name=Sufiyan
+    or http://localhost:5000
+    """
     return {"message": f"Hello from FastAPI",
-            "query": name}
+            "name": name}
 
 
 if __name__ == "__main__":

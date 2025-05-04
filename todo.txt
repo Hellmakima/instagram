@@ -1,14 +1,13 @@
-# TODO
+"""
+File: **project/todo.txt**
+
+Contains the todo list for the project
+"""
 
 clean api_tesr.rest
-[*] Setup backend
-[ ] implement validate_password
 Store refresh tokens server-side (currently stateless).
 Add rate-limiting to /login endpoint
-[ ] User schema + collection
-[ ] Hook real user DB for login
-[ ] Setup auth
-[ ] Setup test environment
-[ ] MongoDB connection + models
-[ ] JWT token generation + Refresh tokens
-[ ] CSRF tokens
+make nextjs pages for login, register, and profile
+
+all password related stuff [change password, forgot password, reset password]
+all user related stuff [create user, delete user, update user]
