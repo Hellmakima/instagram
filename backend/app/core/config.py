@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     
     JWT_SECRET_KEY: str = Field(..., description="JWT Secret Key")
     JWT_ALGORITHM: str = Field("HS256", description="JWT Algorithm")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(30, description="Access Token Expire Minutes")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(1, description="Access Token Expire Minutes")
 
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(30, description="Refresh Token Expire Days")
     REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(None, description="Refresh Token Expire Minutes")

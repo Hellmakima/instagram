@@ -16,7 +16,8 @@ class LogSettings(BaseSettings):
     LOG_REQUESTS: bool = True
     LOG_DB: bool = True
     LOG_DB_CONSOLE: bool = True
-    LOG_MAX_BYTES: int = 10 * 1024 * 1024  # 10MB
+    # LOG_MAX_BYTES: int = 10 * 1024 * 1024  # 10MB
+    LOG_MAX_BYTES: int = 1 * 1024 * 1024  # 1MB
     LOG_BACKUP_COUNT: int = 3
     
     # add more logs if needed

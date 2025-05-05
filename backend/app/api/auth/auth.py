@@ -21,42 +21,17 @@ from app.core.security import (
 from app.schemas.auth import AuthResponse, TokenData, UserCreate
 
 import logging
-from logging.config import dictConfig
 
-LOG_CONFIG = {
-    "version": 1,
-    "formatters": {
-        "default": {
-            "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s",
-        },
-    },
-    "handlers": {
-        "file": {
-            "class": "logging.FileHandler",
-            "filename": "app.log",
-            "formatter": "default",
-            "level": "INFO",
-        },
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "default",
-            "level": "INFO",
-        },
-    },
-    "root": {
-        "handlers": ["file", "console"],
-        "level": "INFO",
-    },
-}
-
-dictConfig(LOG_CONFIG)
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+req_logger = logging.getLogger("app_requests")
+flow_logger = logging.getLogger("app_flow")
+security_logger = logging.getLogger("security_logger")
+db_logger = logging.getLogger("app_db")
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 # router = APIRouter()
 
 def validate_password(password: str):
+    flow_logger.info("in validate_password")
     if len(password) < 8:
         raise HTTPException(400, "Password must be >= 8 characters")
     # Add checks for uppercase, numbers, etc.
@@ -71,17 +46,21 @@ async def register(
     form_data: UserCreate,
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
+    flow_logger.info("in register")
+    req_logger.info("Register request received")
     try:
+        db_logger.info("checking if user exists")
         if await users_col(db).find_one({"username": form_data.username}):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User exists"
             )
     except HTTPException as e:
+        flow_logger.error("Error HTTPException: %s", str(e))
         # Re-raise any HTTPExceptions coz User already exists
         raise e
     except Exception as e:
-        logger.error("Error checking user existence: %s", str(e))
+        flow_logger.error("Error checking user existence: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error checking user"
@@ -92,10 +71,12 @@ async def register(
         "hashed_password": get_password_hash(form_data.password),
     }
     try:
+        db_logger.info("saving user")
         res = await users_col(db).insert_one(user_doc)
+        db_logger.info("fetching user")
         rec = await users_col(db).find_one({"_id": res.inserted_id})
     except Exception as e:
-        logger.error("Error saving user to DB: %s", str(e))
+        flow_logger.error("Error saving user to DB: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error saving user"
@@ -105,7 +86,7 @@ async def register(
     access_token = create_access_token(tok_data)
     refresh_token = create_refresh_token(tok_data)
 
-    logger.info("User %s registered", rec["username"])
+    security_logger.info("User %s registered", rec["username"])
     
     return AuthResponse(
         username=rec["username"],
@@ -125,12 +106,15 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
+    flow_logger.info("in login")
+    req_logger.info("Login request received")
+    db_logger.info("fetching user")
     user = await users_col(db).find_one(
         {"username": form_data.username}, 
         projection={"hashed_password": 1, "username": 1}
     )
     if not user or not verify_password(form_data.password, user["hashed_password"]):
-        logger.error(
+        flow_logger.error(
             "Failed login attempt for username: %s (IP: %s)",
             form_data.username,
             # request.client.host
@@ -146,6 +130,7 @@ async def login(
     access_token = create_access_token(tok_data)
     refresh_token = create_refresh_token(tok_data)
     
+    db_logger.info("saving refresh token")
     await refresh_tokens_col(db).insert_one({
         "user_id": user["_id"],
         "refresh_token": refresh_token,
@@ -153,7 +138,7 @@ async def login(
         "revoked": False
     })
     
-    logger.info("User %s logged in", user["username"])
+    security_logger.info("User %s logged in", user["username"])
     
     return AuthResponse(
         username=user["username"],

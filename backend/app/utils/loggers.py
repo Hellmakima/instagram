@@ -42,7 +42,10 @@ LOG_CONFIG = {
     "disable_existing_loggers": False, # Preserve existing loggers
 
     "formatters": {
-        "default": {"format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"},
+        "default": {
+            # used by other modules/libraries used.
+            "format": "[%(asctime)s] %(levelname)s in %(module)s: %(message)s; default log"
+        },
         "request": {
             # to track any request
             "format": "[%(asctime)s] %(message)s",
@@ -138,16 +141,16 @@ LOG_CONFIG = {
 }
 
 # Configure log levels based on settings
-if not settings.LOG_FLOW:
-    LOG_CONFIG["loggers"]["app_flow"]["level"] = logging.CRITICAL + 1
-if not settings.LOG_FLOW_CONSOLE:
-    LOG_CONFIG["loggers"]["app_flow"]["handlers"].remove("console")
-if not settings.LOG_REQUESTS:
-    LOG_CONFIG["loggers"]["app_requests"]["level"] = logging.CRITICAL + 1
-if not settings.LOG_DB:
-    LOG_CONFIG["loggers"]["app_db"]["level"] = logging.CRITICAL + 1
-if not settings.LOG_DB_CONSOLE:
-    LOG_CONFIG["loggers"]["app_db"]["handlers"].remove("console")
+# if not settings.LOG_FLOW:
+#     LOG_CONFIG["loggers"]["app_flow"]["level"] = logging.CRITICAL + 1
+# if not settings.LOG_FLOW_CONSOLE:
+#     LOG_CONFIG["loggers"]["app_flow"]["handlers"].remove("console")
+# if not settings.LOG_REQUESTS:
+#     LOG_CONFIG["loggers"]["app_requests"]["level"] = logging.CRITICAL + 1
+# if not settings.LOG_DB:
+#     LOG_CONFIG["loggers"]["app_db"]["level"] = logging.CRITICAL + 1
+# if not settings.LOG_DB_CONSOLE:
+#     LOG_CONFIG["loggers"]["app_db"]["handlers"].remove("console")
 
 dictConfig(LOG_CONFIG)
 

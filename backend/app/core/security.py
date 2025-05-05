@@ -23,6 +23,9 @@ from app.db.collections import users_col
 from app.schemas.user import UserMe
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
+import logging
+db_logger = logging.getLogger("app_db")
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -108,6 +111,7 @@ async def get_current_user(
         raise e
     except JWTError:
         raise credentials_exception
+    db_logger.info("fetching user")
     user = await users_col(db).find_one({"username": username})
     if user is None:
         raise credentials_exception

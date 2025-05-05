@@ -4,6 +4,7 @@ File: **project/todo.txt**
 Contains the todo list for the project
 """
 
+add refresh endpoint
 clean api_tesr.rest
 Store refresh tokens server-side (currently stateless).
 Add rate-limiting to /login endpoint
