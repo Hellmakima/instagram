@@ -17,8 +17,9 @@ from app.core.security import (
     verify_password,
     create_access_token,
     create_refresh_token,
+    verify_token,
 )
-from app.schemas.auth import AuthResponse, TokenData, UserCreate
+from app.schemas.auth import AuthResponse, TokenData, UserCreate, RefreshUser
 
 import logging
 
@@ -148,3 +149,28 @@ async def login(
     )
 
 
+@router.post(
+    "/refresh", 
+    response_model=AuthResponse,
+    status_code=status.HTTP_202_ACCEPTED
+)
+async def refresh(
+    form_data: RefreshUser,
+):
+    flow_logger.info("in refresh")
+    req_logger.info("refresh request received")
+    try:
+        username = verify_token(form_data.refresh_token, token_type=form_data.token_type)
+    except Exception as e:
+        flow_logger.error("Error verifying refresh token: %s", str(e))
+        raise e
+    
+    token_data = TokenData(username=username)
+    new_access_token = create_access_token(token_data)
+
+    return AuthResponse(
+        username=username,
+        access_token=new_access_token,
+        refresh_token=form_data.refresh_token,
+        token_type="Bearer"
+    )

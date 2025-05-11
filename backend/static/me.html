@@ -29,41 +29,98 @@
   <h1>My Profile</h1>
   <div id="profile">Loading...</div>
   <button onclick="logout()">Logout</button>
+  <button onclick="manualRefresh()">Refresh Token</button>
 
   <script>
-    async function loadProfile() {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        window.location.href = '/static/login.html';
-        return;
-      }
+    async function manualRefresh() {
+      const refresh_token = localStorage.getItem('refresh_token');
+      if (!refresh_token) return alert("No refresh token found!");
 
       try {
-        const response = await fetch('/user/me', {
+        const response = await fetch('/auth/refresh', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            refresh_token: refresh_token,
+            token_type: 'Bearer'
+          })
+        });
+
+        if (!response.ok) throw new Error(await response.text());
+
+        const result = await response.json();
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
+
+        alert("Token refreshed successfully!");
+      } catch (err) {
+        alert("Failed to refresh token: " + err.message);
+        // redirectToLogin();
+      }
+    }
+
+    async function loadProfile() {
+      let token = localStorage.getItem('access_token');
+      if (!token) return redirectToLogin();
+
+      try {
+        let response = await fetch('/user/me', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
 
+        if (response.status === 401) {
+          const refresh_token = localStorage.getItem('refresh_token');
+          if (!refresh_token) return redirectToLogin();
+
+          const refreshResponse = await fetch('/auth/refresh', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              refresh_token: refresh_token,
+              token_type: 'Bearer'
+            })
+          });
+
+          if (!refreshResponse.ok) return redirectToLogin();
+
+          const result = await refreshResponse.json();
+          localStorage.setItem('access_token', result.access_token);
+          localStorage.setItem('refresh_token', result.refresh_token); // in case it rotates
+
+          return loadProfile();
+        }
+
         if (!response.ok) throw new Error(await response.text());
         const user = await response.json();
 
         document.getElementById('profile').innerHTML = `
-                    <p><strong>Username:</strong> ${user.username}</p>
-                    <p><strong>Email:</strong> ${user.email || 'Not provided'}</p>
-                `;
+    <p><strong>Username:</strong> ${user.username}</p>
+    <p><strong>Email:</strong> ${user.email || 'Not provided'}</p>
+  `;
       } catch (error) {
         alert('Failed to load profile: ' + error.message);
-        window.location.href = '/static/login.html';
+        redirectToLogin();
       }
     }
+
+    function redirectToLogin() {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
+      window.location.href = '/static/login.html';
+    }
+
 
     function logout() {
       localStorage.removeItem('access_token');
       window.location.href = '/static/login.html';
     }
 
-    // Load profile when page loads
     document.addEventListener('DOMContentLoaded', loadProfile);
   </script>
 </body>

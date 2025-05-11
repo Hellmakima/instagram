@@ -52,6 +52,7 @@ def validate_csrf():
 ### **B. JWT Security**
 
 **Best Practices**:
+jWT has data and its hash. u can only recreate the hash if u have key. data is readable by anyone
 
 1. **Storage**:
 

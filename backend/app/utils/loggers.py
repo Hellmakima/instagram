@@ -20,6 +20,7 @@ import logging
 from logging.config import dictConfig
 from app.core.logging_config import settings
 import os
+ 
 
 """
 logging levels:
@@ -61,13 +62,13 @@ LOG_CONFIG = {
             "format": "[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s",
             "datefmt": "%Y-%m-%d %H:%M:%S"
         },
-        "json": {
-            # TODO for future use (mostly security)
-            # json log example
-            # {"asctime": "2025-05-04 12:34:56,789", "name": "app", "levelname": "WARNING", "message": "Disk space low"}
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            "fmt": "%(asctime)s %(name)s %(levelname)s %(message)s"
-        }
+        # "json": {
+        #     # TODO for future use (mostly security)
+        #     # json log example
+        #     # {"asctime": "2025-05-04 12:34:56,789", "name": "app", "levelname": "WARNING", "message": "Disk space low"}
+        #     "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        #     "fmt": "%(asctime)s %(name)s %(levelname)s %(message)s"
+        # }
     },
     
     "handlers": {
@@ -79,7 +80,7 @@ LOG_CONFIG = {
         "security_file": {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": "logs/security.log",
-            "formatter": "json",
+            "formatter": "verbose",
             "encoding": "utf-8",
             "backupCount": settings.LOG_BACKUP_COUNT,
             "maxBytes": settings.LOG_MAX_BYTES,
@@ -117,6 +118,7 @@ LOG_CONFIG = {
             "propagate": False # Don't send to root logger
         },
         "app_requests": {
+            # TODO: this is to use when tracking varying IP addresses. not useful rn
             "handlers": ["request_console"],
             "level": "INFO",
             "propagate": False
@@ -141,21 +143,57 @@ LOG_CONFIG = {
 }
 
 # Configure log levels based on settings
-# if not settings.LOG_FLOW:
-#     LOG_CONFIG["loggers"]["app_flow"]["level"] = logging.CRITICAL + 1
-# if not settings.LOG_FLOW_CONSOLE:
-#     LOG_CONFIG["loggers"]["app_flow"]["handlers"].remove("console")
-# if not settings.LOG_REQUESTS:
-#     LOG_CONFIG["loggers"]["app_requests"]["level"] = logging.CRITICAL + 1
-# if not settings.LOG_DB:
-#     LOG_CONFIG["loggers"]["app_db"]["level"] = logging.CRITICAL + 1
-# if not settings.LOG_DB_CONSOLE:
-#     LOG_CONFIG["loggers"]["app_db"]["handlers"].remove("console")
+if not settings.LOG_FLOW:
+    LOG_CONFIG["loggers"]["app_flow"]["level"] = logging.CRITICAL + 1
+if not settings.LOG_FLOW_CONSOLE:
+    LOG_CONFIG["loggers"]["app_flow"]["handlers"].remove("console")
+if not settings.LOG_REQUESTS:
+    LOG_CONFIG["loggers"]["app_requests"]["level"] = logging.CRITICAL + 1
+if not settings.LOG_DB:
+    LOG_CONFIG["loggers"]["app_db"]["level"] = logging.CRITICAL + 1
+if not settings.LOG_DB_CONSOLE:
+    LOG_CONFIG["loggers"]["app_db"]["handlers"].remove("console")
+
+# Try to add JSON formatter if python-json-logger is available
+try:
+    from pythonjsonlogger import jsonlogger
+    LOG_CONFIG["formatters"]["json"] = {
+        "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
+        "fmt": "%(asctime)s %(name)s %(levelname)s %(message)s"
+    }
+    LOG_CONFIG["handlers"]["security_file"]["formatter"] = "json"  # Use JSON if available
+except ImportError:
+    # If python-json-logger is missing, fall back to 'verbose' for security logs
+    import warnings
+    warnings.warn(
+        "python-json-logger not installed. Security logs will use verbose (plaintext) formatting. " 
+        "Install with: pip install python-json-logger"
+    )
+    LOG_CONFIG["handlers"]["security_file"]["formatter"] = "verbose"
 
 dictConfig(LOG_CONFIG)
+    
+"""
+# Can add color to logs
+pip install colorlog
+"formatters": {
+    "colorful": {
+        "()": "colorlog.ColoredFormatter",
+        "format": "%(log_color)s[%(asctime)s] [%(levelname)s] in %(module)s: %(message)s",
+        "datefmt": "%Y-%m-%d %H:%M:%S",
+        "log_colors": {
+            "DEBUG": "cyan",
+            "INFO": "green",
+            "WARNING": "yellow",
+            "ERROR": "red",
+            "CRITICAL": "bold_red",
+        }
+    },
+    # other formatters...
+}
+
 
 # All this can also be done manually
-"""
 logger = logging.getLogger(__name__)
 logger = logging.getLogger('app.flow')
 logger.setLevel(logging.INFO)

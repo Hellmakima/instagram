@@ -16,5 +16,9 @@ class TokenData(BaseModel):
 class AuthResponse(BaseModel):
     username: str = Field(..., description="Username of the user")
     access_token: str = Field(..., description="Access token for the user")
-    refresh_token: str = Field(..., description="Refresh token for the user")
+    refresh_token: str = Field(..., description="Refresh token")
+    token_type: str = Field("Bearer", description="Type of token")
+
+class RefreshUser(BaseModel):
+    refresh_token: str = Field(..., description="Refresh token")
     token_type: str = Field("Bearer", description="Type of token")

@@ -88,6 +88,7 @@
         if (!response.ok) throw new Error(await response.text());
         const result = await response.json();
         localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
         window.location.href = '/static/me.html';
       } catch (error) {
         alert('Login failed: ' + error.message);
@@ -110,8 +111,10 @@
         });
 
         if (!response.ok) throw new Error(await response.text());
-        alert('Registration successful! Please login.');
-        showLogin();
+        const result = await response.json();
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token);
+        window.location.href = '/static/me.html';
       } catch (error) {
         alert('Registration failed: ' + error.message);
       }

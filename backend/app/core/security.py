@@ -12,7 +12,6 @@ from jose.exceptions import ExpiredSignatureError, JWTClaimsError, JWTError
 from passlib.context import CryptContext
 
 from datetime import datetime, timedelta
-from typing import Any, Union
 
 from app.core.config import settings
 from app.schemas.auth import TokenData
@@ -25,6 +24,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 
 import logging
 db_logger = logging.getLogger("app_db")
+flow_logger = logging.getLogger("app_flow")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
@@ -43,8 +43,8 @@ def create_access_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    # to_encode = {"exp": expire, "sub": {"username": data.username}, "type": "access"}
-    to_encode = {"exp": expire, "sub": data.username, "type": "access"}
+    to_encode = {"exp": expire, "sub": data.username, "type": "Bearer"}
+    # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
@@ -56,12 +56,13 @@ def create_refresh_token(
         expire = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    # to_encode = {"exp": expire, "sub": {"username": data.username}, "type": "refresh"}
-    to_encode = {"exp": expire, "sub": data.username, "type": "refresh"}
+    to_encode = {"exp": expire, "sub": data.username, "type": "Bearer"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
-def verify_token(token: str, token_type: str = "access") -> str:
+
+def verify_token(token: str, token_type: str = "Bearer") -> str:
+    flow_logger.info("in verify_token")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -74,22 +75,27 @@ def verify_token(token: str, token_type: str = "access") -> str:
             algorithms=[settings.JWT_ALGORITHM]
         )
         if decoded_token["type"] != token_type:
+            flow_logger.error("Invalid token type: %s", decoded_token["type"])
             raise credentials_exception
         return decoded_token["sub"]
     except HTTPException as e:
+        flow_logger.error("Error verifying token: %s", str(e))
         # Re-raise any HTTPException
         raise e
     except ExpiredSignatureError:
+        flow_logger.error("Token expired")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail="Token expired"
         )
     except JWTClaimsError as e:
+        flow_logger.error("Invalid claims: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail=f"Invalid claims: {e}"
         )
     except JWTError:
+        flow_logger.error("Error verifying token")
         raise credentials_exception
 
 async def get_current_user(

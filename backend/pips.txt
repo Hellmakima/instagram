@@ -1,10 +1,10 @@
-fastapi
 uvicorn[standard]
-python-multipart
-python-jose[cryptography]
-# lower version of bcrypt for compatibility with passlib 
-pip install passlib[bcrypt]==1.7.4 bcrypt==3.2.0
+fastapi
 python-dotenv
--pymongo- (cancelled)
-motor
+python-multipart
 pydantic_settings 
+python-jose[cryptography]
+passlib[bcrypt]==1.7.4 
+bcrypt==3.2.0
+python-json-logger
+motor

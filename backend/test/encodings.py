@@ -7,9 +7,16 @@ Only for testing purposes.
 
 import os
 
-def find_non_ascii(content):
-    non_ascii_chars = [char for char in content if ord(char) >= 128]
-    return non_ascii_chars
+target_folder = r'D:\project\instagram'
+show_each_line = True  # <<< set to False if you want only file name and line number
+
+def find_non_ascii_lines(content):
+    lines_with_non_ascii = []
+    for i, line in enumerate(content.splitlines(), start=1):
+        non_ascii = [c for c in line if ord(c) >= 128]
+        if non_ascii:
+            lines_with_non_ascii.append((i, non_ascii))
+    return lines_with_non_ascii
 
 def is_ascii_file(file_path):
     encodings_to_try = ['utf-8', 'utf-16', 'latin1']  # latin1 handles anything without error
@@ -18,15 +25,16 @@ def is_ascii_file(file_path):
         try:
             with open(file_path, 'r', encoding=enc) as f:
                 content = f.read()
-                non_ascii_chars = find_non_ascii(content)
-                if non_ascii_chars:
-                    return False, non_ascii_chars
+                non_ascii_lines = find_non_ascii_lines(content)
+                if non_ascii_lines:
+                    return False, non_ascii_lines
                 return True, []
         except Exception:
             continue
-    return False, ['non readable characters']
+    return False, [('?', ['non readable characters'])]
 
 def check_ascii_in_folder(root_folder):
+    found_non_ascii = False
     for dirpath, _, filenames in os.walk(root_folder):
         if any(exclude in dirpath for exclude in ['__pycache__', 'venv', '.git']):
             continue
@@ -36,8 +44,16 @@ def check_ascii_in_folder(root_folder):
             full_path = os.path.join(dirpath, file)
             if any(file.endswith(excluded_extention) for excluded_extention in ['.ico', '.png']):
                 continue
-            is_ascii, non_ascii_chars = is_ascii_file(full_path)
-            if not is_ascii:
-                print(f'NON-ASCII in "{full_path}": {non_ascii_chars}')
 
-check_ascii_in_folder(r'D:\project\instagram')
+            is_ascii, non_ascii_info = is_ascii_file(full_path)
+            if not is_ascii:
+                found_non_ascii = True
+                if show_each_line:
+                    for line_no, chars in non_ascii_info:
+                        print(f'NON-ASCII at {full_path}:{line_no} -> {chars}')
+                else:
+                    print(f'NON-ASCII in "{full_path}": {non_ascii_info}')
+    if not found_non_ascii:
+        print('All files are ASCII')
+
+check_ascii_in_folder(target_folder)

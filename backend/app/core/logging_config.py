@@ -1,5 +1,5 @@
 """
-File: app/core/logging_config.py
+### File: **app/core/logging_config.py**
 
 Contains the settings for logging of the project
 These are not loaded from .env file.
@@ -13,7 +13,7 @@ from typing import Literal
 class LogSettings(BaseSettings):
     LOG_FLOW: bool = True
     LOG_FLOW_CONSOLE: bool = True
-    LOG_REQUESTS: bool = True
+    LOG_REQUESTS: bool = False
     LOG_DB: bool = True
     LOG_DB_CONSOLE: bool = True
     # LOG_MAX_BYTES: int = 10 * 1024 * 1024  # 10MB
