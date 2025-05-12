@@ -36,13 +36,13 @@ def is_ascii_file(file_path):
 def check_ascii_in_folder(root_folder):
     found_non_ascii = False
     for dirpath, _, filenames in os.walk(root_folder):
-        if any(exclude in dirpath for exclude in ['__pycache__', 'venv', '.git']):
+        if any(exclude in dirpath for exclude in ['__pycache__', 'venv', '.git', 'node_modules', '.next']):
             continue
         for file in filenames:
             if any(excluded in file for excluded in ['File Structure', 'yet.ini', 'README.md']):
                 continue
             full_path = os.path.join(dirpath, file)
-            if any(file.endswith(excluded_extention) for excluded_extention in ['.ico', '.png']):
+            if any(file.endswith(excluded_extention) for excluded_extention in ['.ico', '.png', '.woff2']):
                 continue
 
             is_ascii, non_ascii_info = is_ascii_file(full_path)
