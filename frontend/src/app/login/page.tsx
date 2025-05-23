@@ -1,150 +1,90 @@
-"use client";
+"use client"; // This directive is for App Router to make it a Client Component
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useRouter } from "next/navigation";
+import { useState } from 'react';
+import { useRouter } from 'next/navigation'; // For App Router
+// import { useRouter } from 'next/router'; // For Pages Router
 
-const loginSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(4, "Password must be at least 4 characters"),
-});
-
-const registerSchema = z.object({
-  username: z.string().min(3, "Username must be at least 3 characters"),
-  password: z.string().min(4, "Password must be at least 4 characters"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-type RegisterFormData = z.infer<typeof registerSchema>;
-
-export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+export default function LoginPage() {
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
   const router = useRouter();
 
-  const {
-    register: loginRegister,
-    handleSubmit: handleLoginSubmit,
-    formState: { errors: loginErrors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-  });
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const username:any = formData.get('username');
+    const password:any = formData.get('password');
 
-  const {
-    register: registerRegister,
-    handleSubmit: handleRegisterSubmit,
-    formState: { errors: registerErrors },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-  });
-
-  const handleLogin = async (data: LoginFormData) => {
     try {
       const params = new URLSearchParams();
-      params.append("username", data.username);
-      params.append("password", data.password);
+      params.append('username', username);
+      params.append('password', password);
 
-      const res = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: params,
       });
 
-      if (!res.ok) throw new Error(await res.text());
-      
-      const result = await res.json();
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("refresh_token", result.refresh_token);
-      router.push("/me");
-    } catch (err) {
-      alert("Login failed: " + (err instanceof Error ? err.message : "Unknown error"));
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+      const result = await response.json();
+      localStorage.setItem('access_token', result.access_token);
+      localStorage.setItem('refresh_token', result.refresh_token);
+      router.push('/me'); // Redirect to the profile page
+    } catch (error: any) {
+      console.error('Login error:', error);
+      alert('Login failed: ' + error.message);
     }
   };
 
-  const handleRegister = async (data: RegisterFormData) => {
+  const handleRegister = async (e: any) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const username = formData.get('username');
+    const password = formData.get('password');
+
     try {
-      const res = await fetch("http://localhost:5000/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+      const response = await fetch('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       });
 
-      if (!res.ok) throw new Error(await res.text());
-      
-      const result = await res.json();
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("refresh_token", result.refresh_token);
-      router.push("/me");
-    } catch (err) {
-      alert("Registration failed: " + (err instanceof Error ? err.message : "Unknown error"));
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
+      }
+      const result = await response.json();
+      localStorage.setItem('access_token', result.access_token);
+      localStorage.setItem('refresh_token', result.refresh_token);
+      router.push('/me'); // Redirect to the profile page
+    } catch (error: any) {
+      alert('Registration failed: ' + error.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-5">
-      <div className="flex mb-5">
-        <button
-          className={`flex-1 py-2 ${activeTab === "login" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => setActiveTab("login")}
-        >
-          Login
-        </button>
-        <button
-          className={`flex-1 py-2 ${activeTab === "register" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
-          onClick={() => setActiveTab("register")}
-        >
-          Register
-        </button>
+    <div style={{ fontFamily: 'Arial', maxWidth: '400px', margin: '0 auto', padding: '20px' }}>
+      <div style={{ display: 'flex', marginBottom: '20px' }} className="tabs">
+        <button onClick={() => setShowRegisterForm(false)} style={{ flex: 1, padding: '10px' }}>Login</button>
+        <button onClick={() => setShowRegisterForm(true)} style={{ flex: 1, padding: '10px' }}>Register</button>
       </div>
 
-      {activeTab === "login" ? (
-        <form onSubmit={handleLoginSubmit(handleLogin)} className="flex flex-col gap-3">
-          <h2 className="text-xl font-bold">Login</h2>
-          <input
-            {...loginRegister("username")}
-            placeholder="Username"
-            className="p-2 border rounded"
-          />
-          {loginErrors.username && (
-            <p className="text-red-500 text-sm">{loginErrors.username.message}</p>
-          )}
-          <input
-            type="password"
-            {...loginRegister("password")}
-            placeholder="Password"
-            className="p-2 border rounded"
-          />
-          {loginErrors.password && (
-            <p className="text-red-500 text-sm">{loginErrors.password.message}</p>
-          )}
-          <button type="submit" className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Login
-          </button>
+      {!showRegisterForm ? (
+        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h2>Login</h2>
+          <input type="text" name="username" placeholder="Username" required style={{ padding: '8px' }} />
+          <input type="password" name="password" placeholder="Password" required style={{ padding: '8px' }} />
+          <button type="submit" style={{ padding: '8px' }}>Login</button>
         </form>
       ) : (
-        <form onSubmit={handleRegisterSubmit(handleRegister)} className="flex flex-col gap-3">
-          <h2 className="text-xl font-bold">Register</h2>
-          <input
-            {...registerRegister("username")}
-            placeholder="Username"
-            className="p-2 border rounded"
-          />
-          {registerErrors.username && (
-            <p className="text-red-500 text-sm">{registerErrors.username.message}</p>
-          )}
-          <input
-            type="password"
-            {...registerRegister("password")}
-            placeholder="Password"
-            className="p-2 border rounded"
-          />
-          {registerErrors.password && (
-            <p className="text-red-500 text-sm">{registerErrors.password.message}</p>
-          )}
-          <button type="submit" className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-            Register
-          </button>
+        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h2>Register</h2>
+          <input type="text" name="username" placeholder="Username" required style={{ padding: '8px' }} />
+          <input type="password" name="password" placeholder="Password" required style={{ padding: '8px' }} />
+          <button type="submit" style={{ padding: '8px' }}>Register</button>
         </form>
       )}
     </div>

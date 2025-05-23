@@ -82,7 +82,12 @@ async def register(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Error saving user"
         )
-
+    if not rec:
+        flow_logger.error("Error fetching user from DB")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error fetching user"
+        )
     tok_data = TokenData(username=rec["username"])
     access_token = create_access_token(tok_data)
     refresh_token = create_refresh_token(tok_data)

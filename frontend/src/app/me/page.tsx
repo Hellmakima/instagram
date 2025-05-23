@@ -1,142 +1,134 @@
-"use client";
+"use client"; // This directive is for App Router to make it a Client Component
 
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation'; // For App Router
+// import { useRouter } from 'next/router'; // For Pages Router
+interface UserProfile {
+  username: string;
+  email?: string; // email is optional
+}
 export default function MePage() {
-  interface UserData {
-    username: string;
-    email?: string;
-  }
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const router = useRouter();
 
-  const [userData, setUserData] = useState<UserData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const redirectToLogin = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    window.location.href = "/login";
-  };
-
-  const logout = () => {
-    localStorage.removeItem("access_token");
-    window.location.href = "/login";
-  };
+  const redirectToLogin = useCallback(() => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    router.push('/login');
+  }, [router]);
 
   const manualRefresh = async () => {
-    const refresh_token = localStorage.getItem("refresh_token");
+    const refresh_token = localStorage.getItem('refresh_token');
     if (!refresh_token) return alert("No refresh token found!");
 
     try {
-      const response = await fetch("http://localhost:5000/auth/refresh", {
-        method: "POST",
+      const response = await fetch('/auth/refresh', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           refresh_token: refresh_token,
-          token_type: "Bearer",
-        }),
+          token_type: 'Bearer'
+        })
       });
 
       if (!response.ok) throw new Error(await response.text());
 
       const result = await response.json();
-      localStorage.setItem("access_token", result.access_token);
-      localStorage.setItem("refresh_token", result.refresh_token);
+      localStorage.setItem('access_token', result.access_token);
+      localStorage.setItem('refresh_token', result.refresh_token);
 
       alert("Token refreshed successfully!");
+      // Optionally reload profile after refreshing token
       loadProfile();
-    } catch (err) {
-      alert("Failed to refresh token: " + (err instanceof Error ? err.message : "Unknown error"));
+    } catch (err: any) {
+      console.error('Error refreshing token:', err);
+      alert("Failed to refresh token: " + err.message);
+      redirectToLogin();
     }
   };
 
-  const loadProfile = async () => {
-    setLoading(true);
-    let token = localStorage.getItem("access_token");
+  const loadProfile = useCallback(async () => {
+    let token = localStorage.getItem('access_token');
     if (!token) return redirectToLogin();
 
     try {
-      let response = await fetch("http://localhost:5000/user/me", {
+      let response = await fetch('/user/me', {
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          'Authorization': `Bearer ${token}`
+        }
       });
 
       if (response.status === 401) {
-        const refresh_token = localStorage.getItem("refresh_token");
+        const refresh_token = localStorage.getItem('refresh_token');
         if (!refresh_token) return redirectToLogin();
 
-        const refreshResponse = await fetch("http://localhost:5000/auth/refresh", {
-          method: "POST",
+        const refreshResponse = await fetch('/auth/refresh', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             refresh_token: refresh_token,
-            token_type: "Bearer",
-          }),
+            token_type: 'Bearer'
+          })
         });
 
-        if (!refreshResponse.ok) return redirectToLogin();
+        if (!refreshResponse.ok) {
+          alert('Failed to refresh token during automatic refresh. Please log in again.');
+          return redirectToLogin();
+        }
 
         const result = await refreshResponse.json();
-        localStorage.setItem("access_token", result.access_token);
-        localStorage.setItem("refresh_token", result.refresh_token);
+        localStorage.setItem('access_token', result.access_token);
+        localStorage.setItem('refresh_token', result.refresh_token); // in case it rotates
 
-        return loadProfile();
+        // Retry loading profile with the new token
+        token = result.access_token; // Update token for the retry
+        response = await fetch('/user/me', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!response.ok) throw new Error(await response.text());
       }
 
       if (!response.ok) throw new Error(await response.text());
       const user = await response.json();
-      setUserData(user);
-    } catch (error) {
-      alert("Failed to load profile: " + (error instanceof Error ? error.message : "Unknown error"));
+      setProfile(user);
+    } catch (error: any) {
+      console.error('Error loading profile:', error);
+      alert('Failed to load profile: ' + error.message);
       redirectToLogin();
-    } finally {
-      setLoading(false);
     }
-  };
+  }, [redirectToLogin]);
+
+  function logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    router.push('/login');
+  }
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  }, [loadProfile]);
 
   return (
-    <div className="max-w-2xl mx-auto p-5">
-      <h1 className="text-2xl font-bold">My Profile</h1>
-      
-      <div id="profile" className="mt-5 p-5 border border-gray-200 rounded">
-        {loading ? (
-          <p>Loading...</p>
-        ) : userData ? (
+    <div style={{ fontFamily: 'Arial', maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+      <h1>My Profile</h1>
+      <div id="profile" style={{ marginTop: '20px', padding: '20px', border: '1px solid #ddd' }}>
+        {profile ? (
           <>
-            <p>
-              <strong>Username:</strong> {userData.username}
-            </p>
-            <p>
-              <strong>Email:</strong> {userData.email || "Not provided"}
-            </p>
+            <p><strong>Username:</strong> {profile.username}</p>
+            <p><strong>Email:</strong> {profile.email || 'Not provided'}</p>
           </>
         ) : (
-          <p>Failed to load profile data</p>
+          'Loading...'
         )}
       </div>
-
-      <div className="flex gap-3 mt-5">
-        <button
-          onClick={logout}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        >
-          Logout
-        </button>
-        <button
-          onClick={manualRefresh}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
-          Refresh Token
-        </button>
-      </div>
+      <button onClick={logout} style={{ padding: '8px 12px', marginTop: '10px' }}>Logout</button>
+      <button onClick={manualRefresh} style={{ padding: '8px 12px', marginTop: '10px', marginLeft: '10px' }}>Refresh Token</button>
     </div>
   );
 }

@@ -8,11 +8,10 @@ Contains the todo list for the project
 
 ## High Priority
 
-- add CORS during development and remove it before deploying
+- research CSRF tokens, proper location to store the access nad refresh tokens. see how real instagram does it, look up git repos for implementation, and tatakae
 - add logs everywhere
-- add logout endpoint + update static files
+- add logout endpoint + update static files (currently only deletes cookies, no api calls)
 - Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens
-- make nextjs pages for login, register, and profile
 - remove requests logger
 
 ## Research
@@ -38,5 +37,15 @@ Contains the todo list for the project
 
 ## Low Priority
 
-Add rate-limiting to /login endpoint
-add "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" if you feel like it
+- Add rate-limiting to /login endpoint
+- add "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" if you feel like it
+- implement frontend properly
+
+  - used :any to remove red squiggles
+  - implemented for .js not .tsx
+
+- remove CORS before deploying
+
+## ocassionally
+
+search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
