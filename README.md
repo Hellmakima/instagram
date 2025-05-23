@@ -89,13 +89,13 @@ For now?
 
 ---
 
-## 📜 License Most Liberal
+## License Most Liberal
 
 MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee.
 
 ---
 
-## ✌️ Scribe
+## Scribe
 
 Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption.
 
