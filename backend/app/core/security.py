@@ -11,7 +11,7 @@ from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTClaimsError, JWTError
 from passlib.context import CryptContext
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
 from app.schemas.auth import TokenData
@@ -23,22 +23,27 @@ from app.schemas.user import UserMe
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 import logging
-db_logger = logging.getLogger("app_db")
 flow_logger = logging.getLogger("app_flow")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
+
 def get_password_hash(password: str) -> str:
+    flow_logger.info("in get_password_hash")
     return pwd_context.hash(password)
 
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    flow_logger.info("in verify_password")
     return pwd_context.verify(plain_password, hashed_password)
+
 
 def create_access_token(
     data: TokenData,
     expires_delta: timedelta = None
 ) -> str:
+    flow_logger.info("in create_access_token")
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
@@ -48,14 +53,16 @@ def create_access_token(
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
+
 def create_refresh_token(
     data: TokenData,
     expires_delta: timedelta = None
 ) -> str:
+    flow_logger.info("in create_refresh_token")
     if expires_delta:
-        expire = datetime.utcnow() + expires_delta
+        expire = datetime.now(timezone.utc) + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.username, "type": "Bearer"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
@@ -98,10 +105,12 @@ def verify_token(token: str, token_type: str = "Bearer") -> str:
         flow_logger.error("Error verifying token")
         raise credentials_exception
 
+
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> UserMe:
+    flow_logger.info("in get_current_user")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -113,11 +122,12 @@ async def get_current_user(
         if not username:
             raise credentials_exception
     except HTTPException as e:
+        flow_logger.error("Error verifying token: %s", str(e))
         # Re-raise any HTTPExceptions from verify_token
         raise e
     except JWTError:
+        flow_logger.error("Error verifying token")
         raise credentials_exception
-    db_logger.info("fetching user")
     user = await users_col(db).find_one({"username": username})
     if user is None:
         raise credentials_exception

@@ -22,3 +22,7 @@ class AuthResponse(BaseModel):
 class RefreshUser(BaseModel):
     refresh_token: str = Field(..., description="Refresh token")
     token_type: str = Field("Bearer", description="Type of token")
+
+class LogoutRequest(BaseModel):
+    refresh_token: str
+    token_type: str

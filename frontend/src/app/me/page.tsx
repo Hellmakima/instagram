@@ -104,7 +104,18 @@ export default function MePage() {
     }
   }, [redirectToLogin]);
 
-  function logout() {
+  async function logout() {
+    const refresh_token = localStorage.getItem('refresh_token');
+    await fetch('/auth/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        refresh_token: refresh_token,
+        token_type: 'Bearer'
+      })
+    });
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     router.push('/login');

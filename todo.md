@@ -9,10 +9,6 @@ Contains the todo list for the project
 ## High Priority
 
 - research CSRF tokens, proper location to store the access nad refresh tokens. see how real instagram does it, look up git repos for implementation, and tatakae
-- add logs everywhere
-- add logout endpoint + update static files (currently only deletes cookies, no api calls)
-- Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens
-- remove requests logger
 
 ## Research
 
@@ -38,13 +34,17 @@ Contains the todo list for the project
 ## Low Priority
 
 - Add rate-limiting to /login endpoint
+- I use models dir for validation.
 - add "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" if you feel like it
 - implement frontend properly
-
   - used :any to remove red squiggles
   - implemented for .js not .tsx
+- Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens on logout and stuff
+
+## Before Deployment
 
 - remove CORS before deploying
+- add req logs for imp endpoints with source IP
 
 ## ocassionally
 

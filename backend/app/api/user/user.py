@@ -7,9 +7,10 @@ Contains the user related endpoints
 from fastapi import APIRouter, Depends
 from app.schemas.user import UserMe
 from app.core.security import get_current_user
+import logging
 
 router = APIRouter(prefix="/user", tags=["user"])
-# router = APIRouter()
+flow_logger = logging.getLogger("app_flow")
 
 @router.get(
     "/me",
@@ -24,4 +25,5 @@ async def read_current_user(
     Temp function for testing
     Get details for the currently authenticated user
     """
+    flow_logger.info("in read_current_user")
     return current_user
