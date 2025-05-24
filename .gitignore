@@ -1,19 +1,18 @@
 # Python
 __pycache__/
 *.pyc
-# .env
+.env
 venv/
 
 # Logs
 *.log
 
 # OS
-.DS_Store
-Thumbs.db
+# .DS_Store
+# Thumbs.db
 
 # Others
 *.swp
 *.swo
 .idea/
 .vscode/
-.pearai/

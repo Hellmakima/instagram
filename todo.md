@@ -40,12 +40,14 @@ Contains the todo list for the project
   - used :any to remove red squiggles
   - implemented for .js not .tsx
 - Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens on logout and stuff
+  - add req logs for imp endpoints with source IP
 
 ## Before Deployment
 
-- remove CORS before deploying
-- add req logs for imp endpoints with source IP
+- use docker
+- test on wsl
+- remove CORS
 
 ## ocassionally
 
-search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
+- search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
