@@ -8,7 +8,7 @@ Contains the todo list for the project
 
 ## High Priority
 
-- once done with token stuff, add user profile page. Start looking into how to implement it (DB, session, etc)
+- once done with token stuff, add a simple user profile page and start looking into how to implement it (DB, session, etc)
   or
 - go with email verification and password reset
 
@@ -56,3 +56,4 @@ Contains the todo list for the project
 - Add proper logging
 - I use models dir for validation. mabe fix this
 - set up a common page for 404 page not found
+- set refresh tokens only if user wants to

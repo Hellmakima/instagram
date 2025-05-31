@@ -112,7 +112,7 @@
     function redirectToLogin() {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      window.location.href = '/static/login.html';
+      window.location.href = '/static/test/login.html';
     }
 
 
@@ -130,7 +130,7 @@
       });
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      window.location.href = '/static/login.html';
+      window.location.href = '/static/test/login.html';
     }
 
     document.addEventListener('DOMContentLoaded', loadProfile);

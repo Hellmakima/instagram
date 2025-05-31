@@ -1,0 +1,14 @@
+### Profile page
+
+    https://www.instagram.com/<username>/ -> goes to profile page
+    - if it's same as username, the ui changes a bit
+
+### Landing page
+
+    https://www.instagram.com/ -> goes to landing page
+    shows recent posts and reels and stuff
+
+### Auth
+
+    https://www.instagram.com/accounts/login/ -> goes to login page
+    https://www.instagram.com/accounts/emailsignup/ -> goes to signup page
