@@ -1,5 +1,5 @@
 """
-File: **project/todo.txt**
+File: **project/todo.md**
 
 Contains the todo list for the project
 """
@@ -43,6 +43,8 @@ Contains the todo list for the project
 - remove CORS
 - nginx to bring it all together
 - use docker
+  - separate container
+  - refer [Youtube](youtube.com/watch?v=DQdB7wFEygo)
 - test on wsl
 - deploy!!!
 
