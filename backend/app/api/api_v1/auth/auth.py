@@ -1,5 +1,5 @@
 """
-File: app/api/auth/auth.py
+### File: app/api/auth/auth.py
 
 Contains the authentication related endpoints
 """

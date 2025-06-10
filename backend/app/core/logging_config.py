@@ -5,7 +5,6 @@ Contains the settings for logging of the project
 These are not loaded from .env file.
 """
 
-# File: app/core/logging_config.py
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings
 from typing import Literal

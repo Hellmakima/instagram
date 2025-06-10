@@ -1,5 +1,5 @@
 """
-File: app/schemas/auth.py
+### File: app/schemas/auth.py
 
 Contains the auth response schema. Describes JSON Structures for frontend requests.
 """

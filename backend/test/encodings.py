@@ -1,5 +1,5 @@
 """
-File: test/encodings.py
+### File: test/encodings.py
 
 Checks if the project is encoded in ASCII.
 Only for testing purposes.

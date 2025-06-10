@@ -19,12 +19,11 @@ load_dotenv()
 # fastapi app
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from app.api.router import router
+from app.api.api_v1.router import router
 from fastapi.middleware.cors import CORSMiddleware
 
 # startup
 from contextlib import asynccontextmanager
-import app.utils.loggers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -54,16 +53,23 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.include_router(router)
 
-@app.get("/")
-async def root(name: str="Sufiyan"):
+from fastapi.responses import HTMLResponse
+@app.get("/", response_class=HTMLResponse)
+async def root(name: str = "Sufiyan"):
+    return f"""
+    <html>
+        <body>
+            <h2>Hello {name}</h2>
+            <ul>
+                <li><a href="/static/login.html">Login Page</a></li>
+                <li><a href="/static/index.html">Index Page</a></li>
+                <li><a href="/static/test/login.html">Test Login</a></li>
+                <li><a href="/static/test/me.html">Test Me</a></li>
+                <li><a href="/docs">Swagger Docs</a></li>
+            </ul>
+        </body>
+    </html>
     """
-    Test endpoint
-    call with http://localhost:5000/?name=Sufiyan
-    or http://localhost:5000
-    """
-    return {"message": f"Hello from FastAPI",
-            "name": name}
-
 
 if __name__ == "__main__":
     import uvicorn

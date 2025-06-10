@@ -1,5 +1,5 @@
 """
-File: app/core/config.py
+### File: app/core/config.py
 
 Contains the settings for the project
 These are loaded from .env file.
