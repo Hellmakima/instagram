@@ -143,10 +143,10 @@ LOG_CONFIG = {
 }
 
 # Configure log levels based on settings
-if not settings.LOG_FLOW:
-    LOG_CONFIG["loggers"]["app_flow"]["level"] = logging.CRITICAL + 1
-if not settings.LOG_FLOW_CONSOLE:
-    LOG_CONFIG["loggers"]["app_flow"]["handlers"].remove("console")
+# if not settings.LOG_FLOW:
+#     LOG_CONFIG["loggers"]["app_flow"]["level"] = logging.CRITICAL + 1
+# if not settings.LOG_FLOW_CONSOLE:
+#     LOG_CONFIG["loggers"]["app_flow"]["handlers"].remove("console")
 if not settings.LOG_REQUESTS:
     LOG_CONFIG["loggers"]["app_requests"]["level"] = logging.CRITICAL + 1
 if not settings.LOG_DB:

@@ -60,3 +60,4 @@ Contains the todo list for the project
 - set up a common page for 404 page not found
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`.
+- use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time.

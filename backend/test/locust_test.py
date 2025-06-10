@@ -5,15 +5,16 @@ class LoginUser(HttpUser):
 
     @task
     def login(self):
-        self.client.post(
-            "/auth/login",
-            data={
-                "username": "tim",
-                "password": "Hello123",
-                "grant_type": "password"
-            },
-            headers={"Content-Type": "application/x-www-form-urlencoded"}
-        )
+        # self.client.post(
+        #     "/auth/login",
+        #     data={
+        #         "username": "tim",
+        #         "password": "Hello123",
+        #         "grant_type": "password"
+        #     },
+        #     headers={"Content-Type": "application/x-www-form-urlencoded"}
+        # )
+        self.client.get("/static/index.html")
 
 if __name__ == "__main__":
     print("run:`locust -f .\test\locust_test.py --host=http://localhost:5000` in new terminal")
