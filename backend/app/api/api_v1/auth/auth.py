@@ -110,7 +110,7 @@ async def login(
         {"username": form_data.username}, 
         projection={"hashed_password": 1, "username": 1}
     )
-    if not user or not verify_password(form_data.password, user["hashed_password"]):
+    if not user or not await verify_password(form_data.password, user["hashed_password"]):
         flow_logger.error(
             "Failed login attempt for username: %s (IP: %s)",
             form_data.username,

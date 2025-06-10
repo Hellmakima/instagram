@@ -11,6 +11,7 @@ from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTClaimsError, JWTError
 from passlib.context import CryptContext
 
+import asyncio
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
@@ -29,14 +30,14 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
-def get_password_hash(password: str) -> str:
+async def get_password_hash(password: str) -> str:
     flow_logger.info("in get_password_hash")
-    return pwd_context.hash(password)
+    return await asyncio.to_thread(pwd_context.hash, password)
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
+async def verify_password(plain_password: str, hashed_password: str) -> bool:
     flow_logger.info("in verify_password")
-    return pwd_context.verify(plain_password, hashed_password)
+    return await asyncio.to_thread(pwd_context.verify, plain_password, hashed_password)
 
 
 def create_access_token(

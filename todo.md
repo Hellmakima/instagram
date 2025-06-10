@@ -59,3 +59,4 @@ Contains the todo list for the project
 - I use models dir for validation. mabe fix this
 - set up a common page for 404 page not found
 - set refresh tokens only if user wants to
+- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`.
