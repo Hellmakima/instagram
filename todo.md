@@ -6,11 +6,14 @@ Contains the todo list for the project
 
 # TODO
 
+_Search for `TODO` in all files to see all the todos_
+
 ## High Priority
 
 - once done with token stuff, add a simple user profile page and start looking into how to implement it (DB, session, etc)
   or
 - go with email verification and password reset
+- re-visit what data flows back and forth for each endpoint
 
 ## Research
 
@@ -18,6 +21,7 @@ Contains the todo list for the project
 - data validation on frontend as well as backend?
 - do we need redis for session storage?
 - IP validation helpers
+- https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system.
 
 ## Medium Priority
 

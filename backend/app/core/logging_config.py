@@ -24,7 +24,7 @@ class LogSettings(BaseSettings):
     # SYS_LOG_LEVEL: str = "INFO"
     
 
-    # TODO import from .env and also use Field(..., exclude=True) to prevent env binding
+    # TODO: import from .env and also use Field(..., exclude=True) to prevent env binding
     # class Config:
     #     env_prefix = "LOG_"  # All vars will use LOG_ prefix in .env
     #     env_file = ".env"

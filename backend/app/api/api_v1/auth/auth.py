@@ -172,6 +172,9 @@ async def refresh(
     token_data = TokenData(username=username)
     new_access_token = create_access_token(token_data)
 
+    # TODO: optionally rotate the refresh token
+    # TODO: add a check to see if the user is blocked
+
     return AuthResponse(
         username=username,
         access_token=new_access_token,
@@ -185,6 +188,7 @@ async def logout(
     form_data: LogoutRequest,
     db: AsyncIOMotorDatabase = Depends(get_db),
 ):
+    # TODO: redo this endpoint. manage token blacklisting with expiry time.
     """
     Logout endpoint
     deletes refresh token from DB

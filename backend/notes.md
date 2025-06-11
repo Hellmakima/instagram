@@ -1,4 +1,5 @@
 # **Web Security Best Practices**
+- Access tokens are stateless, meaning they do not require server-side session storage because all necessary information for authorization is encoded within the token itself.
 
 ### **A. CSRF (Cross-Site Request Forgery)**
 

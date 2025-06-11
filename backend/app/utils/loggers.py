@@ -63,7 +63,7 @@ LOG_CONFIG = {
             "datefmt": "%Y-%m-%d %H:%M:%S"
         },
         # "json": {
-        #     # TODO for future use (mostly security)
+        #     # TODO: for future use (mostly security)
         #     # json log example
         #     # {"asctime": "2025-05-04 12:34:56,789", "name": "app", "levelname": "WARNING", "message": "Disk space low"}
         #     "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
