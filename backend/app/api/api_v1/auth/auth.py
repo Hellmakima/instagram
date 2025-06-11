@@ -58,7 +58,7 @@ async def register(
         )
 
     try:
-        user_doc = UserCreateModel(
+        user_doc = await UserCreateModel(
             username=form_data.username,
             password=form_data.password
         ).doc()

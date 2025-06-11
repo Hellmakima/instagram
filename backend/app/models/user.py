@@ -25,11 +25,10 @@ class UserCreate(UserBase): # same can be used for update user.
     password: str = Field(..., description="Raw password (will be hashed)")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp of user creation")
 
-    def doc(self):
-        print(self.username)
+    async def doc(self):
         return {
             "username": self.username,
-            "hashed_password": get_password_hash(self.password),
+            "hashed_password": await get_password_hash(self.password),
             "created_at": self.created_at
         }
 

@@ -15,4 +15,4 @@ venv/
 *.swp
 *.swo
 .idea/
-.vscode/
+# .vscode/
