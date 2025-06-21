@@ -44,6 +44,8 @@ def check_ascii_in_folder(root_folder):
             full_path = os.path.join(dirpath, file)
             if any(file.endswith(excluded_extention) for excluded_extention in ['.ico', '.png', '.woff2']):
                 continue
+            if any(file.startswith(excluded_prefix) for excluded_prefix in ['README']):
+                continue
 
             is_ascii, non_ascii_info = is_ascii_file(full_path)
             if not is_ascii:

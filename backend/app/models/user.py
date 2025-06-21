@@ -13,11 +13,12 @@ from app.core.security import get_password_hash
 
 class UserBase(BaseModel):
     # TODO: decide if username is all lowercase, and if it can include . _ -
-    username: str = Field(..., min_length=3, max_length=50, description="Username of the user")
+    username: str = Field(..., min_length=3, max_length=20, description="Username of the user")
 
     @field_validator('username')
     def username_must_be_alphanumeric(cls, v):
-        if not re.match(r"^[a-zA-Z]+$", v): # or not re.match(r"^[a-zA-Z0-9_.-]+$", v):
+        # allow only alphanumeric characters and . _
+        if not not re.match(r"^[a-zA-Z0-9_.-]+$", v): # re.match(r"^[a-zA-Z]+$", v):
             raise ValueError("Username must be alphanumeric and can include . _ -")
         return v
 

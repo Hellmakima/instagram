@@ -1,3 +1,5 @@
+# A'udhu billahi min ash-shaytan ir-rajim Bismillahi ar-Rahmani ar-Rahim
+
 """
 ### File: **app/main.py**
 
@@ -7,7 +9,7 @@ Serves static files from static folder
 Manages the database connection
 
 to run the app in /backend> uvicorn app.main:app --reload --port 5000
-or run backend/app/main.py
+or hit f5 in vscode
 """
 
 # mongodb connection client

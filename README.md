@@ -1,108 +1,116 @@
+<div style="display: flex; justify-content: center; font-size: 40px;">﷽</div>
+
+---
+
 # InstaClone
 
-A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.
-'Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
+A full-stack Instagram-like application built using **FastAPI**, **MongoDB**, and **Next.js**.
+Designed with modularity, clarity, and scalability in mind.
 
-_*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any follies or errours thou mayst uncover. If a gremlin be found, mayhap it be mine doing… or mayhap not… yet I vow to mend it, upon my honour.*_
-
----
-
-## The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
-
-| Sphere   | Alchemy       | Scribblings                                        |
-| -------- | ------------- | -------------------------------------------------- |
-| Forepart | Next.js       | Forsooth, who now doth favour "classic" React?     |
-| Rearward | FastAPI       | As swift as thine Wi-Fi, when none doth leech it   |
-| Tome     | MongoDB       | NoSQL — for those who deem SQL a sluggish beast    |
-| Warding  | To Be Decreed | Mayhap Firebase, mayhap Local — 'tis a mystery yet |
+_This project was initially scaffolded using GPT. While care has been taken to ensure code quality, some issues may exist. Contributions and corrections are welcome._
 
 ---
 
-## The State of Affairs
+## Tech Stack
 
-- **In Sum:** ‘Tis barren.
-- **Forepart:** Only humble scrolls of static HTML hath been penned for trial and jest.
-- **Rearward:** A modest conjuration; the mage yet studies and doth experiment.
-- **Tome:** MongoDB hath been summoned… and then the mage grew weary.
-
----
-
-## How to Summon This Beast (Getting Started)
-
-1. **Clone the Grimoire**
-   `git clone https://github.com/hellmakima/instaclone.git`
-
-2. **Conjure a Virtual Realm**
-   `python -m venv venv && source venv/bin/activate`
-   _(or `venv\Scripts\activate` if thou rideth Windows)_
-
-3. **Scribe the Runes (Install Deps)**
-   `pip install -r backend/requirements.txt`
-
-4. **Kindle the Backfire (Run Backend)**
-   `uvicorn app.main:app --reload --port 5000`
-   Then venture to: [localhost:5000/docs#/](http://localhost:5000/docs#/)
-   There shalt thou behold the holy scroll of endpoints.
-
-5. **Craft the Forepart (Next.js Frontend)**
-   ```
-   cd frontend
-   npm install
-   npm run dev
-   ```
-   Seek [localhost:3000](http://localhost:3000) — the mirror realm awaits.
+| Layer    | Technology | Description                                       |
+| -------- | ---------- | ------------------------------------------------- |
+| Frontend | Next.js    | A modern React framework for performant UIs       |
+| Backend  | FastAPI    | A fast, Pythonic API framework with type hints    |
+| Database | MongoDB    | NoSQL database for flexible, document storage     |
+| Auth     | TBD        | Planned: Local auth with JWT and password hashing |
 
 ---
 
-## Warding (Security & Auth)
+## Project Status
 
-In days yet to come, the wards shall be woven. Here's the prophecy:
+- **Overall:** Under development
+- **Frontend:** Basic static pages for prototyping
+- **Backend:** Initial FastAPI structure implemented
+- **Database:** MongoDB connected; initial schema to be refined
 
-- **Local Auth** - Thy own runes of login, hashed with bcrypt and stored with care.
-- **JWT Tokens** - Each bearer shall prove their claim, or be smote by 401s.
+---
 
-For now?
-**None but trust and jest keep the gates.**
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/hellmakima/instaclone.git
+```
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 3. Install Backend Dependencies
+
+```bash
+pip install -r backend/requirements.txt
+```
+
+### 4. Run the Backend Server
+
+```bash
+uvicorn app.main:app --reload --port 5000
+```
+
+Documentation: [http://localhost:5000/docs#/](http://localhost:5000/docs#/)
+
+### 5. Setup and Run Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Access: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## Authentication (Planned)
+
+- **Local Auth:** Secure login with bcrypt-hashed passwords
+- **JWT Tokens:** Stateless authentication via access tokens
+
+**Current Status:** Authentication not yet implemented
 
 ---
 
 ## References
 
-**Youtube:**
-
-- [@AkamaiDeveloper](https://www.youtube.com/embed/5GxQ1rLTwaU)
-
-**Udemy:**
-
-- [REST APIs with Flask and Python in 2025](https://www.udemy.com/course/rest-api-flask-and-python/)
-
-**Website:**
-
-- [@fastapi](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
-
-**Coding Partners:** _(The heart of the project)_
-
-- [@SuperMaven_senpai](https://marketplace.visualstudio.com/items?itemName=Supermaven.supermaven) - VS Code extention. All-time buddy, only speaks code.
-- [@ChatGPT_chan](https://chatgpt.com/?temporary-chat=true) For easy understanding of new things, Hallucinates a lot.
-- [@Gemini_kun](https://gemini.google.com/app?hl=en-IN) For standard procedures and deep research.
-- [@DeepSeek_san](https://chat.deepseek.com) When my brain noodls give up, he starts crunching his, very low availability though. The thoughts give a lot of insights too.
+- [Akamai Developer on YouTube](https://www.youtube.com/embed/5GxQ1rLTwaU)
+- [Udemy - REST APIs with Flask and Python (2025)](https://www.udemy.com/course/rest-api-flask-and-python/)
+- [FastAPI Security Documentation](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
 
 ---
 
-## License Most Liberal
+## Contributors & Tools
 
-MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee.
-
----
-
-## Scribe
-
-Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption.
-
-> “If thou findest bugs, they are features in disguise. If not, blame the moon.”
+- [Supermaven VS Code Extension](https://marketplace.visualstudio.com/items?itemName=Supermaven.supermaven)
+- [ChatGPT](https://chatgpt.com/?temporary-chat=true)
+- [Gemini](https://gemini.google.com/app?hl=en-IN)
+- [DeepSeek](https://chat.deepseek.com)
 
 ---
 
-Open to collabs, pull requests, lore suggestions, or random acts of digital necromancy.
+## License
 
-Thou art welcome to lend thy craft, mend the broken, or plunge into the enigma that is media storage. This repository be as an open feast: partake, peruse, and pilfer as thou pleaseth. Come, break bread and bytes.
+**MIT License**
+Feel free to use, modify, and distribute. No liability assumed by the author.
+
+---
+
+## Author
+
+Developed by [@hellmakima](https://github.com/hellmakima)
+
+> “If you find a bug, it's either a feature or a reminder that we're always learning.”
+
+---
+
+Pull requests, suggestions, and collaborations are welcome.

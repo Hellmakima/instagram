@@ -1,4 +1,5 @@
 # **Web Security Best Practices**
+
 - Access tokens are stateless, meaning they do not require server-side session storage because all necessary information for authorization is encoded within the token itself.
 
 ### **A. CSRF (Cross-Site Request Forgery)**
@@ -70,7 +71,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-abc123'; s
    - Generate tokens for state-changing requests (POST/PUT/DELETE).
    - Validate tokens in middleware.
 
-3. **IP Tracking (Optional)**:
+2. **IP Tracking (Optional)**:
    - Hash/anonymize IPs for privacy compliance (GDPR).
    - Log temporarily (e.g., 30 days) for security monitoring.
 
@@ -91,6 +92,20 @@ def anonymize_ip(ip):
    - No token handling needed (cookies are auto-sent by the browser).
    - Include CSRF tokens in headers for non-GET requests.
 
+### **C. Overall**
+
+- Use JWT (JSON Web Tokens) for access/refresh.
+- Use random secure strings (128+ bits) for CSRF.
+- Use OAuth 2.0 Authorization Code Flow with PKCE (recommended for SPAs).
+- Include claims like sub, iat, exp in JWTs.
+- Rotate refresh tokens on use (refresh token rotation).
+  **Where to Store**
+  | Token Type | Client Storage | Server Storage | DB Storage |
+  | ------------- | ------------------------------- | ------------------------- | ---------------------- |
+  | Access Token | **In-memory (JS variable)** 💡 | Never store | ✖ |
+  | Refresh Token | **HttpOnly, Secure cookie** 🍪 | Optional (if blacklist) ✅ | ✅ (encrypted) |
+  | CSRF Token | **DOM/form field or cookie** 🧼 | Validate per session 🛡️ | Optional (per-session) |
+
 ---
 
 **Key Principle**:
@@ -101,7 +116,35 @@ def anonymize_ip(ip):
 ---
 
 **Reverse Proxy**
+
 - detailed video on [reverse proxy](https://www.youtube.com/watch?v=m1MWjPKS5NM) (serve backend and frotend on same host)
 - goes in over what it is
 - DNS, ssl cert (https sites), etc
 - docker linux setup
+
+## SPA
+
+- we are a SPA (single page application). We have a single page that is rendered based on the user's actions.
+
+## OAuth2.0
+
+- https://www.youtube.com/watch?v=8-0-8a0s-9w
+- referance [postman blog](https://blog.postman.com/what-is-oauth-2-0/)
+  - Uses
+    - allow third party apps to use instagram without having to implement their own login system.
+    - allows limited access to instagram data
+    - no need to share user's password
+  - agents
+    - resource owner: This is the user that is granting third-party access to their data.
+    - client: This is the third-party application that is requesting access to the resource owner’s data. When the resource owner grants access, the client gets an access token that can be used to request the resources within the granted scope.
+    - authorization server: This is the server that is responsible for granting access to the client.
+    - resource server: This is the server that is responsible for serving the client with the requested data.
+  - flow
+    - user logs in to instagram
+    - instagram redirects user to client
+    - client requests access token from authorization server
+    - authorization server redirects client to instagram
+    - instagram redirects client to resource server
+    - resource server returns access token to client
+    - client uses access token to access instagram data
+- also [what-is-pkce](https://blog.postman.com/what-is-pkce/)
