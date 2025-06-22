@@ -26,7 +26,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 # startup
 from contextlib import asynccontextmanager
-import app.utils.loggers
+import app.utils.loggers # initialize loggers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

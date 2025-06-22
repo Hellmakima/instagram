@@ -1,4 +1,5 @@
 """
+
 ### File: **project/todo.md**
 
 Contains the todo list for the project
@@ -65,3 +66,7 @@ _Search for `TODO` in all files to see all the todos_
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`.
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time.
+
+## when re-implementing
+
+- make multiple servers to handle different services like authorization server, resource server, etc.

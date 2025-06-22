@@ -148,3 +148,15 @@ def anonymize_ip(ip):
     - resource server returns access token to client
     - client uses access token to access instagram data
 - also [what-is-pkce](https://blog.postman.com/what-is-pkce/)
+
+A ton of servers possible
+
+1. **Auth Server** – Handles login, tokens, user creds 🔐
+2. **Resource Server** – Protects and serves data 🍱
+3. **Frontend Server** – Hosts your SPA or HTML views 🌐
+4. **Gateway/Proxy Server** – Routes, rate-limits, logs; like a traffic cop 🚦
+5. **File Server** – For static/media file uploads/downloads 📁
+6. **Cache Server** – Like Redis; holds session or temp data ⚡
+7. **Database Server** – Holds your precious data 💎
+8. **Job/Worker Server** – For async/background tasks like emails 🛠️
+9. **Monitoring/Logging Server** – Watches everything 👀
