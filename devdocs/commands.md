@@ -19,9 +19,9 @@ git add .
 git commit -m "your message"
 # or just git commit to get a gui to write the message (this helps me remember what I did)
 git push origin main
+# main is the branch name
 # or
 git push
-# main is the branch name
 ```
 
 ### Other Git Commands
