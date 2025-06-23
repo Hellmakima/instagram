@@ -42,6 +42,7 @@ _Search for `TODO` in all files to see all the todos_
 
 - Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens on logout and stuff
   - add req logs for imp endpoints with source IP
+- requirements.txt
 
 ## Before Deployment
 

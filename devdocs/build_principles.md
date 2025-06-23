@@ -12,7 +12,8 @@
 
 ## API
 
-- RESTful API used for all operations
+- RESTful API used for all operations.
+- Keep versions and backwards compatibility in mind.
 
 Standard responses:
 
