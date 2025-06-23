@@ -23,7 +23,7 @@ Standard responses:
   "code": 201,
   "data": {
     "post_id": "abcd1234",
-    "title": "Midnight Chai 🌙☕",
+    "title": "Midnight Chai",
     "created_at": "2025-06-23T15:35:00Z"
   },
   "timestamp": "2025-06-23T15:35:00Z"
