@@ -109,7 +109,7 @@ Feel free to use, modify, and distribute. No liability assumed by the author.
 
 Developed by [@hellmakima](https://github.com/hellmakima)
 
-> “If you find a bug, it's either a feature or a reminder that we're always learning.”
+> "If you find a bug, it's either a feature or a reminder that we're always learning."
 
 ---
 

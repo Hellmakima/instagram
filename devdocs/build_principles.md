@@ -2,7 +2,7 @@
 
 ## Servers
 
-- 2 servers (auth 5001 and resources 5000)
+- 2 servers (auth 5001 and resource (main one) 5000)
   - Auth server acts as a proxy for the resources server. Frontend only sees the resources server. Any requests that require auth are proxied to the auth server.
   - Auth server implements OAuth2 protocol to allow third-party apps to access the resources server with limited access granted by the user.
   - Auth server is stateless, and doesn't store any user data.

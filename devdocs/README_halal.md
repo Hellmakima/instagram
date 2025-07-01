@@ -3,27 +3,27 @@
 
 ---
 
-# InstaClone 🕌📸
+# InstaClone
 
-A wholesome, full-stack Instagram clone — forged with **FastAPI**, **MongoDB**, and **Next.js**. Built clean, modular, and fit for the upright ummah of devs in need of a sunnah-friendly sharing space.
+A wholesome, full-stack Instagram clone - forged with **FastAPI**, **MongoDB**, and **Next.js**. Built clean, modular, and fit for the upright ummah of devs in need of a sunnah-friendly sharing space.
 
-**\*Bismillah!** This code was scribed with sincerity and may contain slips — may Allah forgive our shortcomings. If you spot a bug, know that it's a test and in fixing it lies reward, insha’Allah.\*
-
----
-
-## 🧾 License
-
-Use it, share it, remix it. Just don’t sue your brother in Islam over it 🙏
+**\*Bismillah!** This code was scribed with sincerity and may contain slips - may Allah forgive our shortcomings. If you spot a bug, know that it's a test and in fixing it lies reward, insha'Allah.\*
 
 ---
 
-## ✍️ About the Scribe
+## License
 
-Crafted by [@hellmakima](https://github.com/hellmakima) — a humble dev on a mission, coding with sincerity and du'a.
-
-> “Every bug has a wisdom behind it. Maybe it’s a lesson. Maybe it’s qadr.”
+Use it, share it, remix it. Just don't sue your brother in Islam over it
 
 ---
 
-Open for collabs, pull requests, or just a warm salaam 🤝
-Come contribute barakah to this noble quest, and may your code compile on the first try… آمين 🤲💻
+## About the Scribe
+
+Crafted by [@hellmakima](https://github.com/hellmakima) - a humble dev on a mission, coding with sincerity and du'a.
+
+> "Every bug has a wisdom behind it. Maybe it's a lesson. Maybe it's qadr."
+
+---
+
+Open for collabs, pull requests, or just a warm salaam
+Come contribute barakah to this noble quest, and may your code compile on the first try... آمين

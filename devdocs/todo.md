@@ -22,7 +22,7 @@ _Search for `TODO` in all files to see all the todos_
 - data validation on frontend as well as backend?
 - do we need redis for session storage?
 - IP validation helpers
-- https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system.
+- https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
 
 ## Medium Priority
 
@@ -42,17 +42,17 @@ _Search for `TODO` in all files to see all the todos_
 
 - Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens on logout and stuff
   - add req logs for imp endpoints with source IP
-- requirements.txt
 
 ## Before Deployment
 
-- remove CORS
-- nginx to bring it all together
+- use proper license, security.md, code_of_conduct.md
+- rewrite gitignore and put new values in .env
+- remove CORS, use nginx to bring it all together
 - use docker
   - separate container
   - refer [Youtube](youtube.com/watch?v=DQdB7wFEygo)
 - test on wsl
-- deploy!!!
+- deploy!!! Even temporarily, just do it
 
 ## ocassionally
 
@@ -65,9 +65,5 @@ _Search for `TODO` in all files to see all the todos_
 - I use models dir for validation. mabe fix this
 - set up a common page for 404 page not found
 - set refresh tokens only if user wants to
-- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`.
-- use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time.
-
-## when re-implementing
-
-- make multiple servers to handle different services like authorization server, resource server, etc.
+- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
+- use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time

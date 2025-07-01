@@ -3,27 +3,27 @@
 A full-stack simulacrum of Instagram, forged with affection, driven by **FastAPI**, **MongoDB**, and **Next.js**.
 'Tis modular, unsoiled, and as vast as thy hoard of mirthful images.
 
-_*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any follies or errours thou mayst uncover. If a gremlin be found, mayhap it be mine doing… or mayhap not… yet I vow to mend it, upon my honour.*_
+_*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any follies or errours thou mayst uncover. If a gremlin be found, mayhap it be mine doing... or mayhap not... yet I vow to mend it, upon my honour.*_
 
 ---
 
-## The Arcane Implements (What the Youth of Yore Might Call “Trendy”)
+## The Arcane Implements (What the Youth of Yore Might Call "Trendy")
 
 | Sphere   | Alchemy       | Scribblings                                        |
 | -------- | ------------- | -------------------------------------------------- |
 | Forepart | Next.js       | Forsooth, who now doth favour "classic" React?     |
 | Rearward | FastAPI       | As swift as thine Wi-Fi, when none doth leech it   |
-| Tome     | MongoDB       | NoSQL — for those who deem SQL a sluggish beast    |
-| Warding  | To Be Decreed | Mayhap Firebase, mayhap Local — 'tis a mystery yet |
+| Tome     | MongoDB       | NoSQL - for those who deem SQL a sluggish beast    |
+| Warding  | To Be Decreed | Mayhap Firebase, mayhap Local - 'tis a mystery yet |
 
 ---
 
 ## The State of Affairs
 
-- **In Sum:** ‘Tis barren.
+- **In Sum:** 'Tis barren.
 - **Forepart:** Only humble scrolls of static HTML hath been penned for trial and jest.
 - **Rearward:** A modest conjuration; the mage yet studies and doth experiment.
-- **Tome:** MongoDB hath been summoned… and then the mage grew weary.
+- **Tome:** MongoDB hath been summoned... and then the mage grew weary.
 
 ---
 
@@ -50,7 +50,7 @@ _*This scroll hath been conjured by the mighty hand of GPT. I beg pardon for any
    npm install
    npm run dev
    ```
-   Seek [localhost:3000](http://localhost:3000) — the mirror realm awaits.
+   Seek [localhost:3000](http://localhost:3000) - the mirror realm awaits.
 
 ---
 
@@ -91,15 +91,15 @@ For now?
 
 ## License Most Liberal
 
-MIT — Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee.
+MIT - Break it as thou wilt, twist it as thy heart desireth, or wield it to deliver thy kinsmen the jests of felines. But lo, bring no lawsuit upon me, I beseech thee.
 
 ---
 
 ## Scribe
 
-Penned by [@hellmakima](https://github.com/hellmakima) — Like unto a sorcerer, yet armed with naught but a clattering key-contraption.
+Penned by [@hellmakima](https://github.com/hellmakima) - Like unto a sorcerer, yet armed with naught but a clattering key-contraption.
 
-> “If thou findest bugs, they are features in disguise. If not, blame the moon.”
+> "If thou findest bugs, they are features in disguise. If not, blame the moon."
 
 ---
 

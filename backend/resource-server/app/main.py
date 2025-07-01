@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
     yield
     client.close()
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, title="Resource Server", version="0.1")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

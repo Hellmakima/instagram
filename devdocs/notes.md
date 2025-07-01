@@ -102,9 +102,9 @@ def anonymize_ip(ip):
   **Where to Store**
   | Token Type | Client Storage | Server Storage | DB Storage |
   | ------------- | ------------------------------- | ------------------------- | ---------------------- |
-  | Access Token | **In-memory (JS variable)** 💡 | Never store | ✖ |
-  | Refresh Token | **HttpOnly, Secure cookie** 🍪 | Optional (if blacklist) ✅ | ✅ (encrypted) |
-  | CSRF Token | **DOM/form field or cookie** 🧼 | Validate per session 🛡️ | Optional (per-session) |
+  | Access Token | **In-memory (JS variable)** | Never store | X |
+  | Refresh Token | **HttpOnly, Secure cookie** | Optional (if blacklist) | (encrypted) |
+  | CSRF Token | **DOM/form field or cookie** | Validate per session | Optional (per-session) |
 
 ---
 
@@ -136,7 +136,7 @@ def anonymize_ip(ip):
     - no need to share user's password
   - agents
     - resource owner: This is the user that is granting third-party access to their data.
-    - client: This is the third-party application that is requesting access to the resource owner’s data. When the resource owner grants access, the client gets an access token that can be used to request the resources within the granted scope.
+    - client: This is the third-party application that is requesting access to the resource owner,s data. When the resource owner grants access, the client gets an access token that can be used to request the resources within the granted scope.
     - authorization server: This is the server that is responsible for granting access to the client.
     - resource server: This is the server that is responsible for serving the client with the requested data.
   - flow
@@ -151,12 +151,12 @@ def anonymize_ip(ip):
 
 A ton of servers possible
 
-1. **Auth Server** – Handles login, tokens, user creds 🔐
-2. **Resource Server** – Protects and serves data 🍱
-3. **Frontend Server** – Hosts your SPA or HTML views 🌐
-4. **Gateway/Proxy Server** – Routes, rate-limits, logs; like a traffic cop 🚦
-5. **File Server** – For static/media file uploads/downloads 📁
-6. **Cache Server** – Like Redis; holds session or temp data ⚡
-7. **Database Server** – Holds your precious data 💎
-8. **Job/Worker Server** – For async/background tasks like emails 🛠️
-9. **Monitoring/Logging Server** – Watches everything 👀
+1. **Auth Server** - Handles login, tokens, user creds
+2. **Resource Server** - Protects and serves data
+3. **Frontend Server** - Hosts your SPA or HTML views
+4. **Gateway/Proxy Server** - Routes, rate-limits, logs; like a traffic cop
+5. **File Server** - For static/media file uploads/downloads
+6. **Cache Server** - Like Redis; holds session or temp data
+7. **Database Server** - Holds your precious data
+8. **Job/Worker Server** - For async/background tasks like emails
+9. **Monitoring/Logging Server** - Watches everything

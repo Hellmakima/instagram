@@ -20,9 +20,7 @@ load_dotenv()
 
 # fastapi app
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from app.api.api_v1.router import router
-from fastapi.middleware.cors import CORSMiddleware
 
 # startup
 from contextlib import asynccontextmanager
@@ -43,16 +41,7 @@ async def lifespan(app: FastAPI):
     yield
     client.close()
 
-app = FastAPI(lifespan=lifespan)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app = FastAPI(lifespan=lifespan, title="Auth Server", version="0.1")
 
 app.include_router(router)
 
@@ -62,14 +51,7 @@ async def root(name: str = "Sufiyan"):
     return f"""
     <html>
         <body>
-            <h2>Hello {name}</h2>
-            <ul>
-                <li><a href="/static/login.html">Login Page</a></li>
-                <li><a href="/static/index.html">Index Page</a></li>
-                <li><a href="/static/test/login.html">Test Login</a></li>
-                <li><a href="/static/test/me.html">Test Me</a></li>
-                <li><a href="/docs">Swagger Docs</a></li>
-            </ul>
+            <h2>Auth working</h2>
         </body>
     </html>
     """
