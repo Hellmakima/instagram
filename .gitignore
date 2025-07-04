@@ -1,3 +1,5 @@
+# only keep stuff that is too big and not needed
+
 # Python
 __pycache__/
 *.pyc

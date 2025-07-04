@@ -136,7 +136,7 @@ async def login(
     access_token = create_access_token(tok_data)
     refresh_token = create_refresh_token(tok_data)
     
-    # TODO: this is not completely implemented, i dont do anything about this once they are created.
+    # TODO: this is not completely implemented, handle revoked tokens.
     await refresh_tokens_col(db).insert_one({
         "user_id": user["_id"],
         "refresh_token": refresh_token,
