@@ -86,6 +86,8 @@ Access: [http://localhost:3000](http://localhost:3000)
 - [Akamai Developer on YouTube](https://www.youtube.com/embed/5GxQ1rLTwaU)
 - [Udemy - REST APIs with Flask and Python (2025)](https://www.udemy.com/course/rest-api-flask-and-python/)
 - [FastAPI Security Documentation](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
+- [CSRF Protection](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.md#token-based-mitigation)
+  - [python package](https://pypi.org/project/fastapi-csrf-protect/) python package
 
 ---
 

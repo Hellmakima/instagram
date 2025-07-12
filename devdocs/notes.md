@@ -4,26 +4,13 @@
 
 ### **A. CSRF (Cross-Site Request Forgery)**
 
-**What it is**:
+some site makes a req from your browser and since you are logged in, it sends a token in the header.
 
-- An attack where a malicious site tricks a logged-in user into performing unwanted actions on a legitimate site.
-- Exploits the browser's automatic cookie inclusion in same-origin requests.
-
-**Prevention**:
-
-1. **CSRF Tokens** (Synchronizer Token Pattern):
-
+1. **CSRF Tokens**:
    - Backend generates a unique token, stores it server-side, and sends it in a **non-HttpOnly cookie**.
+   - Frontend stores it in its JS (so no one can access it).
    - Frontend includes the same token in a header (e.g., `X-CSRF-Token`).
    - Backend validates the cookie token against the header token.
-
-2. **Double Submit Cookie** (Stateless Alternative):
-
-   - Token is stored in a cookie and also sent in a header/body.
-   - Backend checks if both values match (no server-side storage).
-
-3. **SameSite Cookies**:
-   - Set `SameSite=Strict` or `Lax` to restrict cross-origin cookie sending.
 
 ---
 

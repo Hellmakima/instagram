@@ -153,7 +153,9 @@ async def login(
         token_type="Bearer",
     )
 
-
+from app.core.csrf import CsrfProtect
+from fastapi import Request
+from fastapi.responses import JSONResponse
 @router.post(
     "/refresh", 
     response_model=AuthResponse,
@@ -161,7 +163,11 @@ async def login(
 )
 async def refresh(
     form_data: RefreshUser,
+    request: Request,
+    csrf_protect: CsrfProtect = Depends(),
 ):
+    await csrf_protect.validate_csrf(request)    # <-- make sure token matches
+
     flow_logger.info("in refresh")
     try:
         username = verify_token(form_data.refresh_token, token_type=form_data.token_type)
@@ -181,6 +187,10 @@ async def refresh(
         refresh_token=form_data.refresh_token,
         token_type="Bearer"
     )
+    # optional: unset csrf cookie. do this for important endpoints only (e.g., logout, password change)
+    # resp = JSONResponse(content=response.dict())
+    # csrf_protect.unset_csrf_cookie(resp)
+    # return resp
 
 
 @router.post("/logout")

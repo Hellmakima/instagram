@@ -23,12 +23,16 @@ _Search for `TODO` in all files to see all the todos_
 - do we need redis for session storage?
 - IP validation helpers
 - https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
+- make sure token validation speed scales (consider caching JWT validation results short-term to reduce auth server hits
+- need a good blacklist/rotation strategy for refresh tokens (Mongo TTL index maybe?)
 
 ## Medium Priority
 
 - make a index page to list all the endpoints
 - add password related stuff [change password, forgot password, reset password]
 - add user related stuff [create user, delete user, update user]
+- Require re-authentication for key operations (email changes, MFA toggles).
+- implement rate-limiting, lockouts, CAPTCHA, MFA.
 - add user-specific endpoints
   - get user info
   - block user
