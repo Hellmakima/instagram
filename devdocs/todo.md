@@ -11,10 +11,11 @@ _Search for `TODO` in all files to see all the todos_
 
 ## High Priority
 
-- once done with token stuff, add a simple user profile page and start looking into how to implement it (DB, session, etc)
+- add a simple user profile page and start looking into how to implement it.
+  - DB, session, etc
   or
 - go with email verification and password reset
-- re-visit what data flows back and forth for each endpoint
+- decide DB struct and indexes
 
 ## Research
 
@@ -24,10 +25,11 @@ _Search for `TODO` in all files to see all the todos_
 - IP validation helpers
 - https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
 - make sure token validation speed scales (consider caching JWT validation results short-term to reduce auth server hits
-- need a good blacklist/rotation strategy for refresh tokens (Mongo TTL index maybe?)
 
 ## Medium Priority
 
+- need a good blacklist/rotation strategy for refresh tokens
+  - Mongo TTL index maybe
 - make a index page to list all the endpoints
 - add password related stuff [change password, forgot password, reset password]
 - add user related stuff [create user, delete user, update user]
@@ -71,3 +73,4 @@ _Search for `TODO` in all files to see all the todos_
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time
+-  For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX,

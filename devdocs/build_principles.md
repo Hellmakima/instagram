@@ -179,6 +179,7 @@ sequenceDiagram
 ## Frontend
 
 - Pure vibe coding. (port 3000)
+- Currently NextJS, gonna switch to Vite + React
 - SPA (single page app)
 - Use any copyrighted images, fonts, etc.
 

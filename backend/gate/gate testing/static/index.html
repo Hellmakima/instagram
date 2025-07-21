@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSRF Gateway Test</title>
+</head>
+<body>
+    <h1> CSRF Cookie & Proxy Test</h1>
+
+    <button onclick="getCSRF(true)">GET CSRF from AUTH (via Ngrok)</button>
+    <button onclick="postCritical(true)">POST Critical to AUTH</button>
+    <br><br>
+
+    <button onclick="getCSRF(false)">GET CSRF from RESOURCE (via Ngrok)</button>
+    <button onclick="postCritical(false)">POST Critical to RESOURCE</button>
+    <br><br>
+
+    <button onclick="clearCookies()"> Delete Cookies</button>
+
+    <p id="output" style="white-space: pre-wrap; background: #f0f0f0; padding: 1em;"></p>
+
+    <script>
+        let csrfToken = "";
+        // const gateway = "https://a6cb5d326d5a.ngrok-free.app"; // Your ngrok URL here
+        const gateway = "https://localhost:5000"; // Your ngrok URL here
+        const outputBox = document.getElementById("output");
+
+        async function getCSRF(fromAuth = true) {
+            try {
+                const url = fromAuth
+                    ? `https://auth.${gateway.replace(/^https?:\/\//, '')}/test`
+                    : `${gateway}/test`;
+
+                const res = await fetch(url, {
+                    credentials: "include"
+                });
+
+                const text = await res.text();
+                try {
+                    const data = JSON.parse(text);
+                    csrfToken = data.csrf_token;
+                    outputBox.textContent = `Token from ${fromAuth ? "AUTH" : "RESOURCE"}:\n` + JSON.stringify(data, null, 2);
+                } catch (err) {
+                    outputBox.textContent = ` Failed to parse JSON:\n${text}`;
+                }
+            } catch (err) {
+                outputBox.textContent = `Error during GET:\n${err}`;
+            }
+        }
+
+        async function postCritical(toAuth = true) {
+            try {
+                const res = await fetch(`${gateway}/critical`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "X-CSRF-Token": csrfToken,
+                        "Content-Type": "application/json"
+                    },
+                    body: "{}"
+                });
+
+                const text = await res.text();
+                try {
+                    const data = JSON.parse(text);
+                    outputBox.textContent = ` POST ${toAuth ? "AUTH" : "RESOURCE"}:\n` + JSON.stringify(data, null, 2);
+                } catch (err) {
+                    outputBox.textContent = ` Non-JSON Response:\n${text}`;
+                }
+            } catch (err) {
+                outputBox.textContent = `Error during POST:\n${err}`;
+            }
+        }
+
+        function clearCookies() {
+            document.cookie.split(";").forEach(cookie => {
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+            });
+            outputBox.textContent = "Cookies cleared.";
+        }
+    </script>
+</body>
+</html>

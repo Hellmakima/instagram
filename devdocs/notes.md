@@ -95,23 +95,12 @@ def anonymize_ip(ip):
 
 ---
 
-**Key Principle**:
-
-- **Backend handles security** (token validation, CSRF).
-- **Frontend minimizes risks** (XSS prevention, token forwarding).
-
----
-
 **Reverse Proxy**
 
 - detailed video on [reverse proxy](https://www.youtube.com/watch?v=m1MWjPKS5NM) (serve backend and frotend on same host)
 - goes in over what it is
 - DNS, ssl cert (https sites), etc
 - docker linux setup
-
-## SPA
-
-- we are a SPA (single page application). We have a single page that is rendered based on the user's actions.
 
 ## OAuth2.0
 

@@ -38,7 +38,9 @@ async def lifespan(app: FastAPI):
     await app.state.client.admin.command("ping")
     # TODO: Create indexes for all collections
     db = client.get_database()
-    await db.users.create_index("username", unique=True)
+    
+    # this should be done only once.
+    # await db.users.create_index("username", unique=True)
     
     yield
     client.close()
