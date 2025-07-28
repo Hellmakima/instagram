@@ -11,9 +11,10 @@ _Search for `TODO` in all files to see all the todos_
 
 ## High Priority
 
+- get auth-server running
 - add a simple user profile page and start looking into how to implement it.
   - DB, session, etc
-  or
+    or
 - go with email verification and password reset
 - decide DB struct and indexes
 
@@ -43,6 +44,27 @@ _Search for `TODO` in all files to see all the todos_
   - update user
     - update user password
     - update user data
+- setup nginx
+
+  - rate limiting
+  - route with subdomains
+  - add CORS headers
+
+  ```
+    if host.startswith("auth."):
+        "http://127.0.0.1:5001"
+    elif host.startswith("api."):
+        "http://127.0.0.1:5002"
+  ```
+
+  - other things that nginx can do:
+    - SSL termination
+    - rate limiting
+    - static file serving
+    - basic reverse proxying
+    - basic cors headers
+    - load balancing
+    - caching
 
 ## Low Priority
 
@@ -60,17 +82,16 @@ _Search for `TODO` in all files to see all the todos_
 - test on wsl
 - deploy!!! Even temporarily, just do it
 
-## ocassionally
+## Ocassionally
 
 - search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 
-## eventually
+## Eventually
 
-- Add rate-limiting to critical endpoints
 - Add proper logging
 - I use models dir for validation. mabe fix this
 - set up a common page for 404 page not found
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time
--  For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX,
+- For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX,

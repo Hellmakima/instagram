@@ -9,7 +9,7 @@ from app.schemas.user import UserMe
 from app.core.security import get_current_user
 import logging
 
-router = APIRouter(prefix="/user", tags=["user"])
+router = APIRouter()
 flow_logger = logging.getLogger("app_flow")
 
 @router.get(

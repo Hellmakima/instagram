@@ -26,8 +26,7 @@ import logging
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
 
-router = APIRouter(prefix="/auth", tags=["auth"])
-# router = APIRouter()
+router = APIRouter()
 
 
 @router.post(
@@ -154,21 +153,27 @@ async def login(
     )
 
 from app.core.csrf import CsrfProtect
-from fastapi import Request
-from fastapi.responses import JSONResponse
+from fastapi import Request, Response, Cookie
+# from fastapi.responses import JSONResponse
 @router.post(
-    "/refresh", 
+    "/refresh_token",
     response_model=AuthResponse,
     status_code=status.HTTP_202_ACCEPTED
 )
 async def refresh(
     form_data: RefreshUser,
     request: Request,
+    response: Response,
     csrf_protect: CsrfProtect = Depends(),
 ):
-    await csrf_protect.validate_csrf(request)    # <-- make sure token matches
+    flow_logger.info("in refresh token")
+    try:
+        await csrf_protect.validate_csrf(request)
+    except Exception as e:
+        flow_logger.error("Error validating csrf token: %s", str(e))
+        raise e
+    csrf_protect.set_csrf_cookie(request)
 
-    flow_logger.info("in refresh")
     try:
         username = verify_token(form_data.refresh_token, token_type=form_data.token_type)
     except Exception as e:
@@ -176,16 +181,20 @@ async def refresh(
         raise e
     
     token_data = TokenData(username=username)
-    new_access_token = create_access_token(token_data)
+    access_token = create_access_token(token_data)
 
+    # refresh csrf cookie
+    # set auth token cookie
+    response.set_cookie(
+        Cookie(name="refresh_token", value=access_token, max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60)
+    )
+    
     # TODO: optionally rotate the refresh token
     # TODO: add a check to see if the user is blocked
+    
 
     return AuthResponse(
         username=username,
-        access_token=new_access_token,
-        refresh_token=form_data.refresh_token,
-        token_type="Bearer"
     )
     # optional: unset csrf cookie. do this for important endpoints only (e.g., logout, password change)
     # resp = JSONResponse(content=response.dict())

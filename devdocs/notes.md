@@ -107,7 +107,7 @@ def anonymize_ip(ip):
 - https://www.youtube.com/watch?v=8-0-8a0s-9w
 - referance [postman blog](https://blog.postman.com/what-is-oauth-2-0/)
   - Uses
-    - allow third party apps to use instagram without having to implement their own login system.
+    - allow third party apps to use instagram without having to implement their own login system. (eg. sign in with google)
     - allows limited access to instagram data
     - no need to share user's password
   - agents
@@ -136,3 +136,5 @@ A ton of servers possible
 7. **Database Server** - Holds your precious data
 8. **Job/Worker Server** - For async/background tasks like emails
 9. **Monitoring/Logging Server** - Watches everything
+
+https://gemini.google.com/app/647b32c5f20ae882?hl=en-IN

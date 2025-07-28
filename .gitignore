@@ -1,4 +1,4 @@
-# only keep stuff that is too big and not needed
+# only keep stuff that is too big or not needed
 
 # Python
 __pycache__/
