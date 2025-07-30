@@ -13,6 +13,13 @@
 - common virtual environment
 - Most operations are async
 - Shared user \_id passed in token for cross-server consistency
+- keep backend codebase clean
+  - no python file gets longer than 750 lines
+  - no function gets longer than 75 lines
+  - add logging everywhere
+  - ideally, the code should be self-explanatory, but still have comments
+  - no use of `global` or `print`
+  - no unused imports
 
 ## API
 
