@@ -10,12 +10,12 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "app.main:app",
+                "gate:app",
                 "--reload",
                 "--port",
                 "5000"
             ],
-            "cwd": "${workspaceFolder}/backend",
+            "cwd": "${workspaceFolder}/backend/gate",
             "jinja": true
         }
     ]

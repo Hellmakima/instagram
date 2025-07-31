@@ -131,7 +131,11 @@ async def get_current_user(
         raise credentials_exception
     user = await users_col(db).find_one({"username": username})
     if user is None:
-        raise credentials_exception
-        
+        flow_logger.error("User not found in DB")
+        raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="User not found",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     return UserMe(**user)
 

@@ -12,6 +12,8 @@ _Search for `TODO` in all files to see all the todos_
 ## High Priority
 
 - get auth-server running
+- get resource-server running
+- test it on nginx
 - add a simple user profile page and start looking into how to implement it.
   - DB, session, etc
     or
@@ -20,12 +22,9 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Research
 
-- CSRF tokens, proper location to store the access nad refresh tokens. see how real instagram does it, look up git repos for implementation, and tatakae
 - data validation on frontend as well as backend?
-- do we need redis for session storage?
 - IP validation helpers
 - https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
-- make sure token validation speed scales (consider caching JWT validation results short-term to reduce auth server hits
 
 ## Medium Priority
 
@@ -88,10 +87,10 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Eventually
 
-- Add proper logging
 - I use models dir for validation. mabe fix this
-- set up a common page for 404 page not found
+- set up a common page for 404 page not found (do it in the frontend)
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time
 - For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX,
+- Use Redis insted of get_current_user() if that becomes a bottleneck.

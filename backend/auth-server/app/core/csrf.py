@@ -4,11 +4,13 @@ from fastapi_csrf_protect.exceptions import CsrfProtectError
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from pydantic_settings import BaseSettings
+import dotenv
 
 class CsrfSettings(BaseSettings):
-    secret_key: str = "asecrettoeverybody"          # TODO: pull from .env
+    secret_key: str = dotenv.dotenv_values(".env")["CSRF_SECRET"]
     cookie_samesite: str = "none"
-    cookie_secure: bool = True                      # HTTPS only!
+    cookie_secure: bool = True                      # HTTPS only
+    header_name: str = "X-CSRFToken"
 
 @CsrfProtect.load_config
 def get_csrf_config():

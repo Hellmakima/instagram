@@ -1,5 +1,5 @@
 """
-### File: app/api/status_codes.txt
+### File: devdocs/status_codes.txt
 
 Contains all the status codes that are used in the project
 """

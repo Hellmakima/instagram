@@ -10,6 +10,9 @@
   - Auth server acts as a proxy for the resources server. Frontend only sees the resources server. Any requests that require auth are proxied to the auth server.
   - Auth server implements OAuth2 protocol to allow third-party apps to access the resources server with limited access granted by the user.
   - Auth server is stateless, and doesn't store any user data.
+
+## Common Coding Principles
+
 - common virtual environment
 - Most operations are async
 - Shared user \_id passed in token for cross-server consistency
@@ -20,6 +23,7 @@
   - ideally, the code should be self-explanatory, but still have comments
   - no use of `global` or `print`
   - no unused imports
+- Ocassionally search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 
 ## API
 
@@ -186,7 +190,7 @@ sequenceDiagram
 ## Frontend
 
 - Pure vibe coding. (port 3000)
-- Currently NextJS, gonna switch to Vite + React
+- Currently NextJS, maybe switch to Vite + React
 - SPA (single page app)
 - Use any copyrighted images, fonts, etc.
 

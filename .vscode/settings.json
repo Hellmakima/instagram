@@ -1,0 +1,30 @@
+{
+  "files.exclude": {
+    "**/__init__.py": true,
+    "**/__pycache__": true
+  },
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": false,
+  "git.enableSmartCommit": true,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+  "git.autofetch": true,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "window.commandCenter": false,
+  "diffEditor.ignoreTrimWhitespace": true,
+  "workbench.panel.defaultLocation": "right",
+  "workbench.activityBar.location": "top",
+  "python.createEnvironment.trigger": "off",
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "diffEditor.hideUnchangedRegions.enabled": true,
+  "editor.mouseWheelZoom": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode"
+}
