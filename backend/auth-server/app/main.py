@@ -12,6 +12,7 @@ or hit f5 in vscode
 """
 
 # mongodb connection client
+from fastapi.staticfiles import StaticFiles
 from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
 
@@ -44,5 +45,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan, title="Auth Server", version="0.1")
 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 app.add_exception_handler(CsrfProtectError, csrf_exception_handler)
 app.include_router(router)

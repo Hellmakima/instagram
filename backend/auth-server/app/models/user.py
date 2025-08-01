@@ -34,21 +34,42 @@ class UserCreate(UserBase): # same can be used for update user.
         }
 
     @field_validator('password')
-    def password_must_be_strong(cls, v):
-        if len(v) < 4:
+    def password_must_be_strong(cls, value):
+        if len(value) < 4:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Password must be at least 4 characters long"
+                detail={
+                    "success": False,
+                    "message": "Password must be at least 4 characters long",
+                    "error": {
+                        "code": "PASSWORD_TOO_SHORT",
+                        "details": "Password must be at least 4 characters long"
+                    }
+                }
             )
-        if len(v) > 50:
+        if len(value) > 50:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Password must be at most 50 characters long"
+                detail={
+                    "success": False,
+                    "message": "Password must be less than 50 characters long",
+                    "error": {
+                        "code": "PASSWORD_TOO_LONG",
+                        "details": "Password must be less than 50 characters long"
+                    }
+                }
             )
-        if not re.search(r'[A-Z]', v) or not re.search(r'[a-z]', v) or not re.search(r'\d', v):
+        if not re.search(r'[A-Z]', value) or not re.search(r'[a-z]', value) or not re.search(r'\d', value):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Password must include upper, lower case letters and digits"
+                detail={
+                    "success": False,
+                    "message": "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+                    "error": {
+                        "code": "PASSWORD_NO_UPPERCASE_LETTER",
+                        "details": "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+                    }
+                }
             )
-        return v
+        return value
     

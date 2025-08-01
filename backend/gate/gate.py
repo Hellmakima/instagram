@@ -1,10 +1,11 @@
 # A'udhu billahi min ash-shaytan ir-rajim Bismillahi ar-Rahmani ar-Rahim
 
-from fastapi import FastAPI, Request, Response
+from fastapi import Depends, FastAPI, Request, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_csrf_protect import CsrfProtect
 import httpx
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 app = FastAPI()
 
@@ -22,6 +23,22 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def root():
     return HTMLResponse(open("static/index.html").read())
+
+# TODO: move this to resources server
+@app.get(
+        "/csrf-token", 
+        response_class=JSONResponse
+)
+async def get_csrf_token(
+    csrf_protect: CsrfProtect = Depends(),
+):
+    csrf_token, signed_token = csrf_protect.get_csrf_token()
+    response = JSONResponse(
+        status_code=200,
+        content={"csrf_token": csrf_token}
+    )
+    csrf_protect.set_csrf_cookie(signed_token, response)
+    return response
 
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy(request: Request, path: str):
@@ -52,6 +69,7 @@ async def proxy(request: Request, path: str):
         headers={k: v for k, v in resp.headers.items() if k.lower() in {"content-type", "set-cookie"}}
     )
 
+# TODO: remove anything that nginx can't do.
 
 # It's a basic reverse proxy, but **not good enough** to fully simulate Nginx. Missing:
 
