@@ -15,7 +15,7 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
-from app.schemas.auth import TokenData
+from app.schemas.auth import APIErrorResponse, ErrorDetail, TokenData
 from app.core.config import settings
 
 from app.db.db import get_db
@@ -49,7 +49,7 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data.username, "type": "Bearer"}
+    to_encode = {"exp": expire, "sub": data._id, "type": "Bearer"}
     # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
@@ -64,12 +64,12 @@ def create_refresh_token(
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data.username, "type": "Bearer"}
+    to_encode = {"exp": expire, "sub": data._id, "type": "Bearer"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
 
-def verify_token(token: str, token_type: str = "Bearer") -> str:
+def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
     flow_logger.info("in verify_token")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -85,22 +85,33 @@ def verify_token(token: str, token_type: str = "Bearer") -> str:
         if decoded_token["type"] != token_type:
             flow_logger.error("Invalid token type: %s", decoded_token["type"])
             raise credentials_exception
-        return decoded_token["sub"]
+        return TokenData(decoded_token["sub"])
     except HTTPException as e:
         flow_logger.error("Error verifying token: %s", str(e))
-        # Re-raise any HTTPException
-        raise e
+        raise
     except ExpiredSignatureError:
         flow_logger.error("Token expired")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail="Token expired"
+            detail=APIErrorResponse(
+                message="Token expired",
+                error=ErrorDetail(
+                    code="TOKEN_EXPIRED",
+                    details="Token expired"
+                )
+            ).model_dump()
         )
     except JWTClaimsError as e:
         flow_logger.error("Invalid claims: %s", str(e))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail=f"Invalid claims: {e}"
+            detail=APIErrorResponse(
+                message="Invalid claims",
+                error=ErrorDetail(
+                    code="INVALID_CLAIMS",
+                    details=f"Invalid claims: {e}"
+                )
+            ).model_dump()
         )
     except JWTError:
         flow_logger.error("Error verifying token")
@@ -111,6 +122,7 @@ async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ) -> UserMe:
+    # TODO: Decide if I really get_current_user() or repurpose it.
     flow_logger.info("in get_current_user")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -119,8 +131,8 @@ async def get_current_user(
     )
     
     try:
-        username = verify_token(token)
-        if not username:
+        user = verify_token(token)
+        if not user:
             raise credentials_exception
     except HTTPException as e:
         flow_logger.error("Error verifying token: %s", str(e))
@@ -129,13 +141,16 @@ async def get_current_user(
     except JWTError:
         flow_logger.error("Error verifying token")
         raise credentials_exception
-    user = await users_col(db).find_one({"username": username})
-    if user is None:
+    user_data = await users_col(db).find_one(
+        {"_id": user._id},
+        projection={"_id": 1, "username": 1}
+    )
+    if not user_data:
         flow_logger.error("User not found in DB")
         raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="User not found",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    return UserMe(**user)
+    return UserMe(**user_data)
 

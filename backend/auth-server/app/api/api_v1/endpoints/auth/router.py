@@ -15,6 +15,7 @@ from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
+    get_current_user,
     verify_password,
     verify_token,
 )
@@ -77,6 +78,13 @@ async def register(
     db: AsyncIOMotorDatabase = Depends(get_db),
     csrf_protect: CsrfProtect = Depends(),
 ):
+    '''
+    # User Enumeration Risk (Partial):
+
+    The current check if await users_col(db).find_one({"$and": [{"$or": [{"username": form_data.username}, {"email": form_data.email}]}, {"is_verified": True}]}) correctly avoids leaking which specific field (username or email) is taken if an account exists and is verified. This is good.
+
+    Proactive Suggestion: However, if an unverified user exists with the same username/email, the current logic would still allow a new registration, potentially leading to duplicate unverified accounts or race conditions if verification is asynchronous. Consider adding a check for any existing user (verified or unverified) and then handling the "unverified user exists" case differently (e.g., re-sending verification email).
+    '''
     flow_logger.info("in register endpoint")
     
     try:
@@ -130,10 +138,27 @@ async def register(
 
     # TODO: add email verification
     # currently, users are set as unverified, need to verify them manually
+    '''
+    Recommendation: Implement an email verification flow:
+
+        Upon registration, set is_verified to False.
+
+        Generate a unique, time-limited verification token.
+
+        Store this token (hashed) with the user record or in a separate collection.
+
+        Send an email to the user's provided address with a link containing the verification token.
+
+        Create a new endpoint (e.g., /verify-email) that accepts this token, verifies it, and updates is_verified to True.
+
+        Only allow login for is_verified: True users.
+    '''
 
     try:
         res = await users_col(db).insert_one(user_doc)
-        rec = await users_col(db).find_one({"_id": res.inserted_id})
+        flow_logger.info("User record inserted successfully.")
+        rec = await users_col(db).find_one({"_id": res.inserted_id}, projection={"_id": 1})
+        flow_logger.info("User record fetched successfully.")
     except Exception as e:
         flow_logger.error("Database error during user save/fetch: %s", str(e))
         raise InternalServerError()
@@ -201,6 +226,13 @@ async def login_user(
         or rec.get("is_blocked") 
         or not rec.get("is_verified")
     ):
+        '''
+        # IP Address Logging (TODO: implement this to add IP address of client):
+
+        Correction: request.client.host will give you the direct client IP. If you're behind a reverse proxy (like Nginx, AWS ALB, Cloudflare), you must use request.headers.get("x-forwarded-for") or similar headers, as request.client.host will show the proxy's IP.
+
+        Recommendation: Implement robust IP address logging. If using a reverse proxy, ensure it's configured to pass the X-Forwarded-For header correctly, and your application trusts this header. Add an X-Real-IP header if X-Forwarded-For is not sufficient.
+        '''
         # request.headers.get("x-forwarded-for", request.client.host)
         flow_logger.info(
             "Failed login attempt for user '%s'. IP: %s", 
@@ -236,6 +268,13 @@ async def login_user(
             "refresh_token": refresh_token,
             "expires_at": datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
             # TODO: add TTL in mongoDB
+            '''
+            Token Expiration & Storage:
+
+            MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
+
+            Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
+            '''
             "revoked": False
         })
     except Exception as e:
@@ -350,7 +389,7 @@ async def refresh_access_token(
         raise
 
     try:
-        verify_token(request.cookies.get("refresh_token"), token_type="refresh")
+        username = get_current_user(request.cookies.get("refresh_token"))
         flow_logger.info("refresh token verified.")
     except HTTPException:
         flow_logger.error("Refresh token not found or expired.")

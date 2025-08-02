@@ -5,10 +5,18 @@ Contains the user schema
 """
 from pydantic import BaseModel
 
-class UserMe(BaseModel):
+class User(BaseModel):
+    """
+    User Id
+    """
+    _id: str
+
+class UserMe(User):
     """
     Used for testing
-    Used for responding to /me endpoint
+    Add other fields you want to expose
     """
     username: str
     # email: str  # Add other fields you want to expose
+
+

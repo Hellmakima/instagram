@@ -11,14 +11,11 @@ _Search for `TODO` in all files to see all the todos_
 
 ## High Priority
 
-- get auth-server running
+- make static pages and test auth-server
 - get resource-server running
-- test it on nginx
 - add a simple user profile page and start looking into how to implement it.
-  - DB, session, etc
-    or
+  - DB schema, etc
 - go with email verification and password reset
-- decide DB struct and indexes
 
 ## Research
 

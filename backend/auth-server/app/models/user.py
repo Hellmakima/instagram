@@ -46,6 +46,7 @@ class UserBase(BaseModel):
         return v
 
 class UserCreate(UserBase): # same can be used for update user.
+    #TODO: _id: str = Field(default=uuid.uuid4().hex, description="Unique ID of the user")
     email: str = Field(..., description="Email of the user")
     password: str = Field(..., description="Raw password (will be hashed)")
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="Timestamp of user creation")

@@ -13,11 +13,11 @@ class UserCreate(BaseModel):
     password: str = Field(..., description="Password of the user")
 
 class LoginForm(BaseModel):
-    username_or_email: str = Field(..., description="Username of the user")
+    username_or_email: str = Field(..., description="Username or email of the user")
     password: str = Field(..., description="Password of the user")
 
 class TokenData(BaseModel):
-    username: str = Field(..., description="Username of the user")
+    _id: str = Field(..., description="Username of the user")
 
 class SuccessMessageResponse(BaseModel):
     success: bool = True
@@ -29,7 +29,7 @@ class ErrorDetail(BaseModel):
 
 class APIErrorResponse(BaseModel):
     success: bool = False
-    message: str
+    message: str = Field("Error", description="Message of the response")
     error: Optional[ErrorDetail] = None
 
 
