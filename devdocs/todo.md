@@ -30,6 +30,7 @@ _Search for `TODO` in all files to see all the todos_
 
 - need a good blacklist/rotation strategy for refresh tokens
   - Mongo TTL index maybe
+- redo cookie setting, add samesite, httponly, secure, path, domain, etc
 - make a index page to list all the endpoints
 - add password related stuff [change password, forgot password, reset password]
 - add user related stuff [create user, delete user, update user]

@@ -9,6 +9,11 @@ from typing import Optional
 
 class UserCreate(BaseModel):
     username: str = Field(..., description="Username of the user")
+    email: str = Field(..., description="Email of the user")
+    password: str = Field(..., description="Password of the user")
+
+class LoginForm(BaseModel):
+    username_or_email: str = Field(..., description="Username of the user")
     password: str = Field(..., description="Password of the user")
 
 class TokenData(BaseModel):
@@ -27,10 +32,18 @@ class APIErrorResponse(BaseModel):
     message: str
     error: Optional[ErrorDetail] = None
 
-class RefreshUser(BaseModel):
-    refresh_token: str = Field(..., description="Refresh token")
-    token_type: str = Field("Bearer", description="Type of token")
 
-class LogoutRequest(BaseModel):
-    refresh_token: str
-    token_type: str
+# Response schema
+from fastapi import HTTPException, status
+class InternalServerError(HTTPException):
+    def __init__(self, details: str = "An unexpected server error occurred."):
+        super().__init__(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=APIErrorResponse(
+                message="An unexpected server error occurred.",
+                error=ErrorDetail(
+                    code="INTERNAL_SERVER_ERROR",
+                    details=details
+                )
+            ).model_dump()
+        )

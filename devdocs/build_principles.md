@@ -36,11 +36,12 @@ Standard responses:
 {
   "success": true,
   "message": "Post created successfully", // some simple message
-  "data": { // all the data you want to return, changes based on the request
+  "data": {
+    // all the data you want to return, changes based on the request
     "post_id": "abcd1234",
     "title": "Midnight Chai",
     "created_at": "2025-06-23T15:35:00Z"
-  },
+  }
   // "timestamp": "2025-06-23T15:35:00Z" // optional
 }
 ```
@@ -51,10 +52,11 @@ error responses:
 {
   "success": false,
   "message": "User not found", // explanation of the error
-  "error": { // more details about the error, optional
+  "error": {
+    // more details about the error, optional
     "code": "FIELD_MISSING", // error code, used by the frontend to show the right error message
     "details": "Missing field 'email'." // explanation of the error
-  },
+  }
   // "timestamp": "2025-06-23T15:30:00Z" //datetime.utcnow().isoformat()
 }
 ```
@@ -178,6 +180,11 @@ sequenceDiagram
         Frnt->>Frnt: Redirect to Login/Home Page
     end
 ```
+
+## Deletion
+
+- We believe in soft deletion. but that is a pain to implement.
+- on deletion, delete personal identifying information (PII) like username and email after a set period of time (e.g., 6 months).
 
 ## Database
 
