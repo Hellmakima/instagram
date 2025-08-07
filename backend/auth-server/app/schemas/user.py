@@ -9,7 +9,7 @@ class User(BaseModel):
     """
     User Id
     """
-    _id: str
+    id: str
 
 class UserMe(User):
     """

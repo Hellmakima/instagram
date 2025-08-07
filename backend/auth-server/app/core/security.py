@@ -49,7 +49,7 @@ def create_access_token(
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data._id, "type": "Bearer"}
+    to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
     # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
@@ -64,7 +64,7 @@ def create_refresh_token(
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data._id, "type": "Bearer"}
+    to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
 
@@ -117,40 +117,44 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
         flow_logger.error("Error verifying token")
         raise credentials_exception
 
-
-async def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: AsyncIOMotorDatabase = Depends(get_db)
-) -> UserMe:
-    # TODO: Decide if I really get_current_user() or repurpose it.
-    flow_logger.info("in get_current_user")
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
+# async def get_current_user(
+'''
+# TODO: rework on this
+- no need to verify token here
+- look up what is `token: str = Depends(oauth2_scheme)`
+'''
+#     token: str = Depends(oauth2_scheme),
+#     db: AsyncIOMotorDatabase = Depends(get_db)
+# ) -> UserMe:
+#     # TODO: Decide if I really get_current_user() or repurpose it.
+#     flow_logger.info("in get_current_user")
+#     credentials_exception = HTTPException(
+#         status_code=status.HTTP_401_UNAUTHORIZED,
+#         detail="Could not validate credentials",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
     
-    try:
-        user = verify_token(token)
-        if not user:
-            raise credentials_exception
-    except HTTPException as e:
-        flow_logger.error("Error verifying token: %s", str(e))
-        # Re-raise any HTTPExceptions from verify_token
-        raise e
-    except JWTError:
-        flow_logger.error("Error verifying token")
-        raise credentials_exception
-    user_data = await users_col(db).find_one(
-        {"_id": user._id},
-        projection={"_id": 1, "username": 1}
-    )
-    if not user_data:
-        flow_logger.error("User not found in DB")
-        raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="User not found",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    return UserMe(**user_data)
+#     try:
+#         user = verify_token(token)
+#         if not user:
+#             raise credentials_exception
+#     except HTTPException as e:
+#         flow_logger.error("Error verifying token: %s", str(e))
+#         # Re-raise any HTTPExceptions from verify_token
+#         raise e
+#     except JWTError:
+#         flow_logger.error("Error verifying token")
+#         raise credentials_exception
+#     user_data = await users_col(db).find_one(
+#         {"_id": user.id},
+#         projection={"_id": 1, "username": 1}
+#     )
+#     if not user_data:
+#         flow_logger.error("User not found in DB")
+#         raise HTTPException(
+#         status_code=status.HTTP_404_NOT_FOUND,
+#         detail="User not found",
+#         headers={"WWW-Authenticate": "Bearer"},
+#     )
+#     return UserMe(**user_data)
 

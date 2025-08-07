@@ -15,7 +15,7 @@ from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
-    get_current_user,
+    # get_current_user,
     verify_password,
     verify_token,
 )
@@ -30,7 +30,7 @@ from app.schemas.auth import (
     TokenData,
     UserCreate,
 )
-from app.models.user import UserCreate as UserCreateModel
+
 from app.core.csrf import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 
@@ -38,6 +38,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.db.db import get_db
 from app.db.collections import users_col, refresh_tokens_col
 
+from pydantic import ValidationError
 import logging
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
@@ -124,17 +125,7 @@ async def register(
         flow_logger.error("Database error during user existence check: %s", str(e))
         raise InternalServerError()
 
-    try:
-        user_doc = await UserCreateModel(
-            username=form_data.username,
-            password=form_data.password,
-            email=form_data.email
-        ).doc()
-    except HTTPException:
-        raise
-    except Exception as e:
-        flow_logger.error("Error creating user model: %s", str(e))
-        raise InternalServerError()
+    user_doc = await form_data.doc()
 
     # TODO: add email verification
     # currently, users are set as unverified, need to verify them manually
@@ -167,7 +158,7 @@ async def register(
         flow_logger.error("User record not found immediately after successful insert for username: %s", form_data.username)
         raise InternalServerError()
 
-    security_logger.info("User '%s' registered successfully.", rec["username"])
+    security_logger.info("New user registered successfully with id '%s'.", rec["_id"])
     csrf_protect.unset_csrf_cookie(response)
 
     # Return success response
@@ -209,7 +200,7 @@ async def login_user(
                 {"username": form_data.username_or_email},
                 {"email": form_data.username_or_email}
             ]}, 
-            projection={"_id": -1, "hashed_password": 1, "username": 1, "is_deleted": 1, "is_blocked": 1, "is_verified": 1}
+            projection={"_id": -1, "hashed_password": 1, "is_deleted": 1, "is_blocked": 1, "is_verified": 1}
         )
     except Exception as e:
         flow_logger.error("Error fetching user from DB: %s", str(e))
@@ -258,7 +249,7 @@ async def login_user(
         )
 
     # Generate authentication tokens and set cookie
-    tok_data = TokenData(username=rec["username"])
+    tok_data = TokenData(id=rec["_id"])
     access_token = create_access_token(tok_data)
     refresh_token = create_refresh_token(tok_data)
 
@@ -307,7 +298,7 @@ async def login_user(
 
     csrf_protect.unset_csrf_cookie(response)
 
-    security_logger.info("User '%s' logged in successfully.", rec["username"])
+    security_logger.info("User '%s' logged in successfully.", rec["_id"])
 
     # Return success response
     return SuccessMessageResponse(
@@ -342,7 +333,7 @@ async def logout_user(
         raise
 
     try:
-        verify_token(request.cookies.get("access_token"), token_type="access")
+        user = verify_token(request.cookies.get("access_token"), token_type="access")
         flow_logger.info("auth token verified.")
     except Exception as e:
         flow_logger.error("Error verifying auth token: %s", str(e))
@@ -358,6 +349,8 @@ async def logout_user(
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
     csrf_protect.unset_csrf_cookie(response)
+
+    security_logger.info("User '%s' logged out successfully.", user.id)
 
     return SuccessMessageResponse(
         message="Logout successful."
@@ -389,7 +382,7 @@ async def refresh_access_token(
         raise
 
     try:
-        username = get_current_user(request.cookies.get("refresh_token"))
+        user = verify_token(request.cookies.get("access_token"), token_type="access")
         flow_logger.info("refresh token verified.")
     except HTTPException:
         flow_logger.error("Refresh token not found or expired.")
@@ -411,8 +404,8 @@ async def refresh_access_token(
             )
     except Exception as e:
         flow_logger.error("Error checking refresh token: %s", str(e))
-        raise InternalServerError()
-
+        # TODO: see is an error should be raised here
+        # raise InternalServerError()
 
     try:
         await refresh_tokens_col(db).update_one(
@@ -421,12 +414,14 @@ async def refresh_access_token(
         )
     except Exception as e:
         flow_logger.error("Error revoking refresh token: %s", str(e))
-        raise InternalServerError()
+        # TODO: see is an error should be raised here
+        # raise InternalServerError()
     
-    new_access_token = create_access_token(TokenData(username=request.cookies.get("username")))
-    new_refresh_token = create_refresh_token(TokenData(username=request.cookies.get("username")))
+    tokenData = TokenData(id=user.id)
+    new_access_token = create_access_token(tokenData)
+    new_refresh_token = create_refresh_token(tokenData)
 
-    # Set the refresh token as an HttpOnly cookie
+    # Set the new tokens
     response = Response(content=new_access_token, media_type="text/plain")
     response.set_cookie(
         key="access_token",
@@ -448,5 +443,5 @@ async def refresh_access_token(
     csrf_protect.unset_csrf_cookie(response)
     
     return SuccessMessageResponse(
-        message="Token refreshed."
+        message="Token refreshed successfully."
     )

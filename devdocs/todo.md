@@ -11,6 +11,8 @@ _Search for `TODO` in all files to see all the todos_
 
 ## High Priority
 
+- add flow logging
+- check type errors with type checker
 - make static pages and test auth-server
 - get resource-server running
 - add a simple user profile page and start looking into how to implement it.
