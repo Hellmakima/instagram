@@ -65,10 +65,7 @@ app.add_exception_handler(CsrfProtectError, csrf_exception_handler)
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 from fastapi import status, Request
-from app.schemas.auth import (
-    APIErrorResponse,
-    ErrorDetail,
-)
+from app.schemas.auth import APIErrorResponse
 from pydantic import ValidationError
 # This is the custom exception handler. It catches all RequestValidationError instances.
 @app.exception_handler(ValidationError)
@@ -78,19 +75,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     loc = ".".join(map(str, error_detail["loc"]))
     msg = error_detail["msg"]
 
-    # Construct your custom error response
-    response_body = APIErrorResponse(
-        message=f"Validation failed for field: {loc}",
-        error=ErrorDetail(
-            code="VALIDATION_ERROR",
-            details=f"An error occurred: {msg}"
-        )
-    )
-
-    # Return a JSONResponse with your custom body and the 422 status code
-    return JSONResponse(
+    return APIErrorResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder(response_body),
+        message=f"Validation failed for field: {loc}",
+        code="VALIDATION_ERROR",
+        details=f"An error occurred: {msg}"
     )
 
 app.include_router(router)

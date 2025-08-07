@@ -20,16 +20,13 @@ from app.core.security import (
     verify_token,
 )
 from app.schemas.auth import (
-    # LogoutRequest,
-    # RefreshUser,
     APIErrorResponse,
-    ErrorDetail,
-    InternalServerError,
     LoginForm,
     SuccessMessageResponse,
     TokenData,
     UserCreate,
 )
+from app.services.user_service import prepare_user_for_db
 
 from app.core.csrf import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
@@ -38,7 +35,6 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.db.db import get_db
 from app.db.collections import users_col, refresh_tokens_col
 
-from pydantic import ValidationError
 import logging
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
@@ -109,23 +105,19 @@ async def register(
         ):
             flow_logger.info("Registration failed: User with provided username or email already exists.")
             # Do NOT specify which field is taken.
-            raise HTTPException(
+            raise APIErrorResponse(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=APIErrorResponse(
-                    message="Username or email is already in use",
-                    error=ErrorDetail(
-                        code="USER_EXISTS",
-                        details="An account with this username or email already exists."
-                    )
-                ).model_dump()
+                message="Username or email is already in use",
+                code="USER_EXISTS",
+                details="An account with this username or email already exists."
             )
     except HTTPException:
         raise
     except Exception as e:
         flow_logger.error("Database error during user existence check: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
 
-    user_doc = await form_data.doc()
+    user_doc = await prepare_user_for_db(form_data)
 
     # TODO: add email verification
     # currently, users are set as unverified, need to verify them manually
@@ -152,11 +144,11 @@ async def register(
         flow_logger.info("User record fetched successfully.")
     except Exception as e:
         flow_logger.error("Database error during user save/fetch: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
 
     if not rec:
         flow_logger.error("User record not found immediately after successful insert for username: %s", form_data.username)
-        raise InternalServerError()
+        raise APIErrorResponse()
 
     security_logger.info("New user registered successfully with id '%s'.", rec["_id"])
     csrf_protect.unset_csrf_cookie(response)
@@ -204,7 +196,7 @@ async def login_user(
         )
     except Exception as e:
         flow_logger.error("Error fetching user from DB: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
     if rec:
         is_password_valid = await verify_password(form_data.password, rec.get("hashed_password"))
 
@@ -228,24 +220,20 @@ async def login_user(
         flow_logger.info(
             "Failed login attempt for user '%s'. IP: %s", 
             form_data.username_or_email,
-            # request.client.host # Assuming you've fixed the TODO
+            request.client.host if request.client else "unknown"
             # TODO: implement this to add IP address of client. gets complicated if using reverse proxy
         )
         security_logger.warning(
             "Failed login attempt for user '%s'. IP: %s", 
             form_data.username_or_email,
-            request.client.host # Assuming you've fixed the TODO
+            request.client.host if request.client else "unknown"
             # TODO: implement this to add IP address of client. gets complicated if using reverse proxy
         )
-        raise HTTPException(
+        raise APIErrorResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=APIErrorResponse(
-                message="Invalid credentials",
-                error=ErrorDetail(
-                    code="INVALID_CREDENTIALS",
-                    details="Invalid username, password, or account status."
-                )
-            ).model_dump()
+            message="Invalid credentials",
+            code="INVALID_CREDENTIALS",
+            details="Invalid username, password, or account status."
         )
 
     # Generate authentication tokens and set cookie
@@ -270,7 +258,7 @@ async def login_user(
         })
     except Exception as e:
         flow_logger.error("Error saving refresh token to DB: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
 
     
     # Set the refresh token as an HttpOnly cookie
@@ -280,7 +268,7 @@ async def login_user(
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60, # max_age in seconds
         httponly=True,       # Prevents client-side JavaScript access
         secure=True,         # Only send over HTTPS (essential in production)
-        samesite="Lax",      # Helps prevent CSRF. "Lax" is a good default.
+        samesite="lax",      # Helps prevent CSRF. "lax" is a good default.
         # TODO: add domain and path
         # domain="yourdomain.com", # Uncomment and set if needed for cross-subdomain
         # path="/"             # Default, usually not needed unless restricting paths
@@ -293,7 +281,7 @@ async def login_user(
         max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60,
         httponly=True,
         secure=True,
-        samesite="Lax",
+        samesite="lax",
     )
 
     csrf_protect.unset_csrf_cookie(response)
@@ -333,17 +321,25 @@ async def logout_user(
         raise
 
     try:
-        user = verify_token(request.cookies.get("access_token"), token_type="access")
+        token = request.cookies.get("access_token")
+        if token is None:
+            raise APIErrorResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                message="Invalid credentials",
+                code="INVALID_CREDENTIALS",
+                details="Invalid access token."
+            )
+        user = verify_token(token=token, token_type="access")
         flow_logger.info("auth token verified.")
     except Exception as e:
         flow_logger.error("Error verifying auth token: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
     
     try:
         await refresh_tokens_col(db).delete_one({"refresh_token": request.cookies.get("refresh_token")})
     except Exception as e:
         flow_logger.error("Error deleting refresh token: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
 
     # Unset the refresh token cookie
     response.delete_cookie("access_token")
@@ -382,14 +378,22 @@ async def refresh_access_token(
         raise
 
     try:
-        user = verify_token(request.cookies.get("access_token"), token_type="access")
+        token = request.cookies.get("access_token")
+        if token is None:
+            raise APIErrorResponse(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                message="Invalid credentials",
+                code="INVALID_CREDENTIALS",
+                details="Invalid access token."
+            )
+        user = verify_token(token=token, token_type="access")
         flow_logger.info("refresh token verified.")
     except HTTPException:
         flow_logger.error("Refresh token not found or expired.")
         raise
     except Exception as e:
         flow_logger.error("Error verifying refresh token: %s", str(e))
-        raise InternalServerError()
+        raise APIErrorResponse()
     
     try:
         if not await refresh_tokens_col(db).find_one({
@@ -429,7 +433,7 @@ async def refresh_access_token(
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         httponly=True, 
         secure=True,
-        samesite="Lax", 
+        samesite="lax", 
     )
     response.set_cookie(
         key="refresh_token",
@@ -437,7 +441,7 @@ async def refresh_access_token(
         max_age=settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60,
         httponly=True,
         secure=True,
-        samesite="Lax",
+        samesite="lax",
     )
 
     csrf_protect.unset_csrf_cookie(response)

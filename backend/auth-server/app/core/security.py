@@ -15,7 +15,7 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
-from app.schemas.auth import APIErrorResponse, ErrorDetail, TokenData
+from app.schemas.auth import APIErrorResponse, TokenData
 from app.core.config import settings
 
 from app.db.db import get_db
@@ -42,13 +42,9 @@ async def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     data: TokenData,
-    expires_delta: timedelta = None
 ) -> str:
     flow_logger.info("in create_access_token")
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
     # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
@@ -57,13 +53,9 @@ def create_access_token(
 
 def create_refresh_token(
     data: TokenData,
-    expires_delta: timedelta = None
 ) -> str:
     flow_logger.info("in create_refresh_token")
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
@@ -85,33 +77,25 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
         if decoded_token["type"] != token_type:
             flow_logger.error("Invalid token type: %s", decoded_token["type"])
             raise credentials_exception
-        return TokenData(decoded_token["sub"])
+        return TokenData(id=decoded_token["sub"])
     except HTTPException as e:
         flow_logger.error("Error verifying token: %s", str(e))
         raise
     except ExpiredSignatureError:
         flow_logger.error("Token expired")
-        raise HTTPException(
+        raise APIErrorResponse(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail=APIErrorResponse(
-                message="Token expired",
-                error=ErrorDetail(
-                    code="TOKEN_EXPIRED",
-                    details="Token expired"
-                )
-            ).model_dump()
+            message="Token expired",
+            code="TOKEN_EXPIRED",
+            details="Token expired"
         )
     except JWTClaimsError as e:
         flow_logger.error("Invalid claims: %s", str(e))
-        raise HTTPException(
+        raise APIErrorResponse(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail=APIErrorResponse(
-                message="Invalid claims",
-                error=ErrorDetail(
-                    code="INVALID_CLAIMS",
-                    details=f"Invalid claims: {e}"
-                )
-            ).model_dump()
+            message="Invalid claims",
+            code="INVALID_CLAIMS",
+            details=f"Invalid claims: {e}"
         )
     except JWTError:
         flow_logger.error("Error verifying token")

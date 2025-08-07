@@ -20,13 +20,13 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(1, description="Access Token Expire Minutes")
 
     REFRESH_TOKEN_EXPIRE_DAYS: int = Field(30, description="Refresh Token Expire Days")
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(None, description="Refresh Token Expire Minutes")
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(..., description="Refresh Token Expire Minutes")
 
     @field_validator('REFRESH_TOKEN_EXPIRE_MINUTES', mode='before')
     @classmethod
     def set_refresh_minutes(cls, v, info):
         days = info.data.get('REFRESH_TOKEN_EXPIRE_DAYS', 30)
-        return days * 24 * 60 if v is None else v
+        return days * 24 * 60
 
     class Config:
         env_file = ".env"  # Load from .env file

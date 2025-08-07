@@ -20,7 +20,7 @@ async def get_db(request: Request) -> AsyncIOMotorDatabase:
     Usage: Depends(get_db)
     """
     return request.app.state.client[settings.MONGODB_DB]
-
+'''
 async def test_db_connection():
     """
     Async test: insert, query, delete.
@@ -52,3 +52,4 @@ async def test_db_connection():
 
 if __name__ == "__main__":
     asyncio.run(test_db_connection())
+'''
