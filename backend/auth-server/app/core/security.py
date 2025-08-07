@@ -15,7 +15,7 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
-from app.schemas.auth import APIErrorResponse, TokenData
+from app.schemas.auth import APIErrorResponse, ErrorDetail, TokenData
 from app.core.config import settings
 
 from app.db.db import get_db
@@ -83,19 +83,27 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
         raise
     except ExpiredSignatureError:
         flow_logger.error("Token expired")
-        raise APIErrorResponse(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            message="Token expired",
-            code="TOKEN_EXPIRED",
-            details="Token expired"
+            detail=APIErrorResponse(
+                message="Token expired",
+                error=ErrorDetail(
+                    code="TOKEN_EXPIRED",
+                    details="Token expired"
+                )
+            ).model_dump()
         )
     except JWTClaimsError as e:
         flow_logger.error("Invalid claims: %s", str(e))
-        raise APIErrorResponse(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, 
-            message="Invalid claims",
-            code="INVALID_CLAIMS",
-            details=f"Invalid claims: {e}"
+            detail=APIErrorResponse(
+                message="Invalid claims",
+                error=ErrorDetail(
+                    code="INVALID_CLAIMS",
+                    details=f"Invalid claims: {e}"
+                )
+            ).model_dump()
         )
     except JWTError:
         flow_logger.error("Error verifying token")

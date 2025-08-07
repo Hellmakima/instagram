@@ -6,7 +6,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from pydantic_settings import BaseSettings
 import dotenv
-from app.schemas.auth import APIErrorResponse
+from app.schemas.auth import InternalServerError
 
 import logging
 security_logger = logging.getLogger("security_logger")
@@ -16,7 +16,7 @@ class CsrfSettings(BaseSettings):
     secret_key: str|None = dotenv.dotenv_values(".env")["CSRF_SECRET"]
     if secret_key is None:
         security_logger.error("CSRF secret key not found in .env file.")
-        raise APIErrorResponse()
+        raise InternalServerError()
     cookie_samesite: str = "lax"
     cookie_secure: bool = False # HTTPS only
     header_name: str = "X-CSRF-Token"

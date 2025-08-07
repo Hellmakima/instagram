@@ -67,32 +67,25 @@ class SuccessMessageResponse(BaseModel):
     message: str = Field("Success", description="Message of the response")
     data: Optional[dict] = {}
 
+class ErrorDetail(BaseModel):
+    code: str = Field(default="UNKNOWN_ERROR", description="Error code")
+    details: str = Field(default="No details provided", description="Details of the error")
 
-class APIErrorResponse(HTTPException):
-    '''
-    This is a custom exception class for APIErrorResponses.
-    It implements standard REST API error responses.
-    # TODO: put this somewhere else
-    '''
-    def __init__(
-        self, 
-        status_code: int=status.HTTP_500_INTERNAL_SERVER_ERROR, 
-        message: str="An unexpected server error occurred.",
-        details: str="No details provided",
-        code: str="UNKNOWN_ERROR",
-    ):
-        self.status_code = status_code
-        self.message = message
-        self.code = code
-        self.detail = details
+class APIErrorResponse(BaseModel):
+    success: bool = Field(default=False, description="Indicates failure")
+    message: str = Field(default="Error", description="Message of the response")
+    error: Optional[ErrorDetail] = None
+
+class InternalServerError(HTTPException):
+    def __init__(self, details: str = "An unexpected server error occurred."):
+        error_response = APIErrorResponse(
+            message="An unexpected server error occurred.",
+            error=ErrorDetail(
+                code="INTERNAL_SERVER_ERROR",
+                details=details
+            )
+        )
         super().__init__(
-            status_code=status_code,
-            detail={
-                "success": False,
-                "message": message,
-                "error": {
-                    "code": code,
-                    "details": details
-                }
-            }
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=error_response.model_dump()
         )

@@ -16,11 +16,11 @@ class Settings(BaseSettings):
     CSRF_SECRET: str = Field(..., description="CSRF Secret")
     
     JWT_SECRET_KEY: str = Field(..., description="JWT Secret Key")
-    JWT_ALGORITHM: str = Field("HS256", description="JWT Algorithm")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(1, description="Access Token Expire Minutes")
+    JWT_ALGORITHM: str = Field(..., description="JWT Algorithm")
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(..., description="Access Token Expire Minutes")
 
-    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(30, description="Refresh Token Expire Days")
-    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(..., description="Refresh Token Expire Minutes")
+    REFRESH_TOKEN_EXPIRE_DAYS: int = Field(..., description="Refresh Token Expire Days")
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = Field(1, description="Refresh Token Expire Minutes")
 
     @field_validator('REFRESH_TOKEN_EXPIRE_MINUTES', mode='before')
     @classmethod

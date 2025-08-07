@@ -21,6 +21,8 @@ from app.core.security import (
 )
 from app.schemas.auth import (
     APIErrorResponse,
+    ErrorDetail,
+    InternalServerError,
     LoginForm,
     SuccessMessageResponse,
     TokenData,
@@ -105,17 +107,21 @@ async def register(
         ):
             flow_logger.info("Registration failed: User with provided username or email already exists.")
             # Do NOT specify which field is taken.
-            raise APIErrorResponse(
+            raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                message="Username or email is already in use",
-                code="USER_EXISTS",
-                details="An account with this username or email already exists."
+                detail=APIErrorResponse(
+                    message="Username or email is already in use",
+                    error=ErrorDetail(
+                        code="USER_EXISTS",
+                        details="An account with this username or email already exists."
+                    )
+                ).model_dump()
             )
     except HTTPException:
         raise
     except Exception as e:
         flow_logger.error("Database error during user existence check: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
 
     user_doc = await prepare_user_for_db(form_data)
 
@@ -144,11 +150,11 @@ async def register(
         flow_logger.info("User record fetched successfully.")
     except Exception as e:
         flow_logger.error("Database error during user save/fetch: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
 
     if not rec:
         flow_logger.error("User record not found immediately after successful insert for username: %s", form_data.username)
-        raise APIErrorResponse()
+        raise InternalServerError()
 
     security_logger.info("New user registered successfully with id '%s'.", rec["_id"])
     csrf_protect.unset_csrf_cookie(response)
@@ -196,7 +202,8 @@ async def login_user(
         )
     except Exception as e:
         flow_logger.error("Error fetching user from DB: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
+    is_password_valid = False
     if rec:
         is_password_valid = await verify_password(form_data.password, rec.get("hashed_password"))
 
@@ -229,11 +236,15 @@ async def login_user(
             request.client.host if request.client else "unknown"
             # TODO: implement this to add IP address of client. gets complicated if using reverse proxy
         )
-        raise APIErrorResponse(
+        raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            message="Invalid credentials",
-            code="INVALID_CREDENTIALS",
-            details="Invalid username, password, or account status."
+            detail=APIErrorResponse(
+                message="Invalid credentials",
+                error=ErrorDetail(
+                    code="INVALID_CREDENTIALS",
+                    details="Invalid username, password, or account status."
+                )
+            ).model_dump()
         )
 
     # Generate authentication tokens and set cookie
@@ -258,7 +269,7 @@ async def login_user(
         })
     except Exception as e:
         flow_logger.error("Error saving refresh token to DB: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
 
     
     # Set the refresh token as an HttpOnly cookie
@@ -323,23 +334,27 @@ async def logout_user(
     try:
         token = request.cookies.get("access_token")
         if token is None:
-            raise APIErrorResponse(
+            raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                message="Invalid credentials",
-                code="INVALID_CREDENTIALS",
-                details="Invalid access token."
+                detail=APIErrorResponse(
+                    message="Invalid credentials",
+                    error=ErrorDetail(
+                        code="INVALID_CREDENTIALS",
+                        details="Invalid access token."
+                    )
+                ).model_dump()
             )
         user = verify_token(token=token, token_type="access")
         flow_logger.info("auth token verified.")
     except Exception as e:
         flow_logger.error("Error verifying auth token: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
     
     try:
         await refresh_tokens_col(db).delete_one({"refresh_token": request.cookies.get("refresh_token")})
     except Exception as e:
         flow_logger.error("Error deleting refresh token: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
 
     # Unset the refresh token cookie
     response.delete_cookie("access_token")
@@ -380,11 +395,15 @@ async def refresh_access_token(
     try:
         token = request.cookies.get("access_token")
         if token is None:
-            raise APIErrorResponse(
+            raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                message="Invalid credentials",
-                code="INVALID_CREDENTIALS",
-                details="Invalid access token."
+                detail=APIErrorResponse(
+                    message="Invalid credentials",
+                    error=ErrorDetail(
+                        code="INVALID_CREDENTIALS",
+                        details="Invalid access token."
+                    )
+                ).model_dump()
             )
         user = verify_token(token=token, token_type="access")
         flow_logger.info("refresh token verified.")
@@ -393,7 +412,7 @@ async def refresh_access_token(
         raise
     except Exception as e:
         flow_logger.error("Error verifying refresh token: %s", str(e))
-        raise APIErrorResponse()
+        raise InternalServerError()
     
     try:
         if not await refresh_tokens_col(db).find_one({
