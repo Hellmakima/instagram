@@ -29,10 +29,10 @@ async def root():
         "/csrf-token", 
         response_class=JSONResponse
 )
-async def get_csrf_token(
+async def generate_csrf_token(
     csrf_protect: CsrfProtect = Depends(),
 ):
-    csrf_token, signed_token = csrf_protect.get_csrf_token()
+    csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     response = JSONResponse(
         status_code=200,
         content={"csrf_token": csrf_token}

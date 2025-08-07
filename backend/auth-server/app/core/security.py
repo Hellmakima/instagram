@@ -42,13 +42,9 @@ async def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     data: TokenData,
-    expires_delta: timedelta = None
 ) -> str:
     flow_logger.info("in create_access_token")
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
     # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
@@ -57,13 +53,9 @@ def create_access_token(
 
 def create_refresh_token(
     data: TokenData,
-    expires_delta: timedelta = None
 ) -> str:
     flow_logger.info("in create_refresh_token")
-    if expires_delta:
-        expire = datetime.now(timezone.utc) + expires_delta
-    else:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
@@ -85,7 +77,7 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
         if decoded_token["type"] != token_type:
             flow_logger.error("Invalid token type: %s", decoded_token["type"])
             raise credentials_exception
-        return TokenData(decoded_token["sub"])
+        return TokenData(id=decoded_token["sub"])
     except HTTPException as e:
         flow_logger.error("Error verifying token: %s", str(e))
         raise

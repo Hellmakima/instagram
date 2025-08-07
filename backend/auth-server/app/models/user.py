@@ -4,6 +4,13 @@
 Contains the user model. Describe Database Schemas for backend DB server
 I'm using it for data validation
 """
+
+"""
+Pydantic models here raise ValueError or ValidationError exceptions, which are caught by the custom exception handler in app/main.py (RequestValidationError) or send custom HTTPExceptions to the frontend.
+
+Ideally, no validation should be done here. Validation should be done only for data received from the frontend.
+I used Pydantic just because, also it nicely defines the data structure of the DB inserts.
+"""
 # from fastapi import HTTPException, status
 # from pydantic import BaseModel, Field, field_validator
 # from datetime import datetime, timezone
