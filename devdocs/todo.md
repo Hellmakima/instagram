@@ -11,13 +11,9 @@ _Search for `TODO` in all files to see all the todos_
 
 ## High Priority
 
-- add flow logging
-- check type errors with type checker
-- make static pages and test auth-server
-- get resource-server running
+- get resource-server running.
 - add a simple user profile page and start looking into how to implement it.
-  - DB schema, etc
-- go with email verification and password reset
+  - DB schema, user images, etc
 
 ## Research
 
@@ -27,48 +23,44 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Medium Priority
 
-- need a good blacklist/rotation strategy for refresh tokens
-  - Mongo TTL index maybe
-- redo cookie setting, add samesite, httponly, secure, path, domain, etc
-- make a index page to list all the endpoints
-- add password related stuff [change password, forgot password, reset password]
-- add user related stuff [create user, delete user, update user]
+- email verification
+- Add Mongo TTL for refresh tokens
+- redo cookie setting, add samesite, httponly, secure, path, domain, etc once respective frontend is done.
+- add password related endpoints [change password, forgot password, reset password]
+- add user related endpoints [create user, delete user, update user]
 - Require re-authentication for key operations (email changes, MFA toggles).
-- implement rate-limiting, lockouts, CAPTCHA, MFA.
-- add user-specific endpoints
-  - get user info
-  - block user
-  - unblock user
-  - delete user
-  - update user
-    - update user password
-    - update user data
+- lockouts, CAPTCHA, MFA.
+
+## Low Priority
+
 - setup nginx
-
-  - rate limiting
-  - route with subdomains
-  - add CORS headers
-
   ```
     if host.startswith("auth."):
         "http://127.0.0.1:5001"
     elif host.startswith("api."):
         "http://127.0.0.1:5002"
   ```
-
+  - rate limiting
+  - route with subdomains
+  - add CORS headers
   - other things that nginx can do:
     - SSL termination
-    - rate limiting
     - static file serving
-    - basic reverse proxying
-    - basic cors headers
     - load balancing
     - caching
 
-## Low Priority
+## Ocassionally
 
-- Store refresh tokens server-side (in DB). Add blacklisting logic to refresh tokens on logout and stuff
-  - add req logs for imp endpoints with source IP
+- search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
+- update requirements.txt
+
+## Eventually
+
+- set refresh tokens only if user wants to
+- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
+- use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during load testing. This will show you exactly which lines of code are consuming the most CPU time.
+- For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX, etc.) to handle all the traffic.
+- Use Redis insted of get_current_user() if that becomes a bottleneck.
 
 ## Before Deployment
 
@@ -80,17 +72,3 @@ _Search for `TODO` in all files to see all the todos_
   - refer [Youtube](youtube.com/watch?v=DQdB7wFEygo)
 - test on wsl
 - deploy!!! Even temporarily, just do it
-
-## Ocassionally
-
-- search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
-
-## Eventually
-
-- I use models dir for validation. mabe fix this
-- set up a common page for 404 page not found (do it in the frontend)
-- set refresh tokens only if user wants to
-- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
-- use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during a login request. This will show you exactly which lines of code are consuming the most CPU time
-- For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX,
-- Use Redis insted of get_current_user() if that becomes a bottleneck.

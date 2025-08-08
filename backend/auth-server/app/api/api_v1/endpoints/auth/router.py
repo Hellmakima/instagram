@@ -40,6 +40,7 @@ from app.db.collections import users_col, refresh_tokens_col
 import logging
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
+db_logger = logging.getLogger("app_db")
 
 router = APIRouter()
 
@@ -145,10 +146,12 @@ async def register(
 
     try:
         res = await users_col(db).insert_one(user_doc)
+        db_logger.info("User record inserted successfully.")
         flow_logger.info("User record inserted successfully.")
         rec = await users_col(db).find_one({"_id": res.inserted_id}, projection={"_id": 1})
         flow_logger.info("User record fetched successfully.")
     except Exception as e:
+        db_logger.error("Database error during user save/fetch: %s", str(e))
         flow_logger.error("Database error during user save/fetch: %s", str(e))
         raise InternalServerError()
 
@@ -200,12 +203,14 @@ async def login_user(
             ]}, 
             projection={"_id": -1, "hashed_password": 1, "is_deleted": 1, "is_blocked": 1, "is_verified": 1}
         )
+        flow_logger.info("Fetched user record: %s", str(rec))
     except Exception as e:
         flow_logger.error("Error fetching user from DB: %s", str(e))
         raise InternalServerError()
     is_password_valid = False
     if rec:
         is_password_valid = await verify_password(form_data.password, rec.get("hashed_password"))
+        flow_logger.info("Password verification result: %s", str(is_password_valid))
 
     # Generic check for ALL failure conditions to prevent user enumeration
     # TODO: maybe separate this based on condition, Gemini says it's a risk to leak this.
@@ -225,9 +230,10 @@ async def login_user(
         '''
         # request.headers.get("x-forwarded-for", request.client.host)
         flow_logger.info(
-            "Failed login attempt for user '%s'. IP: %s", 
+            "Failed login attempt for user '%s'. IP: %s. Details: %s",
             form_data.username_or_email,
-            request.client.host if request.client else "unknown"
+            request.client.host if request.client else "unknown",
+            {"password_valid": is_password_valid, "rec": rec}
             # TODO: implement this to add IP address of client. gets complicated if using reverse proxy
         )
         security_logger.warning(
@@ -253,18 +259,16 @@ async def login_user(
     refresh_token = create_refresh_token(tok_data)
 
     try:
+        # TODO: add TTL in mongoDB
+        '''
+        Token Expiration & Storage:
+        MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
+        Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
+        '''
         await refresh_tokens_col(db).insert_one({
             "user_id": rec["_id"],
             "refresh_token": refresh_token,
             "expires_at": datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
-            # TODO: add TTL in mongoDB
-            '''
-            Token Expiration & Storage:
-
-            MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
-
-            Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
-            '''
             "revoked": False
         })
     except Exception as e:
@@ -351,8 +355,12 @@ async def logout_user(
         raise InternalServerError()
     
     try:
-        await refresh_tokens_col(db).delete_one({"refresh_token": request.cookies.get("refresh_token")})
+        await refresh_tokens_col(db).delete_one({
+            "refresh_token": request.cookies.get("refresh_token")
+        })
+        db_logger.info("Refresh token deleted successfully.")
     except Exception as e:
+        db_logger.error("Error deleting refresh token: %s", str(e))
         flow_logger.error("Error deleting refresh token: %s", str(e))
         raise InternalServerError()
 
@@ -435,7 +443,9 @@ async def refresh_access_token(
             {"refresh_token": request.cookies.get("refresh_token")},
             {"$set": {"revoked": True}}
         )
+        db_logger.info("Refresh token revoked successfully.")
     except Exception as e:
+        db_logger.error("Error revoking refresh token: %s", str(e))
         flow_logger.error("Error revoking refresh token: %s", str(e))
         # TODO: see is an error should be raised here
         # raise InternalServerError()

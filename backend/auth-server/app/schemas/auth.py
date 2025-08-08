@@ -23,9 +23,9 @@ class UserCreate(BaseModel):
         ..., 
         min_length=10,
         max_length=72,
-        description="Raw password (will be hashed)")
+        description="Raw password (will be hashed)"
+    )
     
-    @classmethod
     @field_validator('username')
     def validate_username_characters(cls, v: str) -> str:
         # Allow only alphanumeric characters, periods, underscores, and hyphens.
@@ -34,14 +34,12 @@ class UserCreate(BaseModel):
             raise ValueError("Username must be alphanumeric and can include periods (.), underscores (_), and hyphens (-).")
         return v
 
-    @classmethod
     @field_validator('email')
     def validate_email_domain(cls, v: str) -> str:
         if not v.endswith("@gmail.com"):
             raise ValueError("We currently only support emails from the gmail.com domain.")
         return v
 
-    @classmethod
     @field_validator('password')
     def validate_password_strength(cls, v: str) -> str:
         # Ensure complexity: at least one uppercase, one lowercase, one digit, one special character.
