@@ -11,54 +11,40 @@ to run the app in /backend> uvicorn app.main:app --reload --port 5000
 or hit f5 in vscode
 """
 
-# mongodb connection client
+from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from motor.motor_asyncio import AsyncIOMotorClient
+from contextlib import asynccontextmanager
+
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+
 from app.core.config import settings
-
-# fastapi app
-from fastapi import FastAPI, HTTPException
-from fastapi.exceptions import RequestValidationError
-from fastapi.exception_handlers import request_validation_exception_handler
-
-# csrf protection
 from app.core.csrf import csrf_exception_handler, CsrfProtectError
 from app.api.api_v1.router import router
 
-# startup
-from contextlib import asynccontextmanager
-import app.utils.loggers # initialize loggers
+import app.utils.loggers  # initialize loggers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup
     client = AsyncIOMotorClient(settings.MONGODB_URI)
     app.state.client = client
-    
-    await app.state.client.admin.command("ping")
-    # TODO: Create indexes for all collections
-    db = client.get_database()
-    
-    # this should be done only once.
+    await client.admin.command("ping")
+    # TODO: create indexes once here, e.g.
+    # db = client.get_database()
     # await db.users.create_index("username", unique=True)
-    
     yield
     client.close()
 
 app = FastAPI(lifespan=lifespan, title="Auth Server", version="0.1")
 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_exception_handler(CsrfProtectError, csrf_exception_handler)
 
-# TODO: remove this
-# from fastapi.responses import FileResponse
-# from fastapi.requests import Request
-# from starlette.exceptions import HTTPException as StarletteHTTPException
-
-# @app.exception_handler(StarletteHTTPException)
-# async def custom_404_handler(request: Request, exc: StarletteHTTPException):
-#     if exc.status_code == 404:
-#         return FileResponse("app/static/index.html")
-#     raise exc
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(router)

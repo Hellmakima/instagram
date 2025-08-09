@@ -24,7 +24,12 @@ _Search for `TODO` in all files to see all the todos_
 ## Medium Priority
 
 - email verification
-- Add Mongo TTL for refresh tokens
+- TTL stuff
+  - Add Mongo TTL for refresh tokens
+  - Add TTL for is_blocked
+    - put blocked_till field in user schema and make a service to unblock users every X days.
+  - same for is_deleted
+    - but here the enty moves to a separate collection with PII removed.
 - redo cookie setting, add samesite, httponly, secure, path, domain, etc once respective frontend is done.
 - add password related endpoints [change password, forgot password, reset password]
 - add user related endpoints [create user, delete user, update user]
@@ -53,6 +58,11 @@ _Search for `TODO` in all files to see all the todos_
 
 - search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 - update requirements.txt
+- code review
+  - look for proper logging
+  - error handling
+  - type checking
+  - look for what can be a bottleneck for scalability
 
 ## Eventually
 

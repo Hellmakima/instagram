@@ -1,5 +1,5 @@
 # auth-server/app/api/api_v1/endpoints/auth/router.py
-# Contains /register, /login, /logout, /refresh_token
+# Contains /register, /login, /logout, /refresh_token, also /csrf-token for now
 
 from datetime import datetime, timedelta, timezone
 from fastapi import (
@@ -10,6 +10,9 @@ from fastapi import (
     Response, 
     status,
 )
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+
 from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.security import (
@@ -43,6 +46,7 @@ security_logger = logging.getLogger("security_logger")
 db_logger = logging.getLogger("app_db")
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)  # IP-based rate limiting
 
 # TODO: fix it's place. (decide which file to put it)
 @router.get(
@@ -71,6 +75,7 @@ async def generate_csrf_token(
         500: {"model": APIErrorResponse, "description": "Internal Server Error"},
     }
 )
+@limiter.limit("10/minute")
 async def register(
     form_data: UserCreate,
     request: Request,
@@ -167,7 +172,7 @@ async def register(
         message="User registered successfully. Please proceed to login."
     )
 
-# '''
+
 @router.post(
         "/login", 
         summary="Login with username/password",
@@ -180,6 +185,7 @@ async def register(
             500: {"model": APIErrorResponse, "description": "Internal Server Error"},
         }
 )
+@limiter.limit("5/hour")
 async def login_user(
     form_data: LoginForm,
     request: Request,
@@ -307,7 +313,7 @@ async def login_user(
     return SuccessMessageResponse(
         message="Login successful."
     )
-# '''
+
 
 @router.post(
         "/logout",
@@ -375,6 +381,7 @@ async def logout_user(
         message="Logout successful."
     )
 
+# refresh_token
 @router.post(
         "/refresh_token", 
         summary="Rotate access token",
@@ -422,38 +429,61 @@ async def refresh_access_token(
         flow_logger.error("Error verifying refresh token: %s", str(e))
         raise InternalServerError()
     
-    try:
-        if not await refresh_tokens_col(db).find_one({
-            "refresh_token": request.cookies.get("refresh_token"),
-            "revoked": False,
-            "expires_at": {"$gt": datetime.now(timezone.utc)},
-        }):
-            flow_logger.error("Refresh token not found or expired.")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Refresh token not found or expired."
-            )
-    except Exception as e:
-        flow_logger.error("Error checking refresh token: %s", str(e))
-        # TODO: see is an error should be raised here
-        # raise InternalServerError()
 
-    try:
-        await refresh_tokens_col(db).update_one(
-            {"refresh_token": request.cookies.get("refresh_token")},
-            {"$set": {"revoked": True}}
-        )
-        db_logger.info("Refresh token revoked successfully.")
-    except Exception as e:
-        db_logger.error("Error revoking refresh token: %s", str(e))
-        flow_logger.error("Error revoking refresh token: %s", str(e))
-        # TODO: see is an error should be raised here
-        # raise InternalServerError()
+    async with await db.client.start_session() as session:
+        async with session.start_transaction():
+            try:
+                # Check for the valid refresh token inside the transaction
+                refresh_token_doc = await refresh_tokens_col(db).find_one({
+                    "refresh_token": request.cookies.get("refresh_token"),
+                    # "user_id": user.id,
+                    "revoked": False,
+                    "expires_at": {"$gt": datetime.now(timezone.utc)},
+                }, session=session)
+
+                if not refresh_token_doc:
+                    flow_logger.warning("Revoked or invalid refresh token used for refresh attempt.")
+                    raise HTTPException(
+                        status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail=APIErrorResponse(
+                            message="Unauthorized",
+                            error=ErrorDetail(
+                                code="REFRESH_TOKEN_INVALID",
+                                details="Refresh token not found, revoked, or expired."
+                            )
+                        ).model_dump()
+                    )
+
+                # Revoke the old refresh token
+                await refresh_tokens_col(db).update_one(
+                    {"_id": refresh_token_doc["_id"]},
+                    {"$set": {"revoked": True}},
+                    session=session
+                )
+                db_logger.info("Old refresh token revoked successfully.")
+
+                # Generate and insert the new refresh token
+                user_token_payload = TokenData(id=user.id)
+                new_refresh_token = create_refresh_token(user_token_payload)
+                await refresh_tokens_col(db).insert_one({
+                    "user_id": user.id,
+                    "refresh_token": new_refresh_token,
+                    "expires_at": datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
+                    "revoked": False
+                }, session=session)
+                db_logger.info("New refresh token inserted successfully.")
+
+                # Generate new access token
+                new_access_token = create_access_token(user_token_payload)
+
+            except HTTPException:
+                # This will propagate the HTTP error without rolling back
+                raise
+            except Exception as e:
+                # Any other error will cause the transaction to fail and rollback.
+                db_logger.error("Transaction failed during token refresh: %s", str(e))
+                raise InternalServerError()
     
-    tokenData = TokenData(id=user.id)
-    new_access_token = create_access_token(tokenData)
-    new_refresh_token = create_refresh_token(tokenData)
-
     # Set the new tokens
     response = Response(content=new_access_token, media_type="text/plain")
     response.set_cookie(

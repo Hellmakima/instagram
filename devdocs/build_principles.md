@@ -191,6 +191,7 @@ sequenceDiagram
 - NoSQL (port 27017)
 - Try to keep it modular, tiny collections
 - Each server has its own collection in a shared database to later be split into separate databases
+- make sure to use transactions for multi query operations.
 
 ## Frontend
 

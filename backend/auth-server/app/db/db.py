@@ -8,8 +8,8 @@ Contains the database connection and related functions
 
 from fastapi import Request
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from pymongo.errors import ConnectionFailure
-import asyncio
+# from pymongo.errors import ConnectionFailure
+# import asyncio
 
 from app.core.config import settings
 # from config import settings

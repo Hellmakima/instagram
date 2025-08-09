@@ -1,14 +1,15 @@
-uvicorn[standard] # for running the app
-fastapi # for APIs
-python-dotenv # for env vars
-pydantic_settings # for settings
-python-jose[cryptography] # for JWT
-passlib[bcrypt]==1.7.4 # for password hashing
 bcrypt==3.2.0 # for password hashing
-python-json-logger # for logging
-motor # for MongoDB connection
+fastapi # for APIs
 fastapi-csrf-protect # for CSRF protection
 httpx or httpx[http2] # for making HTTP requests to downstream services
+motor # for MongoDB connection
+passlib[bcrypt]==1.7.4 # for password hashing
+pydantic_settings # for settings
+python-dotenv # for env vars
+python-jose[cryptography] # for JWT
+python-json-logger # for logging
+slowapi # for rate limiting
+uvicorn[standard] # for running the app
 
 # optional installs
 locust # for load testing

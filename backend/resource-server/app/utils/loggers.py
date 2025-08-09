@@ -128,7 +128,7 @@ LOG_CONFIG = {
             "level": "DEBUG" if settings.LOG_FLOW else "CRITICAL",
             "propagate": False
         },
-        "app_db": {
+        "app_db": { # only for inserts/updates/deletes
             "handlers": ["db_file", "console"] if settings.LOG_DB_CONSOLE else ["db_file"],
             "level": "DEBUG" if settings.LOG_DB else "CRITICAL",
             "propagate": False
