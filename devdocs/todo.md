@@ -7,6 +7,13 @@ _Search for `TODO` in all files to see all the todos_
 - make a layer between all servers and the database
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
+- implement better documentation for code
+- improve project documentation
+- add contributing guidelines
+  - commit message format
+  - branch naming
+  - PR template
+  - etc
 
 ## Research
 
