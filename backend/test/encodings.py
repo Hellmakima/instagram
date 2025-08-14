@@ -5,10 +5,33 @@ Checks if the project is encoded in ASCII.
 Only for testing purposes.
 """
 
+# just search [^\x00-\x7F] with regex match
+
+__author__ = 'Sufiyan Attar'
+__version__ = '1.0.0'
+__maintainer__ = 'Sufiyan Attar'
+__email__ = 'sufiyan.attar@gmail.com'
+__status__ = 'Development'
+
+EXCLUDED_EXTENTIONS = [
+    '.ico', 
+    '.png',
+    # '.md', 
+    '.ini'
+]
+EXCLUDED_FOLDERS = [
+    '__pycache__', 
+    'venv', 
+    '.git', 
+    'node_modules', 
+    '.next'
+]
+
 import os
 
 target_folder = r'D:\project\instagram'
-show_each_line = True  # <<< set to False if you want only file name and line number
+target_folder = r'C:\Users\Sufiyan Attar\Documents\instagram\backend'
+show_each_line = False  # <<< set to False if you want only file name and line number
 
 def find_non_ascii_lines(content):
     lines_with_non_ascii = []
@@ -36,13 +59,13 @@ def is_ascii_file(file_path):
 def check_ascii_in_folder(root_folder):
     found_non_ascii = False
     for dirpath, _, filenames in os.walk(root_folder):
-        if any(exclude in dirpath for exclude in ['__pycache__', 'venv', '.git', 'node_modules', '.next']):
+        if any(exclude in dirpath for exclude in EXCLUDED_FOLDERS):
             continue
         for file in filenames:
             if any(excluded in file for excluded in ['File Structure']):
                 continue
             full_path = os.path.join(dirpath, file)
-            if any(file.endswith(excluded_extention) for excluded_extention in ['.ico', '.png', '.ini']):
+            if any(file.endswith(excluded_extention) for excluded_extention in EXCLUDED_EXTENTIONS):
                 continue
             if any(file.startswith(excluded_prefix) for excluded_prefix in ['mnbvbwrj']):
                 continue

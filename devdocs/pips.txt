@@ -9,6 +9,7 @@ python-json-logger # for logging
 motor # for MongoDB connection
 fastapi-csrf-protect # for CSRF protection
 httpx or httpx[http2] # for making HTTP requests to downstream services
+^ fix this
 
 # optional installs
 locust # for load testing
