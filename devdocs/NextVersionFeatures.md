@@ -1,0 +1,6 @@
+- custom themes and templates (cyberpunk, barbie, clash of clans, etc)
+- text post (like tweets)
+- reddit features
+  - comment trees
+  - communities
+- end-to-end encryption
