@@ -1,28 +1,29 @@
-"""
-
-### File: **project/todo.md**
-
-Contains the todo list for the project
-"""
-
 # TODO
 
 _Search for `TODO` in all files to see all the todos_
 
 ## High Priority
 
-- get resource-server running.
+- make a layer between all servers and the database
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
+- implement better documentation for code
+- improve project documentation
+- add contributing guidelines
+  - commit message format
+  - branch naming
+  - PR template
+  - etc
 
 ## Research
 
 - data validation on frontend as well as backend?
 - IP validation helpers
-- https://fusionauth.io/blog/understanding-oauth2-grant-types multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
+- [understanding-oauth2-grant-types](https://fusionauth.io/blog/understanding-oauth2-grant-types) multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
 
 ## Medium Priority
 
+- get resource-server running.
 - email verification
 - TTL stuff
   - Add Mongo TTL for refresh tokens
@@ -39,12 +40,14 @@ _Search for `TODO` in all files to see all the todos_
 ## Low Priority
 
 - setup nginx
-  ```
+
+  ```python
     if host.startswith("auth."):
         "http://127.0.0.1:5001"
     elif host.startswith("api."):
         "http://127.0.0.1:5002"
   ```
+
   - rate limiting
   - route with subdomains
   - add CORS headers

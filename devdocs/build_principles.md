@@ -25,6 +25,47 @@
   - no unused imports
 - Ocassionally search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 
+### Python Code Documentation
+
+```python
+"""
+User Management Module
+
+This module handles all user-related operations for the application,
+including creating, retrieving, updating, and deleting user accounts. It
+interacts with the 'database' module to persist user data.
+
+Classes:
+    User: Represents a user with attributes like id, username, and email.
+
+Functions:
+    create_user(username, email): Creates a new user in the database.
+    get_user_by_id(user_id): Retrieves a user by their unique ID.
+    update_user_email(user_id, new_email): Updates a user's email address.
+    delete_user(user_id): Deletes a user account.
+"""
+
+class User:
+    """
+    A class to represent a user account.
+
+    Attributes:
+        user_id (int): A unique identifier for the user.
+        username (str): The user's chosen username.
+        email (str): The user's email address.
+    """
+    def __init__(self, user_id, username, email):
+        self.user_id = user_id
+        self.username = username
+        self.email = email
+    
+    def ascend_to_heaven(self):
+        """
+        A method to ascend the user to heaven with the magic of love.
+        """
+        print(f"Ascending {self.username} to heaven...")
+```
+
 ## API
 
 - RESTful API used for all operations.

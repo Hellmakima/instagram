@@ -1,7 +1,6 @@
 bcrypt==3.2.0 # for password hashing
 fastapi # for APIs
 fastapi-csrf-protect # for CSRF protection
-httpx or httpx[http2] # for making HTTP requests to downstream services
 motor # for MongoDB connection
 passlib[bcrypt]==1.7.4 # for password hashing
 pydantic_settings # for settings
@@ -10,6 +9,8 @@ python-jose[cryptography] # for JWT
 python-json-logger # for logging
 slowapi # for rate limiting
 uvicorn[standard] # for running the app
+httpx or httpx[http2] # for making HTTP requests to downstream services
+^ fix this
 
 # optional installs
 locust # for load testing

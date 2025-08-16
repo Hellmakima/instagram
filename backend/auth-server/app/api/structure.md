@@ -1,31 +1,23 @@
-## proposed structure
+# proposed structure
 
-```
+```ini
 .
 └── auth-server/
     └── app/
         └── api/
             └── api_v1/
-                ├── __init__.py
                 ├── endpoints/
-                │   ├── __init__.py
                 │   ├── auth/                 # For core auth operations
-                │   │   ├── __init__.py
                 │   │   └── router.py         # Contains /register, /login, /logout, /refresh_token
                 │   ├── password/             # For password management
-                │   │   ├── __init__.py
                 │   │   └── router.py         # Contains /forgot_password, /reset_password, /change_password
                 │   ├── verification/         # For email/phone verification
-                │   │   ├── __init__.py
                 │   │   └── router.py         # Contains /verify_email, /verify_phone
                 │   ├── social/               # For social logins
-                │   │   ├── __init__.py
                 │   │   └── router.py         # Contains /social_login/*
                 │   ├── security/             # For session & 2FA management
-                │   │   ├── __init__.py
                 │   │   └── router.py         # Contains /active_sessions, /2fa
                 │   └── account/              # For account lifecycle management
-                │       ├── __init__.py
                 │       └── router.py         # Contains /deactivate_account, /delete_account
                 └── router.py                 # Main API router (aggregates all module routers)
 ```
@@ -34,13 +26,13 @@
 
 Recommended to keep the `endpoints/` folder for the following reasons related to **clarity, maintainability, future-proofing, and separation of concerns**:
 
-1.  **Semantic Grouping and Clarity:**
+1. **Semantic Grouping and Clarity:**
 
     - The `api_v1/` folder represents a **version namespace** (e.g., all code related to API Version 1).
     - The `endpoints/` folder explicitly clarifies that the contents within it are **HTTP API route definitions**.
     - This distinction helps new developers (or your future self) immediately understand the _purpose_ of the files and folders inside `api_v1/`.
 
-2.  **Future Expansion and Separation of Concerns within a Version:**
+2. **Future Expansion and Separation of Concerns within a Version:**
     Your `api_v1/` directory might eventually contain more than just endpoint definitions. For example, you might have:
 
     - `api_v1/schemas/` (for Pydantic models/data contracts)
@@ -54,7 +46,7 @@ Recommended to keep the `endpoints/` folder for the following reasons related to
 
     **Example of a more complex `api_v1` without `endpoints/` (less clear):**
 
-    ```
+    ```ini
     api_v1/
     ├── __init__.py
     ├── auth/                 # Endpoints
@@ -67,7 +59,7 @@ Recommended to keep the `endpoints/` folder for the following reasons related to
 
     **Example with `endpoints/` (more organized):**
 
-    ```
+    ```ini
     api_v1/
     ├── __init__.py
     ├── endpoints/            # Contains all API endpoints
@@ -83,8 +75,8 @@ Recommended to keep the `endpoints/` folder for the following reasons related to
 
     The second structure clearly delineates what's an endpoint module versus what's a schema module or a service module.
 
-3.  **Consistency Across API Versions:**
+3. **Consistency Across API Versions:**
     If you later introduce `api_v2/`, maintaining a consistent structure like `api_vX/endpoints/` helps in understanding and navigating between different API versions.
 
-4.  **Team Collaboration:**
+4. **Team Collaboration:**
     In a team environment, having clear, agreed-upon structural conventions helps developers quickly locate code and reduces cognitive load, especially as the project grows.
