@@ -1,15 +1,8 @@
-# only keep stuff that is too big or not needed
+# only keep stuff that is too big or should not be committed
 
 # Python
 __pycache__/
 *.pyc
-.env
 venv/
-
-# Logs
 *.log
-
-# Others
-*.swp
-*.swo
-# .vscode/
+.vscode/

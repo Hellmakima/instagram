@@ -2,28 +2,37 @@
 
 _Search for `TODO` in all files to see all the todos_
 
-## High Priority
+## High Priority Tasks
 
 - make a layer between all servers and the database
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
 - implement better documentation for code
 - improve project documentation
-- add contributing guidelines
-  - commit message format
-  - branch naming
-  - PR template
-  - etc
+  - verify requirements.txt by making a new venv and testing the project.
 
 ## Research
 
-- data validation on frontend as well as backend?
+- look up [fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)
+- Appropriate Database for each service.
+  - For auth, file storage, maybe cassandra for linking between videos.
 - IP validation helpers
-- [understanding-oauth2-grant-types](https://fusionauth.io/blog/understanding-oauth2-grant-types) multiple servers to handle different services. Allows third party apps to use instagram without having to implement their own login system
+- nginx vs traefik or others
 
-## Medium Priority
+  - Traefik is a **modern reverse proxy + load balancer** built for microservices and APIs.
+
+    - It sits in front of your apps (like Nginx/HAProxy would) and routes traffic.
+    - Auto-discovers services from Docker, Kubernetes, or your config.
+    - Handles SSL certs automatically via Let’s Encrypt.
+    - Supports sticky sessions, load balancing, middleware (rate limiting, auth, etc.).
+    - Popular in containerized setups since you don’t need to manually edit configs when services come/go.
+
+  Think of it as **“Nginx, but built for dynamic cloud-native environments.”**
+
+## Medium Priority Tasks
 
 - get resource-server running.
+- update `devdocs/file_structure.ini` with new structure.
 - email verification
 - TTL stuff
   - Add Mongo TTL for refresh tokens
@@ -37,8 +46,19 @@ _Search for `TODO` in all files to see all the todos_
 - Require re-authentication for key operations (email changes, MFA toggles).
 - lockouts, CAPTCHA, MFA.
 
-## Low Priority
+## Ocassionally
 
+- search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
+- update requirements.txt
+- code review
+  - look for proper logging
+  - error handling
+  - type checking
+  - look for what can be a bottleneck for scalability
+
+## Low Priority Tasks
+
+- separate repository for frontend
 - setup nginx
 
   ```python
@@ -57,18 +77,16 @@ _Search for `TODO` in all files to see all the todos_
     - load balancing
     - caching
 
-## Ocassionally
-
-- search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
-- update requirements.txt
-- code review
-  - look for proper logging
-  - error handling
-  - type checking
-  - look for what can be a bottleneck for scalability
-
 ## Eventually
 
+- Make files:
+  - Makefile
+    - dev: run app with auto-reload
+    - run: run app in prod mode
+    - test: run pytest
+    - lint: run lint checks
+    - clean: clear caches (pycache, pytest_cache, etc)
+  - Dockerfile
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during load testing. This will show you exactly which lines of code are consuming the most CPU time.
@@ -80,8 +98,8 @@ _Search for `TODO` in all files to see all the todos_
 - use proper license, security.md, code_of_conduct.md
 - rewrite gitignore and put new values in .env
 - remove CORS, use nginx to bring it all together
+- test on wsl
 - use docker
   - separate container
-  - refer [Youtube](youtube.com/watch?v=DQdB7wFEygo)
-- test on wsl
+  - refer [Youtube](https://www.youtube.com/watch?v=DQdB7wFEygo)
 - deploy!!! Even temporarily, just do it

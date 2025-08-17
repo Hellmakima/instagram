@@ -9,9 +9,11 @@ python-jose[cryptography] # for JWT
 python-json-logger # for logging
 slowapi # for rate limiting
 uvicorn[standard] # for running the app
-httpx or httpx[http2] # for making HTTP requests to downstream services
-^ fix this
+
+# for gate.py (temporary)
+httpx # or httpx[http2] # for making HTTP requests to downstream services
 
 # optional installs
+pytest
 locust # for load testing
 python-multipart # for file uploads

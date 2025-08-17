@@ -1,4 +1,5 @@
 """
+
 ### File: **project/rough.md**
 
 Contains rough notes on the project
@@ -17,6 +18,7 @@ Contains rough notes on the project
 - `https://www.instagram.com/`
   - shows recent posts and reels and stuff from algorith (mix of following and explore)
   - includes stories, suggested users, ads, threads from threads
+  - if not logged in, it redirects to login page
 - `https://www.instagram.com/explore/`
 - `https://www.instagram.com/reels/`
   - goes to reels page, and loads a specific reel
@@ -42,3 +44,5 @@ Contains rough notes on the project
   - if opeened in new tab, shows related posts below
 - `https://www.instagram.com/<username>/following/`
   - pop-up window with following list
+
+---
