@@ -18,11 +18,6 @@ from app.core.config import settings
 from app.schemas.auth import APIErrorResponse, ErrorDetail, TokenData
 from app.core.config import settings
 
-from app.db.db import get_db
-from app.db.collections import users_col
-from app.schemas.user import UserMe
-from motor.motor_asyncio import AsyncIOMotorDatabase
-
 import logging
 flow_logger = logging.getLogger("app_flow")
 
@@ -45,7 +40,7 @@ def create_access_token(
 ) -> str:
     flow_logger.info("in create_access_token")
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
+    to_encode = {"exp": expire, "sub": data.id, "type": "access"}
     # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
     return encoded_jwt
@@ -109,13 +104,18 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
         flow_logger.error("Error verifying token")
         raise credentials_exception
 
+
+# from app.db.db import get_db
+# from app.db.collections import users_col
+# from app.schemas.user import UserMe
+# from motor.motor_asyncio import AsyncIOMotorDatabase
+
 # async def get_current_user(
 '''
 # TODO: rework on this
 - no need to verify token here
-- look up what is `token: str = Depends(oauth2_scheme)`
+- `OAuth2PasswordBearer` is not for our cookie based auth
 '''
-#     token: str = Depends(oauth2_scheme),
 #     db: AsyncIOMotorDatabase = Depends(get_db)
 # ) -> UserMe:
 #     # TODO: Decide if I really get_current_user() or repurpose it.

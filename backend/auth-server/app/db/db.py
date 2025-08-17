@@ -15,6 +15,7 @@ from app.core.config import settings
 # from config import settings
 
 async def get_db(request: Request) -> AsyncIOMotorDatabase:
+    # TODO: see why this needs request.
     """
     Get MongoDB database from FastAPI app state.
     Usage: Depends(get_db)

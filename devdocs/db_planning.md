@@ -1,4 +1,6 @@
-# denormalized JSON
+# Database Planning
+
+_later will merge this with `devdocs/build_principles.md`_
 
 Maybe I'll use SQL for this. It is on hold for now.
 
@@ -9,7 +11,7 @@ Maybe I'll use SQL for this. It is on hold for now.
     "username": "hellmakima",
     "is_blocked": true,
     "blocked_till": null, // UTC timestamp or null
-    "is_verified": true, 
+    "is_verified": true,
     "is_deleted": false,
     "deleted_ttl": null, // will deleted after this timestamp or null
     "email": "instaclone@gmail.com",
@@ -21,7 +23,7 @@ Maybe I'll use SQL for this. It is on hold for now.
     "posts": [
       {
         "id": "jSUYdcfUuP", // nano id
-        "media_type": "image", 
+        "media_type": "image",
         /*
           image (png, jpg, svg, gif, jpeg, etc)
           video (mp4, mkv, etc)
@@ -34,7 +36,7 @@ Maybe I'll use SQL for this. It is on hold for now.
         "created": "2025-08-11T11:30:11.838487+00:00", // timestamp
         "is_deleted": false,
         "likes_count": "2", // cache
-        "likes" :[
+        "likes": [
           {
             "user_id": "jsbhfvlshbwurionwekvbwiorbgywsl", // user id
             "timestamp": "2025-08-11T11:30:11.838487+00:00" // liked at
@@ -43,7 +45,8 @@ Maybe I'll use SQL for this. It is on hold for now.
         "pinned_comment": null, // The pinned comment object is stored here or maybe add comment id
         "creator_comment": null, // either object or comment id
         "comments_count": "2", // TODO: cache and update only in write server ocassionally.
-        "comments": [ // TODO: on report, copy the required fields to a different collection
+        "comments": [
+          // TODO: on report, copy the required fields to a different collection
           {
             "liked_by_creator": true,
             "reply_by_creator": true,
@@ -76,7 +79,7 @@ Maybe I'll use SQL for this. It is on hold for now.
         ]
       }
     ],
-    "save_collections": [
+    "saved_collections": [
       {
         "name": "food",
         "posts": [
@@ -86,18 +89,6 @@ Maybe I'll use SQL for this. It is on hold for now.
           }
         ]
       }
-      /* normalized
-      {
-        _id: ObjectId,
-        user_id: "abc123",
-        collection_name: "food",
-        post_id: "23d0d713edbf4e5bae2ee8751b38ec85",
-        saved_at: ISODate("2025-08-11T15:30:00Z")
-      }
-
-      index it (1 is ascendind)
-      db.saved_posts.createIndex({ user_id: 1, collection_name: 1, saved_at: -1 })
-      */
     ]
   }
 ]
@@ -106,7 +97,7 @@ Maybe I'll use SQL for this. It is on hold for now.
 ---
 
 - timestamp is isoformat in UTC zone eg: 2025-08-11T06:04:38.224332+00:00
-`print(datetime.now(timezone.utc).isoformat())`
+  `print(datetime.now(timezone.utc).isoformat())`
 
 ---
 
@@ -147,8 +138,6 @@ So, let's break it down into three things:
 
 ## Goal: Balanced Normalization for MongoDB
 
-You want to:
-
 - **Avoid unnecessary joins** (lookups)
 - **Prevent document bloat** (especially when documents grow with time, like comments/replies)
 - **Allow for fast reads/writes** (especially on feed, profile, and comment sections)
@@ -169,149 +158,6 @@ You want to:
 - Data can grow **unbounded** (e.g., comments, likes)
 - It's accessed **independently** (e.g., searching user posts, querying a comment)
 - It's **shared** across documents (e.g., same user liking multiple posts)
-
----
-
-## Suggested MongoDB Collections (Need to be redone)
-
-### 1. `users`
-
-Embed small things like `profile_picture`, `past_profile_pictures`, and `is_verified`.
-
-```json
-{
-  "_id": "user_id",
-  "username": "hellmakima",
-  "email": "instaclone@gmail.com",
-  "phone": null,
-  "hashed_password": "...",
-  "is_blocked": true,
-  "blocked_till": null,
-  "is_verified": true,
-  "is_deleted": false,
-  "deleted_ttl": null,
-  "created": ISODate(...),
-  "profile_picture": "link",
-  "past_profile_pictures": ["link1", "link2"]
-}
-```
-
----
-
-### 2. `posts`
-
-Keep basic info. Reference large data like comments, likes.
-
-```json
-{
-  "_id": "post_id",
-  "user_id": "user_id",
-  "media_type": "image",
-  "visibility": "public",
-  "media_link": "link",
-  "created": ISODate(...),
-  "is_deleted": false,
-  "likes_count": 2,
-  "comments_count": 2,
-  "pinned_comment_id": "comment_id", // optional
-  "creator_comment_id": "comment_id" // optional
-}
-```
-
----
-
-### 3. `post_likes`
-
-Each like is a separate document. Useful for analytics, showing who liked.
-
-```json
-{
-  "_id": ObjectId,
-  "post_id": "post_id",
-  "user_id": "user_id",
-  "timestamp": ISODate(...)
-}
-```
-
-> Index: `post_id`, `user_id` (compound unique for preventing duplicate likes)
-
----
-
-### 4. `comments`
-
-Top-level comments only.
-
-```json
-{
-  "_id": "comment_id",
-  "post_id": "post_id",
-  "user_id": "user_id",
-  "timestamp": ISODate(...),
-//   "is_edited": true, // either store previous value or make it is_deleted
-  "value": "Bro this is dope.",
-  "liked_by_creator": true,
-  "reply_by_creator": true
-}
-```
-
-> Index: `post_id`
-
----
-
-### 5. `comment_likes`
-
-```json
-{
-  "_id": ObjectId,
-  "comment_id": "comment_id",
-  "user_id": "user_id",
-  "timestamp": ISODate(...)
-}
-```
-
----
-
-### 6. `replies`
-
-```json
-{
-  "_id": "reply_id",
-  "comment_id": "comment_id",
-  "user_id": "user_id",
-  "timestamp": ISODate(...),
-//   "is_edited": false, // either store previous value or make it is_deleted
-  "is_post": true,
-  "value": "Yes Bro."
-}
-```
-
-> Index: `comment_id`
-
----
-
-### 7. `reply_likes`
-
-```json
-{
-  "_id": ObjectId,
-  "reply_id": "reply_id",
-  "user_id": "user_id",
-  "timestamp": ISODate(...)
-}
-```
-
----
-
-## Collection Growth Considerations
-
-| Collection   | Growth Concern | Mitigation                          |
-| ------------ | -------------- | ----------------------------------- |
-| `users`      | Low            | Bounded fields                      |
-| `posts`      | Moderate       | Keep post-only data                 |
-| `post_likes` | High           | Paginate, limit write frequency     |
-| `comments`   | High           | Paginate, indexed                   |
-| `replies`    | High           | Paginate, indexed                   |
-| `likes`      | High           | Index + TTL optional (if ephemeral) |
 
 ---
 
@@ -337,29 +183,24 @@ If you're optimizing for:
 
 ---
 
-You Can Calculate engagement From:
+**Calculate engagement**
 
-Interaction
-
-- likes
-  - liked post
-  - liked comments
-- comment
-  - aggregated comment emotion for each direct comment
-  - do something for replies
-- share
-  - share count
-- save
-
-View duration
-
-- scrolled within first .5 seconds
-- viewed duration vs total video length
-- Did user rewatch?
-
-Did they click "Not Interested"?
-
-- maybe handle this saparately.
+- Interaction
+  - likes
+    - liked post
+    - liked comments
+  - comment
+    - aggregated comment emotion for each direct comment
+    - do something for replies
+  - share
+    - share count
+  - save
+- View duration
+  - scrolled within first .5 seconds
+  - viewed duration vs total video length
+  - Did user rewatch?
+- Did they click "Not Interested"?
+  - maybe handle this saparately.
 
 ---
 
@@ -378,7 +219,7 @@ The decision to separate comments and replies into two distinct collections is a
 
 ## **Code snippet for hybrid approach**
 
-Here's a Python example using **PyMongo** for that hybrid normalization pattern:  
+Here's a Python example using **PyMongo** for that hybrid normalization pattern:
 
 ```python
 
@@ -419,11 +260,11 @@ def add_comment(post_id: str, author_id: str, text: str, max_recent: int = 3):
 
 ```
 
-**How this works:**  
+**How this works:**
 
-- Keeps **all** comments in `comments` collection for full history.  
-- Keeps **last N** comments embedded in `posts.recent_comments` for fast reads.  
-- `$slice` in `$push` ensures the embedded list never grows beyond `max_recent`.  
+- Keeps **all** comments in `comments` collection for full history.
+- Keeps **last N** comments embedded in `posts.recent_comments` for fast reads.
+- `$slice` in `$push` ensures the embedded list never grows beyond `max_recent`.
 
 _There is a method called `$pop` but we dont do that here coz it uses `$slice`._
 
@@ -433,7 +274,7 @@ _There is a method called `$pop` but we dont do that here coz it uses `$slice`._
 
 ---
 
-## More
+## **Subset Pattern**
 
 The technical name for this hybrid data structure approach in MongoDB is the "Subset Pattern" or a combination of "Embedded" and "Referenced" documents. It's a strategy that leverages the strengths of both data modeling approaches to optimize for specific access patterns.
 
@@ -443,9 +284,9 @@ A cached storage of top/hot comments embedded in the post document is an excelle
 
 ### How It Works
 
-* **Primary Data:** The real, up-to-the-minute comment data (likes, replies, content) lives in a separate **`comments` collection**.
-* **Cached Data:** A denormalized subset of the top comments is embedded directly within the parent **`posts` collection** document.
-* **Update Logic:** A background process (e.g., a scheduled job or a microservice) periodically queries the `comments` collection, calculates the "hot" or "top" comments based on your scoring logic, and updates the embedded array in the `posts` document.
+- **Primary Data:** The real, up-to-the-minute comment data (likes, replies, content) lives in a separate **`comments` collection**.
+- **Cached Data:** A denormalized subset of the top comments is embedded directly within the parent **`posts` collection** document.
+- **Update Logic:** A background process (e.g., a scheduled job or a microservice) periodically queries the `comments` collection, calculates the "hot" or "top" comments based on your scoring logic, and updates the embedded array in the `posts` document.
 
 ---
 

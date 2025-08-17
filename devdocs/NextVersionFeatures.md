@@ -4,3 +4,4 @@
   - comment trees
   - communities
 - end-to-end encryption
+- Add user scopes/roles (admin, mod, etc.).

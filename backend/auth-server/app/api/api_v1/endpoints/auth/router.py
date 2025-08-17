@@ -10,7 +10,7 @@ from fastapi import (
     Response, 
     status,
 )
-from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from fastapi.responses import JSONResponse
@@ -186,6 +186,7 @@ async def register(
         }
 )
 @limiter.limit("5/hour")
+# TODO: use redis and make this rate limiting only for failed attempts and suspend for a while.
 async def login_user(
     form_data: LoginForm,
     request: Request,

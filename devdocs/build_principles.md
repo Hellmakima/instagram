@@ -58,7 +58,7 @@ class User:
         self.user_id = user_id
         self.username = username
         self.email = email
-    
+
     def ascend_to_heaven(self):
         """
         A method to ascend the user to heaven with the magic of love.
@@ -245,6 +245,10 @@ sequenceDiagram
 
 - Swagger UI (http://localhost:5000/docs) to test APIs.
 - Before making pages, make static html (project/backend/static/index.html) to test the backend.
+- pytest
+  - we maintain `tests` folder for all the tests.
+  - all PRs must pass all the tests.
+  - [documentation](https://docs.pytest.org/en/stable/explanation/goodpractices.html#test-discovery)
 - Locust (/backend/test/locust_test.py) for load testing. (port 8089)
 
 ## Networking
@@ -259,7 +263,6 @@ sequenceDiagram
 ## Future Add-ons
 
 - User scopes/roles (admin, mod, etc.) for granular access control
-- Email & phone verification (via OTP)
 - all flow is via http/https (no WebSockets Secure (wss) for now) might need for voice/video calls
   - but when you add wss, just slot it as a dedicated realtime service (keep it isolated!)
 - Sanitize all user input (e.g., prevent XSS)

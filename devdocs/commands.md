@@ -5,10 +5,10 @@
 ```bash
 git branch           # Check current branch
 git branch -a        # List all branches
-git branch devde     # Create new branch named 'devde'
-git checkout devde   # Switch to branch 'devde'
+git branch dev     # Create new branch named 'dev'
+git checkout dev   # Switch to branch 'dev'
 # Merge/Pull via GitHub web interface
-git branch -D devde  # Delete branch 'devde'
+git branch -D dev  # Delete branch 'dev'
 ```
 
 ---
@@ -37,6 +37,6 @@ npx create-next-app@latest frontend
 ### Run
 
 ```bash
-(venv)...\backend\auth-server> uvicorn app.main:app --reload --port 5001
-(venv)...\backend\resource-server> uvicorn app.main:app --reload --port 5000
+(venv) ~/backend/gate> uvicorn main:app --reload --port 5000
+(venv) ~/backend/auth-server> uvicorn app.main:app --reload --port 5001
 ```
