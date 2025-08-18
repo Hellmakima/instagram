@@ -10,9 +10,9 @@ Designed with modularity, clarity, and scalability in mind.
 ## Getting Started
 
 ### 1. Clone the Repository
-
+ 
 ```bash
-git clone https://github.com/hellmakima/instaclone.git
+git clone https://github.com/hellmakima/instagram.git
 ```
 
 ### 2. Create a Virtual Environment
@@ -25,11 +25,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 ### 3. Install Backend Dependencies
 
 ```bash
-pip install -r backend/devdocs/requirements.txt
+pip install -r instagram/backend/devdocs/requirements.txt
 ```
 
 or
-install from [pips.txt](https://github.com/hellmakima/instaclone/blob/main/d:/project/instagram/devdocs/pips.txt) one by one.
+install from [pips.txt](https://github.com/hellmakima/instagram/blob/main/devdocs/pips.txt) one by one.
 
 ### 4. Run the Backend Server
 
