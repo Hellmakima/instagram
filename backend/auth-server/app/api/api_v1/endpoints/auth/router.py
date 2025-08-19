@@ -23,14 +23,11 @@ from app.core.security import (
     verify_token,
 )
 from app.schemas.auth import (
-    APIErrorResponse,
-    ErrorDetail,
-    InternalServerError,
     LoginForm,
-    SuccessMessageResponse,
     TokenData,
     UserCreate,
 )
+from app.schemas.responses import APIErrorResponse, ErrorDetail, InternalServerError, SuccessMessageResponse
 from app.services.user_service import prepare_user_for_db
 
 from app.core.csrf import CsrfProtect

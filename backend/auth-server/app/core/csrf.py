@@ -6,7 +6,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 from pydantic_settings import BaseSettings
 import dotenv
-from app.schemas.auth import InternalServerError
+from app.schemas.responses import InternalServerError
 
 import logging
 security_logger = logging.getLogger("security_logger")
