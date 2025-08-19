@@ -1,7 +1,6 @@
 # auth-server/app/api/api_v1/endpoints/auth/router.py
 # Contains /register, /login, /logout, /refresh_token, also /csrf-token for now
 
-from datetime import datetime, timedelta, timezone
 from fastapi import (
     APIRouter, 
     Depends, 
@@ -38,9 +37,8 @@ from app.services.to_doc import prepare_user_for_db
 from app.core.csrf import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 
-from motor.motor_asyncio import AsyncIOMotorDatabase
-from app.db.db import get_db
-from app.db.collections import users_col, refresh_tokens_col
+from app.db.repositories import RefreshTokenRepository, UserRepository
+from app.db.dependies import get_user_repo, get_refresh_token_repo, get_session
 
 import logging
 flow_logger = logging.getLogger("app_flow")
@@ -82,7 +80,7 @@ async def register(
     form_data: UserCreate,
     request: Request,
     response: Response,
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    user_repo: UserRepository = Depends(get_user_repo),
     csrf_protect: CsrfProtect = Depends(),
 ):
     '''
@@ -103,16 +101,7 @@ async def register(
 
     # Check if user already exists
     try:
-        if await users_col(db).find_one({
-            "$and": [
-                {"$or": [
-                    {"username": form_data.username},
-                    {"email": form_data.email},
-                ]},
-                {"is_verified": True},
-            ]},
-            projection={"_id": 1}
-        ):
+        if await user_repo.find_verified(form_data.username, form_data.email):
             flow_logger.info("Registration failed: User with provided username or email already exists.")
             # Do NOT specify which field is taken.
             raise HTTPException(
@@ -152,10 +141,12 @@ async def register(
     '''
 
     try:
-        res = await users_col(db).insert_one(user_doc)
+        # res = await users_col(db).insert_one(user_doc)
+        res = await user_repo.insert(user_doc)
         db_logger.info("User record inserted successfully.")
         flow_logger.info("User record inserted successfully.")
-        rec = await users_col(db).find_one({"_id": res.inserted_id}, projection={"_id": 1})
+        # rec = await users_col(db).find_one({"_id": res.inserted_id}, projection={"_id": 1})
+        rec = await user_repo.find_by_id(res.inserted_id)
         flow_logger.info("User record fetched successfully.")
     except Exception as e:
         db_logger.error("Database error during user save/fetch: %s", str(e))
@@ -193,7 +184,8 @@ async def login_user(
     form_data: LoginForm,
     request: Request,
     response: Response,
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    user_repo: UserRepository = Depends(get_user_repo),
+    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
     csrf_protect: CsrfProtect = Depends(),
 ):
     flow_logger.info("in login endpoint")
@@ -205,20 +197,14 @@ async def login_user(
         raise
 
     try:
-        rec = await users_col(db).find_one({
-            "$or": [
-                {"username": form_data.username_or_email},
-                {"email": form_data.username_or_email}
-            ]}, 
-            projection={"_id": -1, "hashed_password": 1, "is_deleted": 1, "is_blocked": 1, "is_verified": 1}
-        )
+        rec = await user_repo.find_by_username_or_email(form_data.username_or_email)
         flow_logger.info("Fetched user record: %s", str(rec))
     except Exception as e:
         flow_logger.error("Error fetching user from DB: %s", str(e))
         raise InternalServerError()
     is_password_valid = False
     if rec:
-        is_password_valid = await verify_password(form_data.password, rec.get("hashed_password"))
+        is_password_valid = await verify_password(form_data.password, rec.get("hashed_password", ""))
         flow_logger.info("Password verification result: %s", str(is_password_valid))
 
     # Generic check for ALL failure conditions to prevent user enumeration
@@ -274,12 +260,7 @@ async def login_user(
         MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
         Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
         '''
-        await refresh_tokens_col(db).insert_one({
-            "user_id": rec["_id"],
-            "refresh_token": refresh_token,
-            "expires_at": datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
-            "revoked": False
-        })
+        await refresh_token_repo.insert(rec["_id"], refresh_token)
     except Exception as e:
         flow_logger.error("Error saving refresh token to DB: %s", str(e))
         raise InternalServerError()
@@ -334,7 +315,7 @@ async def logout_user(
     request: Request,
     response: Response,
     csrf_protect: CsrfProtect = Depends(),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
 ):
     flow_logger.info("in logout endpoint")
     try:
@@ -364,9 +345,7 @@ async def logout_user(
         raise InternalServerError()
     
     try:
-        await refresh_tokens_col(db).delete_one({
-            "refresh_token": request.cookies.get("refresh_token")
-        })
+        await refresh_token_repo.delete_by_token(request.cookies.get("refresh_token", ""))
         db_logger.info("Refresh token deleted successfully.")
     except Exception as e:
         db_logger.error("Error deleting refresh token: %s", str(e))
@@ -400,7 +379,8 @@ async def logout_user(
 async def refresh_access_token(
     request: Request,
     csrf_protect: CsrfProtect = Depends(),
-    db: AsyncIOMotorDatabase = Depends(get_db),
+    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
+    session=Depends(get_session)
 ):
     flow_logger.info("in refresh token endpoint")
     try:
@@ -431,61 +411,43 @@ async def refresh_access_token(
     except Exception as e:
         flow_logger.error("Error verifying refresh token: %s", str(e))
         raise InternalServerError()
-    
 
-    async with await db.client.start_session() as session:
-        async with session.start_transaction():
-            try:
-                # Check for the valid refresh token inside the transaction
-                refresh_token_doc = await refresh_tokens_col(db).find_one({
-                    "refresh_token": request.cookies.get("refresh_token"),
-                    # "user_id": user.id,
-                    "revoked": False,
-                    "expires_at": {"$gt": datetime.now(timezone.utc)},
-                }, session=session)
+    async with session.start_transaction():
+        try:
+            refresh_token_doc = await refresh_token_repo.find_by_token(request.cookies.get("refresh_token", ""))
 
-                if not refresh_token_doc:
-                    flow_logger.warning("Revoked or invalid refresh token used for refresh attempt.")
-                    raise HTTPException(
-                        status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail=APIErrorResponse(
-                            message="Unauthorized",
-                            error=ErrorDetail(
-                                code="REFRESH_TOKEN_INVALID",
-                                details="Refresh token not found, revoked, or expired."
-                            )
-                        ).model_dump()
-                    )
-
-                # Revoke the old refresh token
-                await refresh_tokens_col(db).update_one(
-                    {"_id": refresh_token_doc["_id"]},
-                    {"$set": {"revoked": True}},
-                    session=session
+            if not refresh_token_doc:
+                flow_logger.warning("Revoked or invalid refresh token used for refresh attempt.")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail=APIErrorResponse(
+                        message="Unauthorized",
+                        error=ErrorDetail(
+                            code="REFRESH_TOKEN_INVALID",
+                            details="Refresh token not found, revoked, or expired."
+                        )
+                    ).model_dump()
                 )
-                db_logger.info("Old refresh token revoked successfully.")
+            db_logger.info("Found refresh token.")
 
-                # Generate and insert the new refresh token
-                user_token_payload = TokenData(id=user.id)
-                new_refresh_token = create_refresh_token(user_token_payload)
-                await refresh_tokens_col(db).insert_one({
-                    "user_id": user.id,
-                    "refresh_token": new_refresh_token,
-                    "expires_at": datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
-                    "revoked": False
-                }, session=session)
-                db_logger.info("New refresh token inserted successfully.")
+            await refresh_token_repo.revoke(refresh_token_doc["_id"])
+            db_logger.info("Old refresh token revoked successfully.")
 
-                # Generate new access token
-                new_access_token = create_access_token(user_token_payload)
+            # Generate and insert the new refresh token
+            user_token_payload = TokenData(id=user.id)
+            new_refresh_token = create_refresh_token(user_token_payload)
 
-            except HTTPException:
-                # This will propagate the HTTP error without rolling back
-                raise
-            except Exception as e:
-                # Any other error will cause the transaction to fail and rollback.
-                db_logger.error("Transaction failed during token refresh: %s", str(e))
-                raise InternalServerError()
+            await refresh_token_repo.insert(user.id, new_refresh_token)
+            db_logger.info("New refresh token inserted successfully.")
+
+            # Generate new access token
+            new_access_token = create_access_token(user_token_payload)
+
+        except HTTPException:
+            raise
+        except Exception as e:
+            db_logger.error("Transaction failed during token refresh: %s", str(e))
+            raise InternalServerError()
     
     # Set the new tokens
     response = Response(content=new_access_token, media_type="text/plain")

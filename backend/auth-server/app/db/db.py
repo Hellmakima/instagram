@@ -7,7 +7,7 @@ Contains the database connection and related functions
 # app/core/db.py
 
 from fastapi import Request
-from motor.motor_asyncio import AsyncIOMotorDatabase
+from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 # from pymongo.errors import ConnectionFailure
 # import asyncio
 
@@ -21,6 +21,11 @@ async def get_db(request: Request) -> AsyncIOMotorDatabase:
     Usage: Depends(get_db)
     """
     return request.app.state.client[settings.MONGODB_DB]
+
+async def get_client(request: Request) -> AsyncIOMotorClient:
+    return request.app.state.client
+
+
 '''
 async def test_db_connection():
     """
