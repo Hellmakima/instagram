@@ -31,7 +31,7 @@ from app.schemas.auth import (
     TokenData,
     UserCreate,
 )
-from app.services.user_service import prepare_user_for_db
+from app.services.to_doc import prepare_user_for_db
 
 from app.core.csrf import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
