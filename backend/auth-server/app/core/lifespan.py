@@ -13,8 +13,8 @@ async def lifespan(app: FastAPI):
     app.state.client = client
     await client.admin.command("ping")
 
-    # Run this only once if needed
     db = client.get_database()
+    # Run this only once if needed
     await db.refresh_tokens.create_index(
         [("expires_at", 1)], expireAfterSeconds=0
     )
@@ -23,7 +23,8 @@ async def lifespan(app: FastAPI):
         expireAfterSeconds=0,
         partialFilterExpression={"is_deleted": True}
     )
-    await db.users.create_index("_id", unique=True)
+    # already exists, doesn't make a difference
+    await db.users.create_index("_id")
 
 
     yield
