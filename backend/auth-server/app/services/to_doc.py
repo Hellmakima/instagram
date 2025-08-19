@@ -1,6 +1,6 @@
 # app/services/user_service.py
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from app.schemas.auth import UserCreate # Import your Pydantic model
 from app.core.security import get_password_hash # Assuming this is your hashing utility
 import uuid
@@ -22,7 +22,11 @@ async def prepare_user_for_db(user_create_data: UserCreate) -> dict:
         "hashed_password":  hashed_password,
         "created_at": datetime.now(timezone.utc),
         "is_verified": False,
-        "is_blocked": False,
-        "is_deleted": False,
+        "is_suspended": False,
+        "suspended_till": None,
+        "last_activity_at": datetime.now(timezone.utc),
+        # by default, set to delete within a day, coz not verified. Remove this once verified.
+        "is_deleted": True,
+        "delete_at": datetime.now(timezone.utc) + timedelta(days=1),
     }
     return user_doc
