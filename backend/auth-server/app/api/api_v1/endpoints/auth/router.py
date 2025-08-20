@@ -9,10 +9,10 @@ from fastapi import (
     Response, 
     status,
 )
+from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
-from fastapi.responses import JSONResponse
 from app.core.config import settings
 from app.core.security import (
     create_access_token,
@@ -21,6 +21,8 @@ from app.core.security import (
     verify_password,
     verify_token,
 )
+from app.core.csrf import CsrfProtect
+from fastapi_csrf_protect.exceptions import CsrfProtectError
 from app.schemas.auth import (
     LoginForm,
     TokenData,
@@ -48,7 +50,7 @@ db_logger = logging.getLogger("app_db")
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)  # IP-based rate limiting
 
-# TODO: fix it's place. (decide which file to put it)
+# TODO: fix it's place. (decide which file to put this function)
 @router.get(
         "/csrf-token", 
         response_class=JSONResponse
@@ -85,10 +87,7 @@ async def register(
 ):
     '''
     # User Enumeration Risk (Partial):
-
-    The current check if await users_col(db).find_one({"$and": [{"$or": [{"username": form_data.username}, {"email": form_data.email}]}, {"is_verified": True}]}) correctly avoids leaking which specific field (username or email) is taken if an account exists and is verified. This is good.
-
-    Proactive Suggestion: However, if an unverified user exists with the same username/email, the current logic would still allow a new registration, potentially leading to duplicate unverified accounts or race conditions if verification is asynchronous. Consider adding a check for any existing user (verified or unverified) and then handling the "unverified user exists" case differently (e.g., re-sending verification email).
+    The current check if await users_col(db).find_one({"$and": [{"$or": [{"username": form_data.username}, {"email": form_data.email}]}, {"is_verified": True}]}) correctly avoids leaking which specific field (username or email) is taken if an account exists and is verified. This is good. Proactive Suggestion: However, if an unverified user exists with the same username/email, the current logic would still allow a new registration, potentially leading to duplicate unverified accounts or race conditions if verification is asynchronous. Consider adding a check for any existing user (verified or unverified) and then handling the "unverified user exists" case differently (e.g., re-sending verification email).
     '''
     flow_logger.info("in register endpoint")
     
