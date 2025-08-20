@@ -1,6 +1,6 @@
 # Database Planning
 
-_later will merge this with `devdocs/build_principles.md`_
+_later will merge this with `devdocs/build_principles.md` and `devdocs/notes.md`_
 
 Maybe I'll use SQL for this. It is on hold for now.
 
@@ -101,9 +101,7 @@ Maybe I'll use SQL for this. It is on hold for now.
 
 ---
 
-## Space vs Time
-
-It's the classic **space vs time** trade-off.
+## Space vs Time trade-off.
 
 - **Storing more** = denormalization ->
 

@@ -15,7 +15,8 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
-from app.schemas.auth import APIErrorResponse, ErrorDetail, TokenData
+from app.schemas.auth import TokenData
+from app.schemas.responses import APIErrorResponse, ErrorDetail
 from app.core.config import settings
 
 import logging

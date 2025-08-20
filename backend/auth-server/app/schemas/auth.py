@@ -1,12 +1,10 @@
 """
 ### File: app/schemas/auth.py
 
-Contains the auth response schema. Describes JSON Structures for frontend requests.
+Contains the auth incomming request schema. Describes JSON Structures for frontend requests.
 """
 
-from fastapi import HTTPException, status
-from pydantic import BaseModel, Field, field_validator
-from typing import Optional
+from pydantic import BaseModel, Field, field_validator, model_validator
 import re
 
 class UserCreate(BaseModel):
@@ -52,38 +50,19 @@ class UserCreate(BaseModel):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v): # Example special characters
             raise ValueError("Password must contain at least one special character.")
         return v
-
+    
+    @model_validator(mode="after")
+    def validate_password_similarity(self):
+        # Ensure password does not contain username or email
+        if self.username.lower() in self.password.lower():
+            raise ValueError("Password must not contain the username.")
+        if self.email.split("@")[0].lower() in self.password.lower():
+            raise ValueError("Password must not contain the email name part.")
+        return self
+    
 class LoginForm(BaseModel):
     username_or_email: str = Field(..., description="Username or email of the user")
     password: str = Field(..., description="Password of the user")
 
 class TokenData(BaseModel):
     id: str = Field(..., description="Unique ID of the user")
-
-class SuccessMessageResponse(BaseModel):
-    success: bool = True
-    message: str = Field("Success", description="Message of the response")
-    data: Optional[dict] = {}
-
-class ErrorDetail(BaseModel):
-    code: str = Field(default="UNKNOWN_ERROR", description="Error code")
-    details: str = Field(default="No details provided", description="Details of the error")
-
-class APIErrorResponse(BaseModel):
-    success: bool = Field(default=False, description="Indicates failure")
-    message: str = Field(default="Error", description="Message of the response")
-    error: Optional[ErrorDetail] = None
-
-class InternalServerError(HTTPException):
-    def __init__(self, details: str = "An unexpected server error occurred."):
-        error_response = APIErrorResponse(
-            message="An unexpected server error occurred.",
-            error=ErrorDetail(
-                code="INTERNAL_SERVER_ERROR",
-                details=details
-            )
-        )
-        super().__init__(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=error_response.model_dump()
-        )

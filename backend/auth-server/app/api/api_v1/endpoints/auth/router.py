@@ -22,16 +22,13 @@ from app.core.security import (
     verify_token,
 )
 from app.schemas.auth import (
-    APIErrorResponse,
-    ErrorDetail,
-    InternalServerError,
     LoginForm,
-    SuccessMessageResponse,
     TokenData,
     UserCreate,
 )
-from app.services.to_doc import prepare_user_for_db
 
+from app.schemas.responses import APIErrorResponse, ErrorDetail, InternalServerError, SuccessMessageResponse
+from app.services.to_doc import prepare_user_for_db
 from app.core.csrf import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 
