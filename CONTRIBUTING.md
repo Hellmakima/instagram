@@ -26,5 +26,5 @@
 - Don't push to `main`. Period.
 - All your branches should be named `username/module-name/feature-name`. For example, `tojifushiguro/shops/analytics-dashboard`.
 - Same format for commit messages.
-- Use `git rebase` to squash commits before merging to `main`.
+- Use `git rebase` to squash commits before merging to `main`. **Do not do this unless you know what you are doing.**
 - [PR template](https://github.com/hellmakima/instaclone/blob/main/d:/project/instagram/PULL_REQUEST_TEMPLATE.md)
