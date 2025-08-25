@@ -3,6 +3,7 @@
 _later will merge this with `devdocs/build_principles.md` and `devdocs/notes.md`_
 
 Maybe I'll use SQL for this. It is on hold for now.
+caching is on hold for now. we'll go ahead with mongodb. Caching will be done when we have a good idea of what and how much to cache andhow to do it.
 
 ```json
 [
@@ -55,6 +56,7 @@ Maybe I'll use SQL for this. It is on hold for now.
             "is_edited": true,
             "value": "Bro this is dope.", // sanitized text
             "likes": [
+              // no cache
               {
                 "user_id": "jsbhfvlshbwurionwekvbwiorbgywsl", // user id
                 "timestamp": "2025-08-11T11:30:11.838487+00:00" // liked at

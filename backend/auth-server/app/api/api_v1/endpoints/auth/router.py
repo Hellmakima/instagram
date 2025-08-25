@@ -40,7 +40,7 @@ from app.core.csrf import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
 
 from app.db.repositories import RefreshTokenRepository, UserRepository
-from app.db.dependies import get_user_repo, get_refresh_token_repo, get_session
+from app.api.dependies import get_user_repo, get_refresh_token_repo, get_session
 
 import logging
 flow_logger = logging.getLogger("app_flow")
@@ -177,7 +177,7 @@ async def register(
             500: {"model": APIErrorResponse, "description": "Internal Server Error"},
         }
 )
-@limiter.limit("5/hour")
+@limiter.limit("10/hour")
 # TODO: use redis and make this rate limiting only for failed attempts and suspend for a while.
 async def login_user(
     form_data: LoginForm,

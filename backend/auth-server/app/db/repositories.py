@@ -68,7 +68,7 @@ class UserRepository:
 
     async def insert(self, user_doc: dict):
         res = await self.collection.insert_one(user_doc)
-        return res.inserted_id
+        return res
 
     async def find_by_id(self, user_id: str):
         return await self.collection.find_one({"_id": user_id}, projection={"_id": 1})

@@ -13,6 +13,8 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Research
 
+- MVC structure
+- ORM
 - in-memory sort operations in mongodb
 - look up [fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)
 - Appropriate Database for each service.

@@ -18,6 +18,7 @@ async def prepare_user_for_db(user_create_data: UserCreate) -> dict:
     user_doc = {
         "_id": uuid.uuid4().hex,
         "username": user_create_data.username,
+        "name": "",
         "email": user_create_data.email,
         "hashed_password":  hashed_password,
         "created_at": datetime.now(timezone.utc),
@@ -25,8 +26,9 @@ async def prepare_user_for_db(user_create_data: UserCreate) -> dict:
         "is_suspended": False,
         "suspended_till": None,
         "last_activity_at": datetime.now(timezone.utc),
-        # by default, set to delete within a day, coz not verified. Remove this once verified.
-        "is_deleted": True,
-        "delete_at": datetime.now(timezone.utc) + timedelta(days=1),
+        "is_deleted": False,
+        # by default, set to delete within a few hours, coz not verified.
+        # Remove this once verified.
+        "delete_at": datetime.now(timezone.utc) + timedelta(hours=6),
     }
     return user_doc

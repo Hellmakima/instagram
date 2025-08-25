@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Edit Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            background: #fafafa;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: bold;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            background: #3897f0;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2a7cc7;
+        }
+
+        img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Edit Profile</h1>
+    <form id="editForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" />
+        </div>
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" />
+        </div>
+        <div class="form-group">
+            <label for="description">Bio</label>
+            <textarea id="description" rows="3"></textarea>
+        </div>
+
+        <!-- Profile picture preview -->
+        <div>
+            <img id="profilePicture" alt="profile picture" src="https://placehold.co/100x100?text=?" />
+        </div>
+
+        <!-- Hidden file input -->
+        <input type="file" id="profile_picture_input" accept="image/*" style="display:none;" />
+
+        <!-- Explicit button -->
+        <button type="button" id="removePictureBtn">Remove Picture</button>
+
+        <button type="button" id="editPictureBtn">Edit Picture</button>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <div id="message" style="display:none;"></div>
+
+    <script>
+        let csrfToken = null;
+        const messageDiv = document.getElementById('message');
+        const profileEl = document.getElementById("profilePicture");
+        const fileInput = document.getElementById("profile_picture_input");
+        const usernameEl = document.getElementById("username"); // Reference the element once
+        const nameEl = document.getElementById("name"); // Reference the element once
+        const removeBtn = document.getElementById("removePictureBtn"); // New reference
+
+        function displayMessage(msg, type) {
+            messageDiv.textContent = msg;
+            messageDiv.className = type;
+            messageDiv.style.display = 'block';
+        }
+
+        // --- CSRF Token Fetch (Kept for PoC function, but not essential for this logic) ---
+        async function getCsrfToken() {
+            try {
+                const response = await fetch('/auth/csrf-token');
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                csrfToken = data.csrf_token;
+                displayMessage("CSRF token fetched. Ready to login.", 'success');
+            } catch (error) {
+                displayMessage(`Error fetching CSRF token: ${error.message}`, 'error');
+            }
+        }
+
+        function setFallback() {
+            // Use the CURRENT value of the username input field
+            const username = usernameEl.value;
+            const initial = username ? username[0].toUpperCase() : "?";
+            profileEl.src = `https://placehold.co/100x100?text=${initial}`;
+        }
+
+
+        // load dummy profile
+        function getProfile() {
+            const data = {
+                username: "TestUser",
+                name: "Test User",
+                profile_picture: "", // Empty for testing fallback
+                description: "Just a dummy bio\nJaadoo"
+            };
+
+            usernameEl.value = data.username;
+            nameEl.value = data.name;
+            document.getElementById("description").value = data.description;
+
+            if (data.profile_picture) {
+                profileEl.src = data.profile_picture;
+            } else {
+                setFallback(); // Call without argument, it reads the input field
+            }
+        }
+
+        // button opens file picker
+        document.getElementById("editPictureBtn").addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        // --- NEW LOGIC: Remove Profile Picture ---
+        if (removeBtn) {
+            removeBtn.addEventListener("click", () => {
+                // Clear the file input so no file is sent on submit
+                fileInput.value = '';
+                // Set the image back to the fallback placeholder
+                setFallback();
+                displayMessage("Picture cleared. Submit to save removal.", 'info');
+            });
+        }
+        // -----------------------------------------
+
+        // update preview when file chosen
+        fileInput.addEventListener("change", e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    profileEl.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // fallback if file picker is canceled or file input cleared
+                setFallback();
+            }
+        });
+
+        // dummy save
+        document.getElementById("editForm").addEventListener("submit", e => {
+            e.preventDefault();
+            const username = usernameEl.value;
+            const name = nameEl.value;
+            const description = document.getElementById("description").value;
+            const file = fileInput.files[0];
+
+            // Determine if the action is a removal based on the file input being empty 
+            // AND the current image being the fallback (to distinguish from no change)
+            const isRemoval = !file && profileEl.src.includes('placehold.co');
+
+            console.log("Dummy save:", {
+                username,
+                name,
+                description,
+                file: file ? file.name : "None",
+                action: isRemoval ? "Remove Existing" : (file ? "Upload New" : "No Change")
+            });
+            // alert(`Profile saved (dummy). Action: ${isRemoval ? 'Removal' : (file ? 'Upload' : 'No Picture Change')}. Check console.`);
+            displayMessage("Profile saved (dummy). Check console.", 'success');
+        });
+
+        getCsrfToken();
+        getProfile();
+    </script>
+</body>
+
+</html>

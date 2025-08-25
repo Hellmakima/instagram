@@ -3,12 +3,10 @@ fastapi # for APIs
 fastapi-csrf-protect # for CSRF protection
 motor # for MongoDB connection
 passlib[bcrypt]==1.7.4 # for password hashing
-pydantic_settings # for settings
-python-dotenv # for env vars
 python-jose[cryptography] # for JWT
 python-json-logger # for logging
 slowapi # for rate limiting
-uvicorn[standard] # for running the app
+uvicorn[standard] # for running the app, if failed to install then do uvicorn or use gunicorn
 
 # for gate.py (temporary)
 httpx # or httpx[http2] # for making HTTP requests to downstream services
