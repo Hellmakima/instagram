@@ -180,3 +180,45 @@ Think of Nginx or Traefik as a bouncer at the door. Their job is to filter reque
 In a robust architecture, these two layers work in tandem to provide comprehensive security. The proxy handles the high-volume, low-effort attacks, while your application handles the specific, high-value logic for account protection.
 
 ---
+
+## Python Decorators
+
+**What are decorators?**
+
+- A decorator is a function that wraps another function to extend or modify its behavior without changing its source code.
+
+Common uses:
+
+- Logging
+- Authentication/permissions
+- Caching/memoization
+- Timing functions
+- Input validation
+
+Example:
+
+```python
+def deco(fn):
+def wrapper(*a, \*\*kw):
+print("Before")
+res = fn(*a, \*\*kw)
+print("After")
+return res
+return wrapper
+
+@deco
+def hello():
+print("Hello")
+
+hello()
+```
+
+Output:
+
+```text
+Before
+Hello
+After
+```
+
+---

@@ -17,12 +17,10 @@ from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
-    # get_current_user,
     verify_password,
     verify_token,
 )
-from app.core.csrf import CsrfProtect
-from fastapi_csrf_protect.exceptions import CsrfProtectError
+from app.core.csrf import CsrfProtect, verify_csrf
 from app.schemas.auth import (
     LoginForm,
     TokenData,
@@ -35,9 +33,6 @@ from app.schemas.responses import (
     SuccessMessageResponse,
 )
 from app.services.to_doc import prepare_user_for_db
-
-from app.core.csrf import CsrfProtect
-from fastapi_csrf_protect.exceptions import CsrfProtectError
 
 from app.db.repositories import RefreshTokenRepository, UserRepository
 from app.api.dependies import get_user_repo, get_refresh_token_repo, get_session
@@ -81,22 +76,14 @@ async def generate_csrf_token(
 async def register(
     form_data: UserCreate,
     request: Request,
-    response: Response,
+    _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
-    csrf_protect: CsrfProtect = Depends(),
 ):
     '''
     # User Enumeration Risk (Partial):
     The current check if await users_col(db).find_one({"$and": [{"$or": [{"username": form_data.username}, {"email": form_data.email}]}, {"is_verified": True}]}) correctly avoids leaking which specific field (username or email) is taken if an account exists and is verified. This is good. Proactive Suggestion: However, if an unverified user exists with the same username/email, the current logic would still allow a new registration, potentially leading to duplicate unverified accounts or race conditions if verification is asynchronous. Consider adding a check for any existing user (verified or unverified) and then handling the "unverified user exists" case differently (e.g., re-sending verification email).
     '''
     flow_logger.info("in register endpoint")
-    
-    try:
-        await csrf_protect.validate_csrf(request)
-        flow_logger.info("CSRF token validated successfully.")
-    except CsrfProtectError:
-        flow_logger.error("CSRF token validation failed.")
-        raise
 
     # Check if user already exists
     try:
@@ -157,7 +144,6 @@ async def register(
         raise InternalServerError()
 
     security_logger.info("New user registered successfully with id '%s'.", rec["_id"])
-    csrf_protect.unset_csrf_cookie(response)
 
     # Return success response
     return SuccessMessageResponse(
@@ -173,27 +159,20 @@ async def register(
         responses={
             400: {"model": APIErrorResponse, "description": "Bad Request"},
             401: {"model": APIErrorResponse, "description": "Unauthorized"},
-            403: {"model": APIErrorResponse, "description": "Forbidden (CSRF error)"},
             500: {"model": APIErrorResponse, "description": "Internal Server Error"},
         }
 )
 @limiter.limit("10/hour")
 # TODO: use redis and make this rate limiting only for failed attempts and suspend for a while.
-async def login_user(
+async def login(
     form_data: LoginForm,
     request: Request,
     response: Response,
+    _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
-    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
-    csrf_protect: CsrfProtect = Depends(),
+    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo)
 ):
     flow_logger.info("in login endpoint")
-    try:
-        await csrf_protect.validate_csrf(request)
-        flow_logger.info("CSRF token validated successfully.")
-    except CsrfProtectError:
-        flow_logger.error("CSRF token validation failed.")
-        raise
 
     try:
         rec = await user_repo.find_by_username_or_email(form_data.username_or_email)
@@ -288,8 +267,6 @@ async def login_user(
         samesite="lax",
     )
 
-    csrf_protect.unset_csrf_cookie(response)
-
     security_logger.info("User '%s' logged in successfully.", rec["_id"])
 
     # Return success response
@@ -306,23 +283,16 @@ async def login_user(
         responses={
             400: {"model": APIErrorResponse, "description": "Bad Request"},
             401: {"model": APIErrorResponse, "description": "Unauthorized"},
-            403: {"model": APIErrorResponse, "description": "Forbidden (CSRF error)"},
             500: {"model": APIErrorResponse, "description": "Internal Server Error"},
         }
 )
-async def logout_user(
+async def logout(
     request: Request,
     response: Response,
-    csrf_protect: CsrfProtect = Depends(),
+    _: None = Depends(verify_csrf),
     refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
 ):
     flow_logger.info("in logout endpoint")
-    try:
-        await csrf_protect.validate_csrf(request)
-        flow_logger.info("CSRF token validated successfully.")
-    except CsrfProtectError:
-        flow_logger.error("CSRF token validation failed.")
-        raise
 
     try:
         token = request.cookies.get("access_token")
@@ -354,7 +324,6 @@ async def logout_user(
     # Unset the refresh token cookie
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
-    csrf_protect.unset_csrf_cookie(response)
 
     security_logger.info("User '%s' logged out successfully.", user.id)
 
@@ -362,7 +331,7 @@ async def logout_user(
         message="Logout successful."
     )
 
-# refresh_token
+
 @router.post(
         "/refresh_token", 
         summary="Rotate access token",
@@ -371,23 +340,16 @@ async def logout_user(
         responses={
             400: {"model": APIErrorResponse, "description": "Bad Request"},
             401: {"model": APIErrorResponse, "description": "Unauthorized"},
-            403: {"model": APIErrorResponse, "description": "Forbidden (CSRF error)"},
             500: {"model": APIErrorResponse, "description": "Internal Server Error"},
         }
 )
 async def refresh_access_token(
     request: Request,
-    csrf_protect: CsrfProtect = Depends(),
+    _: None = Depends(verify_csrf),
     refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
     session=Depends(get_session)
 ):
     flow_logger.info("in refresh token endpoint")
-    try:
-        await csrf_protect.validate_csrf(request)
-        flow_logger.info("CSRF token validated successfully.")
-    except CsrfProtectError:
-        flow_logger.error("CSRF token validation failed.")
-        raise
 
     try:
         token = request.cookies.get("access_token")
@@ -467,8 +429,6 @@ async def refresh_access_token(
         samesite="lax",
     )
 
-    csrf_protect.unset_csrf_cookie(response)
-    
     return SuccessMessageResponse(
         message="Token refreshed successfully."
     )
