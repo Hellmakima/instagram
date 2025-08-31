@@ -13,5 +13,6 @@ httpx # or httpx[http2] # for making HTTP requests to downstream services
 
 # optional installs
 locust # for load testing
-pytest
 python-multipart # for file uploads
+pytest
+pytest-asyncio # for async tests eg: motor

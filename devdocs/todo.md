@@ -8,6 +8,9 @@ _Search for `TODO` in all files to see all the todos_
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
 - implement better documentation for code
+- write tests for the project so far
+  - remove warnings that show up on pytest
+  - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
 - improve project documentation
   - verify requirements.txt by making a new venv and testing the project.
 

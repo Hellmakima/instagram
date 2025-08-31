@@ -6,13 +6,15 @@ These are loaded from .env file.
 """
 from dotenv import load_dotenv
 from pydantic import Field, ValidationError, field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 load_dotenv()
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", case_sensitive=True)
+
     MONGODB_URI: str = Field(..., description="MongoDB URI")
-    MONGODB_DB: str = Field(..., description="MongoDB Database")
+    MONGODB_DBNAME: str = Field(..., description="MongoDB Database")
     CSRF_SECRET: str = Field(..., description="CSRF Secret")
     
     JWT_SECRET_KEY: str = Field(..., description="JWT Secret Key")
@@ -28,11 +30,7 @@ class Settings(BaseSettings):
         days = info.data.get('REFRESH_TOKEN_EXPIRE_DAYS', 30)
         return days * 24 * 60
 
-    class Config:
-        env_file = ".env"  # Load from .env file
-        case_sensitive = True
-
 try:
-    settings = Settings()
+    settings = Settings() # type: ignore
 except ValidationError as e:
     raise RuntimeError(f"Invalid configuration (.env file): {e}") from e

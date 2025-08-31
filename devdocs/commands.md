@@ -40,3 +40,16 @@ npx create-next-app@latest frontend
 (venv) ~/backend/gate> uvicorn main:app --reload --port 5000
 (venv) ~/backend/auth-server> uvicorn app.main:app --reload --port 5001
 ```
+
+### Run Tests
+
+```bash
+(venv) ~/backend/auth-server> pytest
+```
+
+for windows:
+
+```powershell
+(venv) ~\backend\auth-server> $env:PYTHONPATH = "D:\project\instagram\backend\auth-server"
+(venv) ~\backend\auth-server> pytest
+```

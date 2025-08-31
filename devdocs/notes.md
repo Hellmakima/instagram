@@ -222,3 +222,86 @@ After
 ```
 
 ---
+
+## Testing in Python
+
+We'll focus mainly on **unit testing** with `pytest`.
+
+### Unit Testing
+
+- Unit tests check **one small piece of code (a function, method, or class)** in isolation.
+- Goal: verify _given X input → expect Y output or exception_.
+- Use mocks/fakes (e.g. `from unittest.mock import MagicMock`) to replace dependencies:
+
+  - Can simulate methods/attributes.
+  - Can record calls (how many times, with what args, etc.).
+  - Avoids needing real DBs, networks, or external services.
+
+### pytest
+
+- Most popular Python test framework.
+- Features: fixtures, parametrization, async support, rich plugins.
+- **Test discovery:**
+
+  - Test files → must start with `test_` or end with `_test.py`.
+  - Test functions/classes → must start with `test_`.
+
+- **Fixtures (`conftest.py`)**:
+
+  - Shared setup/teardown helpers.
+  - Declared once, available across all tests in that directory tree.
+  - Great for DB setup, app clients, mock configs.
+
+- Tests should be:
+
+  - **Simple/dumb** (minimal logic, easy to read).
+  - Focused (test one behavior at a time).
+  - Independent (shouldn't depend on order of execution).
+
+- Common structure:
+
+  - `tests/` folder mirrors app layout (1 test file per module).
+  - Integration/system tests may live alongside or in a separate folder.
+
+### Other points worth knowing
+
+- **Parametrization** → one test covers multiple inputs/expected outputs.
+- **Exceptions** → use `pytest.raises` to check errors.
+- **Integration vs Unit** →
+
+  - Unit = isolate function logic.
+  - Integration = check multiple parts (e.g. FastAPI endpoint + DB).
+
+- **Naming** → clear test names help: `test_<function>_<condition>_<expected>()`.
+- **Coverage** → tools like `pytest-cov` measure how much code is exercised.
+
+Rule of thumb: **don't test everything, test what can break.**
+
+### Minimum FastAPI Test Checklist
+
+1. **App boots**
+
+   - Spin up `TestClient(app)` → root endpoint `/` returns `200`.
+   - Ensures lifespan events + routers load.
+
+2. **One happy path per router**
+
+   - For each main feature (users, auth, posts…), hit one endpoint with valid data.
+   - Assert `200` and a key field in the response.
+
+3. **One error path per router**
+
+   - Invalid input or missing auth.
+   - Assert `4xx` and correct error body.
+
+4. **DB wiring works**
+
+   - Insert + fetch from test DB (or mock DB).
+   - Confirms your `app.state.client` / repositories are connected.
+
+5. **Security edge case**
+
+   - Expired/invalid JWT or missing CSRF.
+   - Assert rejection (`401/403`).
+
+---
