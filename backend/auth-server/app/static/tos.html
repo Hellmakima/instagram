@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Terms of Service</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 700px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        p,
+        li {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        ul {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .highlight {
+            background: #e9f5ff;
+            padding: 10px;
+            border-left: 4px solid #007bff;
+            margin: 20px 0;
+            border-radius: 4px;
+            color: #0056b3;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Terms of Service</h2>
+        <p>Welcome. Please read these terms carefully before registering.</p>
+
+        <ul>
+            <li>You agree to provide accurate and truthful information.</li>
+            <li>You must use this platform responsibly and lawfully.</li>
+            <li>Abuse, spam, or illegal activity may result in suspension or termination.</li>
+        </ul>
+
+        <div class="highlight">
+            <strong>Note:</strong> These terms may be updated from time to time. It is your responsibility to stay
+            informed.
+        </div>
+
+        <!-- <label for="opt-out">
+            <input type="checkbox" id="opt-out" name="opt-out">
+            I do not want to receive TOS updates.
+        </label> -->
+
+        <p>By registering, you confirm you have read and agree to these Terms of Service.</p>
+        <button type="submit">return</button>
+    </div>
+    <script>
+        document.querySelector('button').addEventListener('click', () => {
+            // go back to the previous page
+            window.history.back();
+        });
+    </script>
+</body>
+
+</html>
