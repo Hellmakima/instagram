@@ -305,3 +305,74 @@ Rule of thumb: **don't test everything, test what can break.**
    - Assert rejection (`401/403`).
 
 ---
+
+## FastAPI Background Tasks
+
+if you want:
+
+1. Send response right away
+2. Run `foo()` after, but **not in a separate thread/process**
+
+In FastAPI (or Starlette under the hood), the way to do this is with **background tasks**, not `yield`. Background tasks still run in the same process, just after the response is returned.
+
+Example:
+
+```python
+from fastapi import FastAPI, BackgroundTasks
+
+app = FastAPI()
+
+def foo():
+    print("running after response")
+
+@app.get("/")
+def home(background_tasks: BackgroundTasks):
+    background_tasks.add_task(foo)
+    return {"status": 200, "msg": "ok"}
+```
+
+What happens:
+
+* Client gets `{"status": 200, "msg": "ok"}` immediately.
+* Then FastAPI runs `foo()` right after finishing the response.
+* No threading, no separate worker needed.
+
+### yeild in FastAPI
+
+Those don't go together.
+
+In a **web route** (`@app.get("/")` in FastAPI):
+
+* You just `return` something (dict, JSON, HTML, etc.).
+* You **don’t** `yield` — unless you’re streaming responses.
+
+Example FastAPI route:
+
+```python
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"status": 200, "msg": "ok"}
+```
+
+If you actually wrote:
+
+```python
+@app.get("/")
+def home():
+    yield {"status": 200}
+    foo()
+```
+
+What happens:
+
+* FastAPI sees the `yield` → treats it like an async generator endpoint.
+* The response will **stream out pieces** of data.
+* `foo()` would run after sending the first chunk.
+
+So `yield` inside routes = **streaming** (rarely what you want).
+
+---

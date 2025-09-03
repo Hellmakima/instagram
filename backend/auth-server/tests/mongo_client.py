@@ -5,14 +5,12 @@ import logging
 import json
 from datetime import datetime
 
-
 class MongoHandler():
     def __init__(self, db_name: str, collection_name: str):
         self.__db_name = db_name
         self.__collection_name = collection_name
-        self.__db_client = AsyncIOMotorClient(
-            os.environ.get('TEST_MONGODB_URL')
-        )
+        self.__db_client = AsyncIOMotorClient(os.environ.get('MONGODB_URI'))
+        self.db = self.__db_client[self.__db_name]
 
     async def get_sample_resource(self, resource_id: UUID):
         return await self.__db_client[self.__db_name][self.__collection_name]\

@@ -18,6 +18,7 @@ _Search for `TODO` in all files to see all the todos_
 
 - MVC structure
 - ORM
+- see if we need `psutil`
 - in-memory sort operations in mongodb
 - look up [fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)
 - Appropriate Database for each service.
@@ -93,8 +94,13 @@ _Search for `TODO` in all files to see all the todos_
     - lint: run lint checks
     - clean: clear caches (pycache, pytest_cache, etc)
   - Dockerfile
+  - docker-compose.yml
+  - pyproject.toml
+  - uv.yaml
 - set refresh tokens only if user wants to
-- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`
+- Look into `gunicorn` + `uvicorn.workers.UvicornWorker`, or using `uvicorn` and `gunicorn` together.
+- see if we can use `pip install cookiecutter` to generate our project
+- try `uv` package manager instead of `pip` and `venv`
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during load testing. This will show you exactly which lines of code are consuming the most CPU time.
 - For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX, etc.) to handle all the traffic.
 - Use Redis insted of get_current_user() if that becomes a bottleneck.
