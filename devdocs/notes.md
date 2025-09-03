@@ -304,6 +304,12 @@ Rule of thumb: **don't test everything, test what can break.**
    - Expired/invalid JWT or missing CSRF.
    - Assert rejection (`401/403`).
 
+### from a [tutorial](https://www.youtube.com/watch?v=mzlH8lp4ISA)
+
+**3 Major Types of Tests**- Function based tests, class based tests (good for organization, uses inheritance, not recommended), Classic unit tests.
+
+
+
 ---
 
 ## FastAPI Background Tasks
