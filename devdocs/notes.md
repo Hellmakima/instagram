@@ -223,28 +223,17 @@ After
 
 ---
 
-## Testing in Python
+## Testing FastAPI + Motor + MongoDB with pytest
 
 We'll focus mainly on **unit testing** with `pytest`.
 
-### Unit Testing
-
-- Unit tests check **one small piece of code (a function, method, or class)** in isolation.
-- Goal: verify _given X input → expect Y output or exception_.
-- Use mocks/fakes (e.g. `from unittest.mock import MagicMock`) to replace dependencies:
-
-  - Can simulate methods/attributes.
-  - Can record calls (how many times, with what args, etc.).
-  - Avoids needing real DBs, networks, or external services.
-
 ### pytest
 
-- Most popular Python test framework.
-- Features: fixtures, parametrization, async support, rich plugins.
-- **Test discovery:**
+### from a [tutorial](https://www.youtube.com/watch?v=mzlH8lp4ISA) and beloved [ChatGPT](https://chatgpt.com/?temporary-chat=true)
+Rule of thumb: **don't test everything, test what can break.**
 
-  - Test files → must start with `test_` or end with `_test.py`.
-  - Test functions/classes → must start with `test_`.
+
+### General guidelines
 
 - **Fixtures (`conftest.py`)**:
 
@@ -252,63 +241,169 @@ We'll focus mainly on **unit testing** with `pytest`.
   - Declared once, available across all tests in that directory tree.
   - Great for DB setup, app clients, mock configs.
 
-- Tests should be:
-
-  - **Simple/dumb** (minimal logic, easy to read).
-  - Focused (test one behavior at a time).
-  - Independent (shouldn't depend on order of execution).
-
-- Common structure:
-
-  - `tests/` folder mirrors app layout (1 test file per module).
-  - Integration/system tests may live alongside or in a separate folder.
-
-### Other points worth knowing
-
 - **Parametrization** → one test covers multiple inputs/expected outputs.
-- **Exceptions** → use `pytest.raises` to check errors.
-- **Integration vs Unit** →
+- **Test discovery:**
 
-  - Unit = isolate function logic.
-  - Integration = check multiple parts (e.g. FastAPI endpoint + DB).
+  - Test files → must start with `test_` or end with `_test.py`.
+  - Test functions/classes → must start with `test_`.
 
 - **Naming** → clear test names help: `test_<function>_<condition>_<expected>()`.
 - **Coverage** → tools like `pytest-cov` measure how much code is exercised.
 
-Rule of thumb: **don't test everything, test what can break.**
+#### Steps
 
-### Minimum FastAPI Test Checklist
+1. **Setup fixtures**
 
-1. **App boots**
+   * Spin up a **test MongoDB** (could be a real ephemeral DB via `mongomock` or `testcontainers` Mongo).
+   * Async `user_repo` fixture that points to the test DB.
+   * Client fixture (`httpx.AsyncClient` + FastAPI `TestClient`) with dependency overrides to inject the test repo.
 
-   - Spin up `TestClient(app)` → root endpoint `/` returns `200`.
-   - Ensures lifespan events + routers load.
+2. **Happy path test**
 
-2. **One happy path per router**
+   * Send valid payload.
+   * Assert `201 Created`.
+   * Check DB actually has the new user with `is_verified=False`.
+   * Response body matches `SuccessMessageResponse`.
 
-   - For each main feature (users, auth, posts…), hit one endpoint with valid data.
-   - Assert `200` and a key field in the response.
+3. **Duplicate user tests**
 
-3. **One error path per router**
+   * Insert a verified user before calling.
+   * Send same username/email.
+   * Assert `400` with `USER_EXISTS`.
+   * Make sure the response never reveals whether it was username or email.
 
-   - Invalid input or missing auth.
-   - Assert `4xx` and correct error body.
+4. **Unverified user edge case** (the one you documented as a risk)
 
-4. **DB wiring works**
+   * Insert an unverified user first.
+   * Call register again.
+   * Decide what your intended policy is: block, resend verification, or allow duplicate.
+   * Assert behavior matches that policy.
 
-   - Insert + fetch from test DB (or mock DB).
-   - Confirms your `app.state.client` / repositories are connected.
+5. **CSRF dependency**
 
-5. **Security edge case**
+   * Mock/fake `verify_csrf` dependency.
+   * One test where it passes.
+   * One test where it fails → expect `403`.
 
-   - Expired/invalid JWT or missing CSRF.
-   - Assert rejection (`401/403`).
+6. **Rate limit behavior**
 
-### from a [tutorial](https://www.youtube.com/watch?v=mzlH8lp4ISA)
+   * Patch limiter to a test mode.
+   * Flood requests and assert you eventually get `429 Too Many Requests`.
 
-**3 Major Types of Tests**- Function based tests, class based tests (good for organization, uses inheritance, not recommended), Classic unit tests.
+7. **DB failure simulation**
 
+   * Monkeypatch `user_repo.find_verified` or `user_repo.insert` to raise an exception.
+   * Assert endpoint returns `500` with your `InternalServerError`.
 
+8. **Logging side-effects** (optional but nice in a mature suite)
+
+   * Capture logs with `caplog`.
+   * Assert certain log messages appear on success and failure paths.
+
+### Other points to know
+
+- no need to spin up uvicorn, pytest will do that for you.
+  - it uses the `.env.test` file to set environment variables.
+- tests will never touch the real DB. Instead, they use a test DB defined in `.env.test`.
+- shared files like `conftest.py` and `mongo` are in the `tests/` folder.
+
+### Types of Tests
+
+* **Unit tests**
+
+  * Isolate a single function or class.
+  * Mock dependencies (e.g. repos, external services).
+  * Fast, no DB.
+  * **Simple/dumb** (minimal logic, easy to read).
+  * Focused (test one behavior at a time).
+  * Purpose: verify *logic correctness*.
+  * Independent (shouldn't depend on order of execution).
+
+* **Integration tests**
+
+  * Use real DB (test Mongo instance).
+  * Verify persistence, side-effects, and wiring.
+  * Purpose: ensure *components work together*.
+
+* **API/Functional tests**
+
+  * Use FastAPI `TestClient`.
+  * Hit endpoints over HTTP, assert status codes + payloads.
+  * Purpose: verify *API contract*.
+
+* (Optional later): regression, property-based, performance, security, etc.
+
+### File Structure
+
+Recommended pattern:
+
+```
+project/
+  app/
+    routes/
+      auth.py
+    repos/
+      refresh_token_repo.py
+  tests/
+    unit/
+      routes/
+        test_auth.py              # unit tests for login (mock repo)
+      repos/
+        test_refresh_token_repo.py # unit tests for repo insert/find
+    integration/
+      test_auth_flow.py           # full login + token in DB
+    functional/
+      test_auth_api.py            # TestClient hitting /login
+```
+
+### Example: `login` Route
+
+* **Unit** → mirror app structure.
+* **Integration** → grouped by flow/feature.
+* **Functional/API** → endpoint-focused.
+
+```python
+# app/routes/auth.py
+@router.post("/login")
+async def login(data: LoginRequest, repo: RefreshTokenRepo):
+    user = await repo.find_user(data.username)
+    if not user or not verify_pw(data.password, user.hashed_pw):
+        raise HTTPException(401, "invalid creds")
+    token = make_token(user.id)
+    await repo.insert(token)
+    return {"access": token}
+```
+
+#### Unit test (mock repo, test logic only)
+
+```python
+async def test_login_success(monkeypatch):
+    repo = FakeRepo(user=User("u", "pw"))
+    monkeypatch.setattr("app.routes.auth.make_token", lambda _: "tok")
+    resp = await login(LoginRequest("u","pw"), repo)
+    assert resp == {"access": "tok"}
+```
+
+#### Integration test (real DB, test side-effects)
+
+```python
+async def test_login_inserts_token(test_db, client):
+    resp = client.post("/login", json={"username":"u","password":"pw"})
+    assert resp.status_code == 200
+    token = resp.json()["access"]
+    # Check token is stored in Mongo
+    doc = await test_db.tokens.find_one({"token": token})
+    assert doc is not None
+```
+
+#### API/Functional test (focus on HTTP contract)
+
+```python
+def test_login_api(client):
+    resp = client.post("/login", json={"username":"u","password":"pw"})
+    assert resp.status_code == 200
+    assert "access" in resp.json()
+```
 
 ---
 

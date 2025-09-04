@@ -48,6 +48,7 @@ _Search for `TODO` in all files to see all the todos_
   - same for is_deleted
     - but here the enty moves to a separate collection with PII removed.
 - redo cookie setting, add samesite, httponly, secure, path, domain, etc once respective frontend is done.
+- use `pytest-cov`
 - add password related endpoints [change password, forgot password, reset password]
 - add user related endpoints [create user, delete user, update user]
 - Require re-authentication for key operations (email changes, MFA toggles).
