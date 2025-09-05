@@ -300,6 +300,33 @@ Rule of thumb: **don't test everything, test what can break.**
    * Capture logs with `caplog`.
    * Assert certain log messages appear on success and failure paths.
 
+#### DB related setup
+
+1. **Separate DB**:
+
+   * Use a dedicated test DB (like `myapp_test`).
+   * Never touch prod or staging DBs.
+
+2. **Empty at start**:
+
+   * Tests don’t rely on preloaded prod data.
+   * Each test either creates what it needs or you load a small fixture dataset.
+
+3. **Isolation**:
+
+   * Clean up after each test (truncate collections, rollback transactions, or use `delete_many({})`).
+   * Ensures tests don’t leak state.
+
+4. **Optional seeding**:
+
+   * If many tests need the same baseline data (e.g. one admin user), seed it once in a fixture.
+   * Keep it minimal and fake.
+
+5. **Automation**:
+
+   * CI/CD spins up the test DB automatically (often in Docker).
+   * Dropped after tests finish.
+
 ### Other points to know
 
 - no need to spin up uvicorn, pytest will do that for you.

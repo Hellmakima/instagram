@@ -4,7 +4,7 @@
 Contains the security related functions like hashing, verifying passwords, creating access and refresh tokens etc.
 JWT is used for authentication.
 """
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from jose import jwt
@@ -104,50 +104,3 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
     except JWTError:
         flow_logger.error("Error verifying token")
         raise credentials_exception
-
-
-# from app.db.db import get_db
-# from app.db.collections import users_col
-# from app.schemas.user import UserMe
-# from motor.motor_asyncio import AsyncIOMotorDatabase
-
-# async def get_current_user(
-'''
-# TODO: rework on this
-- no need to verify token here
-- `OAuth2PasswordBearer` is not for our cookie based auth
-'''
-#     db: AsyncIOMotorDatabase = Depends(get_db)
-# ) -> UserMe:
-#     # TODO: Decide if I really get_current_user() or repurpose it.
-#     flow_logger.info("in get_current_user")
-#     credentials_exception = HTTPException(
-#         status_code=status.HTTP_401_UNAUTHORIZED,
-#         detail="Could not validate credentials",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-    
-#     try:
-#         user = verify_token(token)
-#         if not user:
-#             raise credentials_exception
-#     except HTTPException as e:
-#         flow_logger.error("Error verifying token: %s", str(e))
-#         # Re-raise any HTTPExceptions from verify_token
-#         raise e
-#     except JWTError:
-#         flow_logger.error("Error verifying token")
-#         raise credentials_exception
-#     user_data = await users_col(db).find_one(
-#         {"_id": user.id},
-#         projection={"_id": 1, "username": 1}
-#     )
-#     if not user_data:
-#         flow_logger.error("User not found in DB")
-#         raise HTTPException(
-#         status_code=status.HTTP_404_NOT_FOUND,
-#         detail="User not found",
-#         headers={"WWW-Authenticate": "Bearer"},
-#     )
-#     return UserMe(**user_data)
-

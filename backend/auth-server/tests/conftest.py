@@ -1,16 +1,19 @@
 # tests/conftest.py
+
 import os
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
+from dotenv import load_dotenv
 from app.main import app as fastapi_app
 from .mongo_client import MongoClient
 
+load_dotenv(dotenv_path=".env.test", override=True)
 
 @pytest.fixture(scope="session", autouse=True)
 def env_setup():
-    os.environ["MONGODB_DBNAME"] = os.environ.get("TEST_DB_NAME", "instagram_test")
-    os.environ["MONGODB_URL"] = os.environ.get("TEST_MONGODB_URL", "mongodb://localhost:27017/instagram_test")
+    os.environ.setdefault("MONGODB_DBNAME", "instagram_test")
+    os.environ.setdefault("MONGODB_URL", "mongodb://localhost:27017/instagram_test")
 
 
 @pytest.fixture(scope="session")
