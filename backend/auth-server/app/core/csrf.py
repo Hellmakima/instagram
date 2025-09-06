@@ -1,6 +1,6 @@
 # app/core/csrf.py
 
-from fastapi import Response, Depends, Request
+from fastapi import Response, Depends, Request, status
 from fastapi.responses import JSONResponse
 from fastapi_csrf_protect import CsrfProtect
 from fastapi_csrf_protect.exceptions import CsrfProtectError
@@ -32,7 +32,7 @@ def csrf_exception_handler(request: Request, exc: Exception):
         raise exc  # re-raise if not the expected exception
 
     return JSONResponse(
-        status_code=exc.status_code,
+        status_code=status.HTTP_403_FORBIDDEN,
         content={
             "success": False,
             "message": "CSRF validation failed",

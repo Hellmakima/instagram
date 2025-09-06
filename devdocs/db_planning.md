@@ -4,6 +4,8 @@ _later will merge this with `devdocs/build_principles.md` and `devdocs/notes.md`
 
 Maybe I'll use SQL for this. It is on hold for now.
 caching is on hold for now. we'll go ahead with mongodb. Caching will be done when we have a good idea of what and how much to cache andhow to do it.
+Another reason is mongodb provides `primary–replica` set architecture, which is a must for a production-ready system.
+Might need GrpahQL for storing relations between users, posts, etc.
 
 ```json
 [

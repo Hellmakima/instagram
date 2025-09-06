@@ -3,17 +3,12 @@
 import os
 import pytest
 import pytest_asyncio
-from fastapi.testclient import TestClient
 from dotenv import load_dotenv
 from app.main import app as fastapi_app
-from .mongo_client import MongoClient
+from .mongo_client import TestMongoClient
+from httpx import AsyncClient, ASGITransport
 
 load_dotenv(dotenv_path=".env.test", override=True)
-
-@pytest.fixture(scope="session", autouse=True)
-def env_setup():
-    os.environ.setdefault("MONGODB_DBNAME", "instagram_test")
-    os.environ.setdefault("MONGODB_URL", "mongodb://localhost:27017/instagram_test")
 
 
 @pytest.fixture(scope="session")
@@ -21,19 +16,38 @@ def app():
     return fastapi_app
 
 
-@pytest.fixture()
-def test_client(app, env_setup):
-    with TestClient(app) as client:
-        yield client
+@pytest_asyncio.fixture()
+async def mongo_client():
+    async with TestMongoClient(
+        os.getenv("MONGODB_DBNAME", "instagram_test"),
+        os.getenv("MONGODB_USERS_COLLECTION", "users")
+    ) as mongo:
+        yield mongo
 
 
 @pytest_asyncio.fixture()
-async def mongo_client(env_setup):
-    print("\033[92mSetting test db\033[0m")
-    async with MongoClient(
-        os.environ["MONGODB_DBNAME"],
-        "users"
-    ) as mongo:
-        yield mongo
-        await mongo.db["users"].delete_many({})
-        await mongo.db["refresh_tokens"].delete_many({})
+async def async_client(app, mongo_client):
+    """
+    This sets client for rest of the tests
+    """
+    app.state.client = mongo_client
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        yield client
+    """
+    TODO: change this fixture to use asgi_lifespan. coz currently it is more manual.
+    ```py
+    from asgi_lifespan import LifespanManager
+    from httpx import AsyncClient, ASGITransport
+    import pytest_asyncio
+
+    @pytest_asyncio.fixture()
+    async def async_client(app, mongo_client):
+        async with LifespanManager(app):           # runs startup/shutdown
+            app.state.client = mongo_client
+            transport = ASGITransport(app=app)
+            async with AsyncClient(transport=transport, base_url="http://test") as client:
+                yield client
+    ```
+    """
+

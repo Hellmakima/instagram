@@ -47,19 +47,19 @@ limiter = Limiter(key_func=get_remote_address)  # IP-based rate limiting
 
 # TODO: fix it's place. (decide which file to put this function)
 @router.get(
-        "/csrf-token", 
-        response_class=JSONResponse
+    "/csrf-token",
+    response_model=SuccessMessageResponse
 )
 async def generate_csrf_token(
-    csrf_protect: CsrfProtect = Depends(),
+    response: Response,
+    csrf_protect: CsrfProtect = Depends()
 ):
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
-    response = JSONResponse(
-        status_code=200,
-        content={"csrf_token": csrf_token}
-    )
     csrf_protect.set_csrf_cookie(signed_token, response)
-    return response
+    return SuccessMessageResponse(
+        message="CSRF token generated successfully.",
+        data={"csrf_token": csrf_token}
+    )
 
 
 @router.post(

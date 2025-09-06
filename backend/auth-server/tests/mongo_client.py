@@ -27,7 +27,7 @@ class MongoHandler():
         self.__db_client.close()
 
 
-class MongoClient():
+class TestMongoClient():
     def __init__(self, db_name: str, collection_name: str):
         self.__db_handler = MongoHandler(db_name, collection_name)
 

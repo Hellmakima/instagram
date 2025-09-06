@@ -10,42 +10,29 @@ Designed with modularity, clarity, and scalability in mind.
 ## Getting Started
 
 ### 1. Clone the Repository
- 
+
 ```bash
 git clone https://github.com/hellmakima/instagram.git
 ```
 
-### 2. Create a Virtual Environment
+### 2. Install Backend Dependencies
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-### 3. Install Backend Dependencies
-
-```bash
-pip install -r instagram/backend/devdocs/requirements.txt
+pip install -r ./instagram/backend/devdocs/requirements.txt
 ```
 
 or
 install from [pips.txt](https://github.com/hellmakima/instagram/blob/main/devdocs/pips.txt) one by one.
 
-### 4. Run the Backend Server
+### 3. Run the Backend Servers
 
 ```bash
-(venv) ~/instagram/backend/gate$ uvicorn main:app --reload --port 5000
+(venv) ~/instagram/backend/gate$ uvicorn main:app --port 5000
 (venv) ~/instagram/backend/auth-server$ uvicorn app.main:app --reload --port 5001
 (venv) ~/instagram/backend/resource-server$ uvicorn app.main:app --reload --port 5002
 ```
 
 Each server has its swagger docs at `http://localhost:5000/docs`.
-
-### 5. Setup and Run Frontend
-
-```bash
-~/instagram/frontend$ npm i && npm run dev
-```
 
 ---
 
@@ -70,8 +57,6 @@ Each server has its swagger docs at `http://localhost:5000/docs`.
 ## Author
 
 Developed by [@hellmakima](https://github.com/hellmakima)
-
-> "If you find a bug, it's either a feature or a reminder that we're always learning."
 
 ---
 
