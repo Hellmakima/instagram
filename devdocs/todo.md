@@ -7,9 +7,16 @@ _Search for `TODO` in all files to see all the todos_
 - write tests for the project so far
   - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
 
-## Upcomming
+## Upcomming **Waku-Waku**
 
-- design a logo for the app
+- design a logo for the app. The logo must comply with the following rules:
+  - Vector design, square format
+  - Works in both light & dark mode
+  - Recognizable even when pixelated
+  - Animated
+  - Symbolizes growth, privacy, and security
+  - Color palette applied
+  - I'm thinking sequoia seed or sapling as a logo
 - make a youtube video about this project
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
@@ -22,8 +29,7 @@ _Search for `TODO` in all files to see all the todos_
     bool verified = is_verified(login_form)
     return SuccessResponse('You did good')
   ```
-- use `uv` package manager instead of `pip` and `venv`
-- setup docker
+- use `uv` package manager instead of `pip` and `venv` after getting python 3.14
 
 ## Research
 
@@ -31,21 +37,23 @@ _Search for `TODO` in all files to see all the todos_
 - ORM
 - see if we need `psutil`
 - in-memory sort operations in mongodb
-- look up [fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)
 - Appropriate Database for each service.
   - For auth, file storage, maybe cassandra for linking between videos.
 - IP validation helpers
 - nginx vs traefik or others
-
   - Traefik is a **modern reverse proxy + load balancer** built for microservices and APIs.
-
     - It sits in front of your apps (like Nginx/HAProxy would) and routes traffic.
     - Auto-discovers services from Docker, Kubernetes, or your config.
     - Handles SSL certs automatically via Let’s Encrypt.
     - Supports sticky sessions, load balancing, middleware (rate limiting, auth, etc.).
     - Popular in containerized setups since you don’t need to manually edit configs when services come/go.
 
-  Think of it as **“Nginx, but built for dynamic cloud-native environments.”**
+## Read
+
+- [FastAPI Test setup](https://testdriven.io/blog/fastapi-crud/)
+- look up [fastapi-template](https://github.com/fastapi/full-stack-fastapi-template)
+- [fastapi-motor-mongo-template](https://github.com/alexk1919/fastapi-motor-mongo-template)
+- [api-testing-masterclass](https://github.com/Pytest-with-Eric/api-testing-masterclass)
 
 ## Medium Priority Tasks
 
@@ -77,7 +85,8 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Low Priority Tasks
 
-- separate repository for frontend
+- separate repository for each server
+- use `requirements.txt` for prod, `requirements-dev.txt` for pytest/locust/dev tools.
 - setup nginx
 
   ```python
@@ -109,6 +118,7 @@ _Search for `TODO` in all files to see all the todos_
   - docker-compose.yml
   - pyproject.toml
   - uv.yaml
+- set up a protection against DDOS attacks. Maybe new custom captcha that kick in during high traffic.
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`, or using `uvicorn` and `gunicorn` together.
 - see if we can use `pip install cookiecutter` to generate our project
@@ -120,10 +130,9 @@ _Search for `TODO` in all files to see all the todos_
 ## Before Deployment
 
 - use proper license, security.md, code_of_conduct.md
-- rewrite gitignore and put new values in .env
+- put new values in .env
+- only deploy the app/ folder with it's contents
 - remove CORS, use nginx to bring it all together
-- test on wsl
-- use docker
-  - separate container
+- setup docker after setting separate repositories and making it work
   - refer [Youtube](https://www.youtube.com/watch?v=DQdB7wFEygo)
 - deploy!!! Even temporarily, just do it

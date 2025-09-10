@@ -126,13 +126,11 @@
         async function getCsrfToken() {
             try {
                 const response = await fetch('/auth/csrf-token');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                csrfToken = data.csrf_token;
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                csrfToken = result.data.csrf_token;
                 console.log("CSRF Token obtained:", csrfToken);
-                displayMessage("CSRF token fetched. Ready to register.", 'success');
+                displayMessage(result.message || "CSRF token fetched. Ready to register.", 'success');
             } catch (error) {
                 console.error("Failed to get CSRF token:", error);
                 displayMessage(`Error fetching CSRF token: ${error.message}`, 'error');

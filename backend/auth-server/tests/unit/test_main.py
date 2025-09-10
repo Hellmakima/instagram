@@ -56,19 +56,13 @@ def test_static_mount():
 #     assert "hit" in called
         
 """
-It's minimal, only tests the **most basic things**:
-
 1. The FastAPI app starts without errors.
 2. The root endpoint returns the expected response.
 3. Static files mount without a 500 error.
 
 It **doesn't** test:
 
-* All routers under `api_v1`.
 * Rate limiting behavior.
 * CSRF exception handling.
 * Logging side effects.
-* Database integration.
-
-Basically, it's just a **smoke test** to make sure the app boots and the root path works.
 """
