@@ -18,21 +18,33 @@ git clone https://github.com/hellmakima/instagram.git
 ### 2. Install Backend Dependencies
 
 ```bash
-pip install -r ./instagram/backend/devdocs/requirements.txt
+cd instagram
+uv sync --frozen
+```
+
+or (deprecated)
+
+```bash
+pip install -r ./instagram/devdocs/requirements.txt
 ```
 
 or
+
 install from [pips.txt](https://github.com/hellmakima/instagram/blob/main/devdocs/pips.txt) one by one.
 
 ### 3. Run the Backend Servers
 
 ```bash
-(venv) ~/instagram/backend/gate$ uvicorn main:app --port 5000
-(venv) ~/instagram/backend/auth-server$ uvicorn app.main:app --reload --port 5001
-(venv) ~/instagram/backend/resource-server$ uvicorn app.main:app --reload --port 5002
+/instagram/backend/auth-server$ uv run uvicorn app.main:app --reload --port 5001
 ```
 
-Each server has its swagger docs at `http://localhost:5000/docs`.
+or (deprecated)
+
+```bash
+(venv) ~/instagram/backend/auth-server$ uvicorn app.main:app --reload --port 5001
+```
+
+Each server has its swagger docs at `http://localhost:5001/docs`.
 
 ---
 
