@@ -1,3 +1,5 @@
+# this doesn't work as mongodb is not in docker
+
 # Use lightweight Python image
 FROM python:3.12-slim
 
