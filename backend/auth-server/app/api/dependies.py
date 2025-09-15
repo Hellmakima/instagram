@@ -1,3 +1,5 @@
+# app/api/dependencies.py
+
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from app.db.db import get_db, get_client
