@@ -1,9 +1,11 @@
-# app/api/dependencies.py
+# app/api/dependencies/db_deps.py
 
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from app.db.db import get_db, get_client
-from app.db.repositories import UserRepository, RefreshTokenRepository
+from app.db.repositories.refresh_token_repo import RefreshTokenRepository
+from app.db.repositories.user_repo import UserRepository
+
 
 def get_user_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> UserRepository:
     """Provides a UserRepository instance with a database connection."""

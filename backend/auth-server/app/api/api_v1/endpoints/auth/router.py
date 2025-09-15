@@ -34,8 +34,9 @@ from app.schemas.responses import (
 )
 from app.services.to_doc import prepare_user_for_db
 
-from app.db.repositories import RefreshTokenRepository, UserRepository
-from app.api.dependies import get_user_repo, get_refresh_token_repo, get_session
+from app.db.repositories.refresh_token_repo import RefreshTokenRepository
+from app.db.repositories.user_repo import UserRepository
+from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
 
 import logging
 flow_logger = logging.getLogger("app_flow")

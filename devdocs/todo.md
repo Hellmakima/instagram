@@ -6,6 +6,7 @@ _Search for `TODO` in all files to see all the todos_
 
 - write tests for the project so far
   - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
+- setup separate repositories for each service
 
 ## Upcomming **Waku-Waku**
 
@@ -58,6 +59,7 @@ _Search for `TODO` in all files to see all the todos_
 ## Medium Priority Tasks
 
 - get resource-server running.
+- Create a DatabaseProtocol or abstract interface for every database method (find_one, insert_one, delete_many, etc.) and use it in the repositories and the apis. Won't be doing this for auth-server, but it will be for the other services.
 - update `devdocs/file_structure.ini` with new structure.
 - email verification
 - TTL stuff
