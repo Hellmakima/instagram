@@ -9,7 +9,7 @@ Manages the database connection
 
 usage:
 ```bash
-(venv) ~/auth-server> uvicorn app.main:app --reload --port 5000
+auth-server$ uv run uvicorn app.main:app --reload --port 5001
 ```
 """
 
@@ -39,6 +39,6 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(router)
 
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def root():
-    return {"message": "Hello World"}
+    return {"status": "ok"}

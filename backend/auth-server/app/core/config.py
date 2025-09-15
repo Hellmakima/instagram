@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     MONGODB_URI: str = Field(..., description="MongoDB URI")
     MONGODB_DBNAME: str = Field(..., description="MongoDB Database")
+    USER_COLLECTION: str = Field(..., description="User Database")
+    REFRESH_TOKEN_COLLECTION: str = Field(..., description="Refresh Token Database")
     CSRF_SECRET: str = Field(..., description="CSRF Secret")
     
     JWT_SECRET_KEY: str = Field(..., description="JWT Secret Key")

@@ -2,13 +2,11 @@
 
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from typing import Optional
-from motor.motor_asyncio import AsyncIOMotorDatabase
-
+from app.core.config import settings
 
 class UserRepository:
     def __init__(self, db: AsyncIOMotorDatabase):
-        self.collection = db.get_collection("users")
+        self.collection = db.get_collection(settings.USER_COLLECTION)
 
     async def find_by_username_or_email(self, identifier: str) -> Optional[dict]:
         return await self.collection.find_one(

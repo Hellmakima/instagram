@@ -9,7 +9,6 @@ from fastapi import (
     Response, 
     status,
 )
-from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 
@@ -76,7 +75,7 @@ async def generate_csrf_token(
 @limiter.limit("10/minute")
 async def register(
     form_data: UserCreate,
-    request: Request,
+    request: Request, # needed for csrf
     _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
 ):

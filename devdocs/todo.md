@@ -18,6 +18,7 @@ _Search for `TODO` in all files to see all the todos_
   - Symbolizes growth, privacy, and security
   - Color palette applied
   - I'm thinking sequoia seed or sapling as a logo
+- add health check endpoints
 - make a youtube video about this project
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
@@ -62,6 +63,7 @@ _Search for `TODO` in all files to see all the todos_
 - Create a DatabaseProtocol or abstract interface for every database method (find_one, insert_one, delete_many, etc.) and use it in the repositories and the apis. Won't be doing this for auth-server, but it will be for the other services.
 - update `devdocs/file_structure.ini` with new structure.
 - email verification
+- start versioning
 - TTL stuff
   - Add Mongo TTL for refresh tokens
   - Add TTL for is_blocked

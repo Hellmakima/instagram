@@ -8,7 +8,7 @@ from app.core.config import settings
 
 class RefreshTokenRepository:
     def __init__(self, db: AsyncIOMotorDatabase):
-        self.collection = db.get_collection("refresh_tokens")
+        self.collection = db.get_collection(settings.REFRESH_TOKEN_COLLECTION)
 
     async def find_by_token(self, token: str) -> Optional[dict]:
         return await self.collection.find_one(

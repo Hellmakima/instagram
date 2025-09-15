@@ -26,8 +26,9 @@ async def prepare_user_for_db(user_create_data: UserCreate) -> dict:
         "is_suspended": False,
         "suspended_till": None,
         "last_activity_at": datetime.now(timezone.utc),
-        "is_deleted": False,
-        # by default, set to delete within a few hours, coz not verified.
+        "is_deleted": True,
+        # by default, set to delete within a few minutes, coz not verified.
+        # same time as email link expiry.
         # Remove this once verified.
         "delete_at": datetime.now(timezone.utc) + timedelta(hours=6),
     }
