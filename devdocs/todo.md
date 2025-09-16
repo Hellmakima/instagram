@@ -118,15 +118,10 @@ _Search for `TODO` in all files to see all the todos_
     - test: run pytest
     - lint: run lint checks
     - clean: clear caches (pycache, pytest_cache, etc)
-  - Dockerfile
   - docker-compose.yml
-  - pyproject.toml
-  - uv.yaml
 - set up a protection against DDOS attacks. Maybe new custom captcha that kick in during high traffic.
 - set refresh tokens only if user wants to
 - Look into `gunicorn` + `uvicorn.workers.UvicornWorker`, or using `uvicorn` and `gunicorn` together.
-- see if we can use `pip install cookiecutter` to generate our project
-- try `uv` package manager instead of `pip` and `venv`
 - use a Python profiler (like `py-spy` or `cProfile`) on your running FastAPI application during load testing. This will show you exactly which lines of code are consuming the most CPU time.
 - For an Instagram clone, which can scale significantly, I would strongly recommend considering a dedicated API Gateway solution (e.g., Kong, Apache APISIX, etc.) to handle all the traffic.
 - Use Redis insted of get_current_user() if that becomes a bottleneck.
@@ -134,9 +129,7 @@ _Search for `TODO` in all files to see all the todos_
 ## Before Deployment
 
 - use proper license, security.md, code_of_conduct.md
-- put new values in .env
-- only deploy the app/ folder with it's contents
+- put new environment variables
 - remove CORS, use nginx to bring it all together
-- setup docker after setting separate repositories and making it work
-  - refer [Youtube](https://www.youtube.com/watch?v=DQdB7wFEygo)
+- for docker refer [Youtube](https://www.youtube.com/watch?v=DQdB7wFEygo)
 - deploy!!! Even temporarily, just do it
