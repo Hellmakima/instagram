@@ -244,12 +244,12 @@ sequenceDiagram
 ## Testing
 
 - Swagger UI (http://localhost:5000/docs) to test APIs.
-- Before making pages, make static html (project/backend/static/index.html) to test the backend.
+- Before making pages, make static html (/static/index.html) to test the backend.
 - pytest
   - we maintain `tests` folder for all the tests.
   - all PRs must pass all the tests.
   - [documentation](https://docs.pytest.org/en/stable/explanation/goodpractices.html#test-discovery)
-- Locust (/backend/test/locust_test.py) for load testing. (port 8089)
+- Locust (locust_test.py) for load testing. (port 8089)
 
 ## Networking
 

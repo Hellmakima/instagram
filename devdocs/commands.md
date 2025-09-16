@@ -3,6 +3,7 @@
 ### Other Git Commands
 
 ```bash
+git commit -a -m "message" # Commit all changes
 git branch           # Check current branch
 git branch -a        # List all branches
 git branch dev     # Create new branch named 'dev'
@@ -34,20 +35,14 @@ npx create-next-app@latest frontend
 
 ## Backend
 
-### Run
-
 ```bash
-(venv) ~/backend/gate> uvicorn main:app --reload --port 5000
-(venv) ~/backend/auth-server> uvicorn app.main:app --reload --port 5001
+# run the server
+uv run uvicorn app.main:app --reload --port 5000
+# run the tests
+pytest
 ```
 
-### Run Tests
-
-```bash
-(venv) ~/backend/auth-server> pytest
-```
-
-for windows:
+if you get an error like ImportError or ModuleNotFoundError, try this:
 
 ```powershell
 (venv) ~\backend\auth-server> $env:PYTHONPATH = "D:\project\instagram\backend\auth-server"

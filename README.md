@@ -5,24 +5,21 @@
 A full-stack Instagram-like application built using **FastAPI**, **MongoDB**, and **Next.js**.
 Designed with modularity, clarity, and scalability in mind.
 
+![Under Construction](https://raw.githubusercontent.com/sindresorhus/sindresorhus/main/under-construction.gif)
+
+This file and the project are in the early stages of development.
+We're currently in the process of separating this project into multiple repositories.
+
 ---
 
-## Getting Started
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/hellmakima/instagram.git
-```
-
-### 2. Install Backend Dependencies
+### Backend Dependencies installation
 
 ```bash
 cd instagram
 uv sync --frozen
 ```
 
-or (deprecated)
+or
 
 ```bash
 pip install -r ./instagram/devdocs/requirements.txt
@@ -30,31 +27,21 @@ pip install -r ./instagram/devdocs/requirements.txt
 
 or
 
-install from [pips.txt](https://github.com/hellmakima/instagram/blob/main/devdocs/pips.txt) one by one.
+install from [pips.md](https://github.com/hellmakima/instagram/blob/main/devdocs/pips.md) one by one.
 
-### 3. Run the Backend Servers
-
-```bash
-/instagram/backend/auth-server$ uv run uvicorn app.main:app --reload --port 5001
-```
-
-or (deprecated)
+### Run the Servers
 
 ```bash
-(venv) ~/instagram/backend/auth-server$ uvicorn app.main:app --reload --port 5001
+/instagram/auth-server$ uv run uvicorn app.main:app --reload --port 5001
 ```
 
-Each server has its swagger docs at `http://localhost:5001/docs`.
+or
 
----
+```bash
+(venv) ~/instagram/auth-server$ uvicorn app.main:app --reload --port 5001
+```
 
-## References
-
-- [Akamai Developer on YouTube](https://www.youtube.com/embed/5GxQ1rLTwaU)
-- [Udemy - REST APIs with Flask and Python (2025)](https://www.udemy.com/course/rest-api-flask-and-python/)
-- [FastAPI Security Documentation](https://fastapi.tiangolo.com/tutorial/security/first-steps/)
-- [CSRF Protection](https://github.com/OWASP/CheatSheetSeries/blob/master/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.md#token-based-mitigation)
-  - [python package](https://pypi.org/project/fastapi-csrf-protect/) python package
+Each server has its swagger docs at `http://localhost:<port>/docs`.
 
 ---
 

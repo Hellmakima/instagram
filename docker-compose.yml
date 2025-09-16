@@ -1,0 +1,29 @@
+# still under construction
+version: "3.9"
+services:
+  auth:
+    build: auth-server
+    ports:
+      - "5001:5001"
+  posts:
+    build: resources-server
+    ports:
+      - "5002:5002"
+  mongo:
+    # we'll still need to create collections.
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+  nginx:
+    image: nginx:1.23.4
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/static:/var/www/static
+    depends_on:
+      - auth
+      - posts
+
+volumes:
+  mongo_data:

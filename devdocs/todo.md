@@ -90,8 +90,10 @@ _Search for `TODO` in all files to see all the todos_
 ## Low Priority Tasks
 
 - separate repository for each server
-- use `requirements.txt` for prod, `requirements-dev.txt` for pytest/locust/dev tools.
+- use `requirements.txt` for prod, `requirements-dev.txt` for pytest/locust/dev tools for each server.
 - setup nginx
+
+  - look into `nginx config.md`
 
   ```python
     if host.startswith("auth."):

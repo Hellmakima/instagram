@@ -1,6 +1,6 @@
 # tests/unit/db/test_user_repo.py
 import pytest
-from app.db.repositories import UserRepository
+from app.db.repositories.user_repo import UserRepository
 from unittest.mock import AsyncMock, Mock
 
 
