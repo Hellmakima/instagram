@@ -37,3 +37,6 @@ class UserRepository:
 
     async def find_by_id(self, user_id: str):
         return await self.collection.find_one({"_id": user_id}, projection={"_id": 1})
+    
+    async def find_id_by_username(self, username: str) -> Optional[str]:
+        return await self.collection.find_one({"username": username}, projection={"_id": 1})

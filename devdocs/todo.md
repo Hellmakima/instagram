@@ -7,6 +7,7 @@ _Search for `TODO` in all files to see all the todos_
 - write tests for the project so far
   - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
 - setup separate repositories for each service
+- mTLS or API key for internal communication
 
 ## Upcomming **Waku-Waku**
 
@@ -37,7 +38,8 @@ _Search for `TODO` in all files to see all the todos_
 
 - MVC structure
 - ORM
-- see if we need `psutil`
+- see if we need `psutil` for health checks and other stuff
+- learn `git rebase` specifically [squash](https://www.youtube.com/watch?v=gXCkYkLQ3To)
 - in-memory sort operations in mongodb
 - Appropriate Database for each service.
   - For auth, file storage, maybe cassandra for linking between videos.

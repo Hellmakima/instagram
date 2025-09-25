@@ -1,3 +1,30 @@
+"""
+### File: app/schemas/responses.py
+defines
+- SuccessMessageResponse
+- ErrorDetail
+- APIErrorResponse
+- InternalServerError
+
+**Usage**
+
+```python
+from app.schemas.responses import SuccessMessageResponse
+
+raise HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail=APIErrorResponse(
+        message="Bad Request",
+        error=ErrorDetail(
+            code="INVALID_CREDENTIALS",
+            details="Invalid username, password, or account status."
+        )
+    ).model_dump()
+)
+```
+
+"""
+
 from fastapi import HTTPException, status
 from pydantic import BaseModel, Field
 from typing import Optional

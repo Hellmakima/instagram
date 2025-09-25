@@ -110,6 +110,7 @@ async def register(
 
     # TODO: add email verification
     # currently, users are set as unverified, need to verify them manually
+    # After this, call resource-server to create new user.
     '''
     Recommendation: Implement an email verification flow:
 
@@ -122,8 +123,6 @@ async def register(
         Send an email to the user's provided address with a link containing the verification token.
 
         Create a new endpoint (e.g., /verify-email) that accepts this token, verifies it, and updates is_verified to True.
-
-        Only allow login for is_verified: True users.
     '''
 
     try:
