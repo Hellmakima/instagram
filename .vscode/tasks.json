@@ -4,50 +4,32 @@
     {
       "label": "Run Auth Server",
       "type": "shell",
-      "command": "..\\venv\\Scripts\\activate && uvicorn app.main:app --reload --port 5001",
+      "command": "uv run uvicorn app.main:app --reload --port 5001",
       "options": {
         "shell": {
           "executable": "cmd.exe",
           "args": ["/c"]
         },
-        "cwd": "${workspaceFolder}/backend/auth-server"
+        "cwd": "${workspaceFolder}/auth-server"
       },
       "problemMatcher": []
     },
     {
-      "label": "Run Resource Server",
+      "label": "Run Frontend",
       "type": "shell",
-      "command": "..\\venv\\Scripts\\activate && uvicorn app.main:app --reload --port 5002",
+      "command": "npm run dev",
       "options": {
         "shell": {
           "executable": "cmd.exe",
           "args": ["/c"]
         },
-        "cwd": "${workspaceFolder}/backend/resource-server"
+        "cwd": "${workspaceFolder}/frontend"
       },
-      "problemMatcher": []
-    },
-    {
-      "label": "Run Gate Server",
-      "type": "shell",
-      "command": "..\\venv\\Scripts\\activate && uvicorn gate:app --reload --port 5000",
-      "options": {
-        "shell": {
-          "executable": "cmd.exe",
-          "args": ["/c"]
-        },
-        "cwd": "${workspaceFolder}/backend/gate"
-      },
-      "problemMatcher": []
-    },
-    {
-      "label": "Run All Servers",
-      "dependsOn": [
-        "Run Auth Server",
-        "Run Resource Server",
-        "Run Gate Server"
-      ],
-      "dependsOrder": "parallel"
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
   ]
 }
