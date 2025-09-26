@@ -57,11 +57,24 @@ def create_refresh_token(
     return encoded_jwt
 
 
-def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
+def verify_token(
+    token: str, 
+    token_type: str = "Bearer"
+) -> TokenData:
+    """
+    Verify the token and return the user's data.
+    Raises HTTPException if the token is invalid or expired.
+    """
     flow_logger.info("in verify_token")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
+        detail=APIErrorResponse(
+                    message="Credentials not valid",
+                    error=ErrorDetail(
+                        code="INVALID_CREDENTIALS",
+                        details="The credentials provided are invalid or expired."
+                    )
+                ).model_dump(),
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -75,7 +88,6 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
             raise credentials_exception
         return TokenData(id=decoded_token["sub"])
     except HTTPException as e:
-        flow_logger.error("Error verifying token: %s", str(e))
         raise
     except ExpiredSignatureError:
         flow_logger.error("Token expired")
@@ -87,20 +99,12 @@ def verify_token(token: str, token_type: str = "Bearer") -> TokenData:
                     code="TOKEN_EXPIRED",
                     details="Token expired"
                 )
-            ).model_dump()
+            ).model_dump(),
+            headers={"WWW-Authenticate": "Bearer"}
         )
     except JWTClaimsError as e:
         flow_logger.error("Invalid claims: %s", str(e))
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
-            detail=APIErrorResponse(
-                message="Invalid claims",
-                error=ErrorDetail(
-                    code="INVALID_CLAIMS",
-                    details=f"Invalid claims: {e}"
-                )
-            ).model_dump()
-        )
+        raise credentials_exception
     except JWTError:
         flow_logger.error("Error verifying token")
         raise credentials_exception

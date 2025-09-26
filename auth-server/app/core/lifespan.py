@@ -23,9 +23,12 @@ async def lifespan(app: FastAPI):
 
     db = client.get_database()
     # Run this only once if needed
-    await db[settings.REFRESH_TOKEN_COLLECTION].create_index(
-        [("expires_at", 1)], expireAfterSeconds=0
+    await db[settings.USER_COLLECTION].create_index(
+        [("username", 1), ("email", 1)], unique=True
     )
+    # await db[settings.REFRESH_TOKEN_COLLECTION].create_index(
+    #     [("expires_at", 1)], expireAfterSeconds=0
+    # )
     await db[settings.USER_COLLECTION].create_index(
         [("delete_at", 1)],
         expireAfterSeconds=0,
