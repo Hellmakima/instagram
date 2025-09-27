@@ -30,6 +30,32 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "label": "Run Gateway",
+      "type": "shell",
+      "command": "uv run uvicorn gate:app --reload --port 80",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/c"]
+        },
+        "cwd": "${workspaceFolder}/utils/nginx-gateway"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Resource Server",
+      "type": "shell",
+      "command": "uv run uvicorn app.main:app --reload --port 5002",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/c"]
+        },
+        "cwd": "${workspaceFolder}/resource-server"
+      },
+      "problemMatcher": []
     }
   ]
 }

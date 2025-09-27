@@ -3,7 +3,6 @@ from fastapi_csrf_protect import CsrfProtect
 from pydantic_settings import BaseSettings
 from fastapi.middleware.cors import CORSMiddleware
 
-
 app = FastAPI()
 
 app.add_middleware(
