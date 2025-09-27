@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="title">Profile</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #fafafa;
+            color: #333;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        #profilePicture img,
+        #profilePicture .initial {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #e0e0e0;
+            font-size: 48px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-info h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            margin: 1rem 0;
+            font-size: 16px;
+        }
+
+        .stats span {
+            font-weight: bold;
+        }
+
+        #description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        #editProfile {
+            border: none;
+            background: #333;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #editProfile:hover {
+            background: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="profile-container">
+        <div class="profile-header">
+            <span id="profilePicture"></span>
+            <div class="profile-info">
+                <h2 id="username"></h2>
+                <button id="editProfile" style="display: block;" onclick="editProfile()">Edit Profile</button>
+                <div class="stats">
+                    <div><span id="posts">0</span> Posts</div>
+                    <div><span id="followers">0</span> Followers</div>
+                    <div><span id="following">0</span> Following</div>
+                </div>
+                <p id="name"></p>
+                <p id="description"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getProfile() {
+            try {
+                // const response = await fetch('/auth/profile');
+                // if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                // const data = await response.json();
+                const data = {
+                    is_me: true,
+                    username: "TestUser",
+                    name: "Test User",
+                    profile_picture: "",
+                    description: "Just a dummy bio\nJaadoo",
+                    posts_count: 5,
+                    followers_count: 10,
+                    following_count: 3
+                };
+
+                document.getElementById('title').textContent = data.username;
+
+                const profileEl = document.getElementById('profilePicture');
+                if (data.profile_picture) {
+                    profileEl.innerHTML = `<img src="${data.profile_picture}" alt="profile picture" />`;
+                } else {
+                    const initial = data.username ? data.username[0].toUpperCase() : "?";
+                    profileEl.innerHTML = `<div class="initial">${initial}</div>`;
+                }
+
+                if (data.is_me) {
+                    document.getElementById('editProfile').style.display = 'block';
+                } else {
+                    document.getElementById('editProfile').style.display = 'none';
+                }
+
+                document.getElementById('username').textContent = data.username;
+                document.getElementById('name').textContent = data.name;
+                document.getElementById('description').innerHTML = data.description.replaceAll('\n', '<br>');
+                document.getElementById('posts').textContent = data.posts_count;
+                document.getElementById('followers').textContent = data.followers_count;
+                document.getElementById('following').textContent = data.following_count;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        getProfile();
+
+        function editProfile() {
+            window.location.href = '/static/editProfile.html';
+        }
+    </script>
+</body>
+
+</html>
