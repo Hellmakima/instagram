@@ -32,7 +32,7 @@ from typing import Optional
 class SuccessMessageResponse(BaseModel):
     success: bool = True
     message: str = Field("Success", description="Message of the response")
-    data: Optional[dict] = {}
+    data: Optional[dict] = Field(default_factory=dict)
 
 class ErrorDetail(BaseModel):
     code: str = Field(default="UNKNOWN_ERROR", description="Error code")
