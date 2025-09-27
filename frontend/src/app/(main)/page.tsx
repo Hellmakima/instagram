@@ -16,7 +16,7 @@ export default function Home() {
         </a>
         .
       </p>
-      <p className="text-lg md:text-xl mb-4">Other links:</p>
+      <p className="text-lg md:text-xl mb-4">App pages:</p>
       <div className="flex flex-col md:flex-row gap-4">
         <Link
           href="/login"

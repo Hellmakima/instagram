@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+import { Input } from "@/components/atoms/input";
 import { useState } from "react";
 
 export default function LoginForm() {
