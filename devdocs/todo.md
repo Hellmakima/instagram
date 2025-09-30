@@ -26,12 +26,15 @@ _Search for `TODO` in all files to see all the todos_
 - improve project documentation
   - verify requirements.txt by making a new venv and testing the project.
 - format code with annotations
-  - eg:
+
+  eg:
+
   ```py
   async def foo(LoginForm: login_form) -> SuccessResponse:
     bool verified = is_verified(login_form)
     return SuccessResponse('You did good')
   ```
+
 - use `uv` package manager instead of `pip` and `venv` after getting python 3.14
 
 ## Research
@@ -78,6 +81,11 @@ _Search for `TODO` in all files to see all the todos_
 - add user related endpoints [create user, delete user, update user]
 - Require re-authentication for key operations (email changes, MFA toggles).
 - lockouts, CAPTCHA, MFA.
+- logout
+  - move it to new folder `auth-server/app/api/api_v1/logout/router.py`
+  - store `user agent` and `ip` in `refresh_tokens` collection.
+  - let user logout from other devices and potentially other services.
+  - also maybe `logout_all_devices` endpoint.
 
 ## Ocassionally
 
@@ -94,16 +102,7 @@ _Search for `TODO` in all files to see all the todos_
 - separate repository for each server
 - use `requirements.txt` for prod, `requirements-dev.txt` for pytest/locust/dev tools for each server.
 - setup nginx
-
-  - look into `nginx config.md`
-
-  ```python
-    if host.startswith("auth."):
-        "http://127.0.0.1:5001"
-    elif host.startswith("api."):
-        "http://127.0.0.1:5002"
-  ```
-
+  - set it up like `utils/nginx-gateway/gate.py`
   - rate limiting
   - route with subdomains
   - add CORS headers

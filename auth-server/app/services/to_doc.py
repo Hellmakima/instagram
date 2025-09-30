@@ -18,7 +18,6 @@ async def prepare_user_for_db(user_create_data: UserCreate) -> dict:
     user_doc = {
         "_id": uuid.uuid4().hex,
         "username": user_create_data.username,
-        "name": "",
         "email": user_create_data.email,
         "hashed_password":  hashed_password,
         "created_at": datetime.now(timezone.utc),

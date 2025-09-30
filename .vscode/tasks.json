@@ -12,7 +12,8 @@
         },
         "cwd": "${workspaceFolder}/auth-server"
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "isBackground": true
     },
     {
       "label": "Run Frontend",
@@ -26,23 +27,30 @@
         "cwd": "${workspaceFolder}/frontend"
       },
       "problemMatcher": [],
+      "isBackground": true,
       "group": {
         "kind": "build",
         "isDefault": true
       }
     },
     {
-      "label": "Run Gateway",
+      "label": "Run Caddy Gateway",
       "type": "shell",
-      "command": "uv run uvicorn gate:app --reload --port 80",
+      "command": "caddyserver.exe run --config ${workspaceFolder}/utils/caddy.json",
       "options": {
         "shell": {
           "executable": "cmd.exe",
           "args": ["/c"]
-        },
-        "cwd": "${workspaceFolder}/utils/nginx-gateway"
+        }
+        // NOTE: If caddy is not in your PATH, you must use the full path, e.g.,
+        // "command": "C:\\Windows\\caddyserver.exe run --config ${workspaceFolder}/utils/nginx-gateway/caddy.json"
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
     },
     {
       "label": "Run Resource Server",
@@ -55,7 +63,8 @@
         },
         "cwd": "${workspaceFolder}/resource-server"
       },
-      "problemMatcher": []
+      "problemMatcher": [],
+      "isBackground": true
     }
   ]
 }

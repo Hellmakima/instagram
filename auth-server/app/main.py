@@ -32,7 +32,7 @@ app = FastAPI(lifespan=lifespan, title="Auth Server", version="0.1")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://nmaa.com"],
     allow_credentials=True,
     # allow_methods=["GET", "POST"],
     allow_methods=["*"],
