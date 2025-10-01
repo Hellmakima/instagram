@@ -48,3 +48,15 @@ if you get an error like ImportError or ModuleNotFoundError, try this:
 (venv) ~\backend\auth-server> $env:PYTHONPATH = "D:\project\instagram\backend\auth-server"
 (venv) ~\backend\auth-server> pytest
 ```
+
+## Public and private keys creation
+
+```bash
+openssl genrsa -out private.pem 2048
+openssl rsa -in private.pem -pubout -out public.pem
+```
+
+Paste the keys in the `.env` file. Use quotes and put `\n` for each line.
+
+**Note:** The private key should be kept private and never shared.
+I have shared mine with you, but you should never.
