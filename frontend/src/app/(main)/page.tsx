@@ -1,8 +1,10 @@
 import Link from "next/link";
+import TryRedux from "./reduxTry";
 
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-100 text-gray-800 font-sans px-6">
+      <TryRedux />
       <h1 className="text-6xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 mb-6">
         InstaClone
       </h1>

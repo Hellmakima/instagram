@@ -1,4 +1,4 @@
-# Lessons Learned
+# Backend Lessons
 
 ---
 
@@ -230,8 +230,8 @@ We'll focus mainly on **unit testing** with `pytest`.
 ### pytest
 
 ### from a [tutorial](https://www.youtube.com/watch?v=mzlH8lp4ISA) and beloved [ChatGPT](https://chatgpt.com/?temporary-chat=true)
-Rule of thumb: **don't test everything, test what can break.**
 
+Rule of thumb: **don't test everything, test what can break.**
 
 ### General guidelines
 
@@ -254,78 +254,78 @@ Rule of thumb: **don't test everything, test what can break.**
 
 1. **Setup fixtures**
 
-   * Spin up a **test MongoDB** (could be a real ephemeral DB via `mongomock` or `testcontainers` Mongo).
-   * Async `user_repo` fixture that points to the test DB.
-   * Client fixture (`httpx.AsyncClient` + FastAPI `TestClient`) with dependency overrides to inject the test repo.
+   - Spin up a **test MongoDB** (could be a real ephemeral DB via `mongomock` or `testcontainers` Mongo).
+   - Async `user_repo` fixture that points to the test DB.
+   - Client fixture (`httpx.AsyncClient` + FastAPI `TestClient`) with dependency overrides to inject the test repo.
 
 2. **Happy path test**
 
-   * Send valid payload.
-   * Assert `201 Created`.
-   * Check DB actually has the new user with `is_verified=False`.
-   * Response body matches `SuccessMessageResponse`.
+   - Send valid payload.
+   - Assert `201 Created`.
+   - Check DB actually has the new user with `is_verified=False`.
+   - Response body matches `SuccessMessageResponse`.
 
 3. **Duplicate user tests**
 
-   * Insert a verified user before calling.
-   * Send same username/email.
-   * Assert `400` with `USER_EXISTS`.
-   * Make sure the response never reveals whether it was username or email.
+   - Insert a verified user before calling.
+   - Send same username/email.
+   - Assert `400` with `USER_EXISTS`.
+   - Make sure the response never reveals whether it was username or email.
 
 4. **Unverified user edge case** (the one you documented as a risk)
 
-   * Insert an unverified user first.
-   * Call register again.
-   * Decide what your intended policy is: block, resend verification, or allow duplicate.
-   * Assert behavior matches that policy.
+   - Insert an unverified user first.
+   - Call register again.
+   - Decide what your intended policy is: block, resend verification, or allow duplicate.
+   - Assert behavior matches that policy.
 
 5. **CSRF dependency**
 
-   * Mock/fake `verify_csrf` dependency.
-   * One test where it passes.
-   * One test where it fails → expect `403`.
+   - Mock/fake `verify_csrf` dependency.
+   - One test where it passes.
+   - One test where it fails → expect `403`.
 
 6. **Rate limit behavior**
 
-   * Patch limiter to a test mode.
-   * Flood requests and assert you eventually get `429 Too Many Requests`.
+   - Patch limiter to a test mode.
+   - Flood requests and assert you eventually get `429 Too Many Requests`.
 
 7. **DB failure simulation**
 
-   * Monkeypatch `user_repo.find_verified` or `user_repo.insert` to raise an exception.
-   * Assert endpoint returns `500` with your `InternalServerError`.
+   - Monkeypatch `user_repo.find_verified` or `user_repo.insert` to raise an exception.
+   - Assert endpoint returns `500` with your `InternalServerError`.
 
 8. **Logging side-effects** (optional but nice in a mature suite)
 
-   * Capture logs with `caplog`.
-   * Assert certain log messages appear on success and failure paths.
+   - Capture logs with `caplog`.
+   - Assert certain log messages appear on success and failure paths.
 
 #### DB related setup
 
 1. **Separate DB**:
 
-   * Use a dedicated test DB (like `myapp_test`).
-   * Never touch prod or staging DBs.
+   - Use a dedicated test DB (like `myapp_test`).
+   - Never touch prod or staging DBs.
 
 2. **Empty at start**:
 
-   * Tests don’t rely on preloaded prod data.
-   * Each test either creates what it needs or you load a small fixture dataset.
+   - Tests don’t rely on preloaded prod data.
+   - Each test either creates what it needs or you load a small fixture dataset.
 
 3. **Isolation**:
 
-   * Clean up after each test (truncate collections, rollback transactions, or use `delete_many({})`).
-   * Ensures tests don’t leak state.
+   - Clean up after each test (truncate collections, rollback transactions, or use `delete_many({})`).
+   - Ensures tests don’t leak state.
 
 4. **Optional seeding**:
 
-   * If many tests need the same baseline data (e.g. one admin user), seed it once in a fixture.
-   * Keep it minimal and fake.
+   - If many tests need the same baseline data (e.g. one admin user), seed it once in a fixture.
+   - Keep it minimal and fake.
 
 5. **Automation**:
 
-   * CI/CD spins up the test DB automatically (often in Docker).
-   * Dropped after tests finish.
+   - CI/CD spins up the test DB automatically (often in Docker).
+   - Dropped after tests finish.
 
 ### Other points to know
 
@@ -336,29 +336,29 @@ Rule of thumb: **don't test everything, test what can break.**
 
 ### Types of Tests
 
-* **Unit tests**
+- **Unit tests**
 
-  * Isolate a single function or class.
-  * Mock dependencies (e.g. repos, external services).
-  * Fast, no DB.
-  * **Simple/dumb** (minimal logic, easy to read).
-  * Focused (test one behavior at a time).
-  * Purpose: verify *logic correctness*.
-  * Independent (shouldn't depend on order of execution).
+  - Isolate a single function or class.
+  - Mock dependencies (e.g. repos, external services).
+  - Fast, no DB.
+  - **Simple/dumb** (minimal logic, easy to read).
+  - Focused (test one behavior at a time).
+  - Purpose: verify _logic correctness_.
+  - Independent (shouldn't depend on order of execution).
 
-* **Integration tests**
+- **Integration tests**
 
-  * Use real DB (test Mongo instance).
-  * Verify persistence, side-effects, and wiring.
-  * Purpose: ensure *components work together*.
+  - Use real DB (test Mongo instance).
+  - Verify persistence, side-effects, and wiring.
+  - Purpose: ensure _components work together_.
 
-* **API/Functional tests**
+- **API/Functional tests**
 
-  * Use FastAPI `TestClient`.
-  * Hit endpoints over HTTP, assert status codes + payloads.
-  * Purpose: verify *API contract*.
+  - Use FastAPI `TestClient`.
+  - Hit endpoints over HTTP, assert status codes + payloads.
+  - Purpose: verify _API contract_.
 
-* (Optional later): regression, property-based, performance, security, etc.
+- (Optional later): regression, property-based, performance, security, etc.
 
 ### File Structure
 
@@ -385,9 +385,9 @@ project/
 
 ### Example: `login` Route
 
-* **Unit** → mirror app structure.
-* **Integration** → grouped by flow/feature.
-* **Functional/API** → endpoint-focused.
+- **Unit** → mirror app structure.
+- **Integration** → grouped by flow/feature.
+- **Functional/API** → endpoint-focused.
 
 ```python
 # app/routes/auth.py
@@ -461,9 +461,9 @@ def home(background_tasks: BackgroundTasks):
 
 What happens:
 
-* Client gets `{"status": 200, "msg": "ok"}` immediately.
-* Then FastAPI runs `foo()` right after finishing the response.
-* No threading, no separate worker needed.
+- Client gets `{"status": 200, "msg": "ok"}` immediately.
+- Then FastAPI runs `foo()` right after finishing the response.
+- No threading, no separate worker needed.
 
 ### yeild in FastAPI
 
@@ -471,8 +471,8 @@ Those don't go together.
 
 In a **web route** (`@app.get("/")` in FastAPI):
 
-* You just `return` something (dict, JSON, HTML, etc.).
-* You **don’t** `yield` — unless you’re streaming responses.
+- You just `return` something (dict, JSON, HTML, etc.).
+- You **don’t** `yield` — unless you’re streaming responses.
 
 Example FastAPI route:
 
@@ -497,10 +497,23 @@ def home():
 
 What happens:
 
-* FastAPI sees the `yield` → treats it like an async generator endpoint.
-* The response will **stream out pieces** of data.
-* `foo()` would run after sending the first chunk.
+- FastAPI sees the `yield` → treats it like an async generator endpoint.
+- The response will **stream out pieces** of data.
+- `foo()` would run after sending the first chunk.
 
 So `yield` inside routes = **streaming** (rarely what you want).
 
 ---
+
+# Frontend Lessons
+
+## apiHandler
+
+as a wrapper for fetch, it handles errors and returns a promise.
+It can be used to handle api responses in a cleaner way. (e.g. 401 unauthorized -> try to refresh token)
+
+## Redux Toolkit
+
+Redux is used for global state management in React applications.
+needs 'use client' in the component using the state.
+installation: [video](https://www.youtube.com/watch?v=xfhQk9CRXbY) [docs](https://redux-toolkit.js.org/tutorials/quick-start)

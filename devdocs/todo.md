@@ -43,7 +43,7 @@ _Search for `TODO` in all files to see all the todos_
 - ORM
 - see if we need `psutil` for health checks and other stuff
 - learn `git rebase` specifically [squash](https://www.youtube.com/watch?v=gXCkYkLQ3To)
-- in-memory sort operations in mongodb
+- in-memory sort operations in MongoDB
 - Appropriate Database for each service.
   - For auth, file storage, maybe cassandra for linking between videos.
 - IP validation helpers
@@ -77,8 +77,8 @@ _Search for `TODO` in all files to see all the todos_
     - but here the enty moves to a separate collection with PII removed.
 - redo cookie setting, add samesite, httponly, secure, path, domain, etc once respective frontend is done.
 - use `pytest-cov`
-- add password related endpoints [change password, forgot password, reset password]
-- add user related endpoints [create user, delete user, update user]
+- add password related endpoints (change password, forgot password, reset password)
+- add user related endpoints (create user, delete user, update user)
 - Require re-authentication for key operations (email changes, MFA toggles).
 - lockouts, CAPTCHA, MFA.
 - logout

@@ -1,0 +1,16 @@
+$session = New-Object Microsoft.PowerShell.Commands.WebRequestSession
+$session.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36 Edg/141.0.0.0"
+$session.Cookies.Add((New-Object System.Net.Cookie("fastapi-csrf-token", "IjYwNDE0YTMwMjZjMGU5MjdkOGMzMDE3ZTM3M2VhMTZiNGViM2I1MGUi.aN9IAQ.crCdsO2PSqFYvEu50pno_NzuFqA", "/", "auth.nmaa.com")))
+Invoke-WebRequest -UseBasicParsing -Uri "http://auth.nmaa.com/auth/login" `-Method "POST"`
+-WebSession $session `-Headers @{
+"Accept"="application/json"
+  "Accept-Encoding"="gzip, deflate"
+  "Accept-Language"="en-US,en-IN;q=0.9,en;q=0.8,ja;q=0.7"
+  "DNT"="1"
+  "Origin"="http://nmaa.com"
+  "Referer"="http://nmaa.com/"
+  "X-CSRF-Token"="60414a3026c0e927d8c3017e373ea16b4eb3b50e"
+  "ngrok-skip-browser-warning"="true"
+}`
+-ContentType "application/json" `
+-Body "{`"username_or_email`":`"sufiyanhattar@gmail.com`",`"password`":`"asdASD123!@#`"}"

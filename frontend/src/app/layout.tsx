@@ -3,11 +3,12 @@
 // src/app/layout.tsx
 
 import "@/app/globals.css";
+import StoreProvider from "@/lib/store/StoreProvider";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Welcome to Nmaa",
-  description: "Where the magic happens",
+  title: "Nmaa",
+  description: "Experience social media built for connection, not addiction.",
 };
 
 export default function RootLayout({
@@ -16,8 +17,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body suppressHydrationWarning>{children}</body>
-    </html>
+    <StoreProvider>
+      <html lang="en">
+        <body suppressHydrationWarning>{children}</body>
+      </html>
+    </StoreProvider>
   );
 }

@@ -237,8 +237,8 @@ sequenceDiagram
 ## Frontend
 
 - Pure vibe coding. (port 3000)
-- Currently NextJS, maybe switch to Vite + React
 - SPA (single page app)
+- Stack: NextJS, Tailwind, TypeScript, Redux, Redux Toolkit, Axios, Cypress, Shadcn.
 - Use any copyrighted images, fonts, etc.
 
 ## Testing
