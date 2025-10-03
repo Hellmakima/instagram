@@ -43,7 +43,8 @@ def create_access_token(
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.id, "type": "access"}
     # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    # encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.ACCESS_TOKEN_PRIVATE_JWT_SECRET_KEY, algorithm=settings.ACCESS_TOKEN_JWT_ALGORITHM)
     return encoded_jwt
 
 
@@ -53,13 +54,13 @@ def create_refresh_token(
     flow_logger.info("in create_refresh_token")
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
-    encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.REFRESH_TOKEN_JWT_SECRET_KEY, algorithm=settings.REFRESH_TOKEN_JWT_ALGORITHM)
     return encoded_jwt
 
 
 def verify_token(
     token: str, 
-    token_type: str = "Bearer"
+    token_type: str,
 ) -> TokenData:
     """
     Verify the token and return the user's data.
@@ -78,11 +79,22 @@ def verify_token(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        decoded_token = jwt.decode(
-            token=token,
-            key=settings.JWT_SECRET_KEY,
-            algorithms=[settings.JWT_ALGORITHM]
-        )
+        decoded_token = None
+        if token_type == "access":
+            decoded_token = jwt.decode(
+                token=token,
+                key=settings.ACCESS_TOKEN_PUBLIC_JWT_SECRET_KEY,
+                algorithms=[settings.ACCESS_TOKEN_JWT_ALGORITHM]
+            )
+        elif token_type == "refresh":
+            decoded_token = jwt.decode(
+                token=token,
+                key=settings.REFRESH_TOKEN_JWT_SECRET_KEY,
+                algorithms=[settings.REFRESH_TOKEN_JWT_ALGORITHM]
+            )
+        else:
+            flow_logger.error("Invalid token type: %s", token_type)
+            raise credentials_exception
         if decoded_token["type"] != token_type:
             flow_logger.error("Invalid token type: %s", decoded_token["type"])
             raise credentials_exception
