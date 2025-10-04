@@ -1,4 +1,5 @@
 // components/organisms/AuthFormClient.tsx
+// AuthFormClient.tsx
 "use client";
 
 import { useState } from "react";
@@ -12,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/atoms/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/atoms/alert";
+import { toast } from "sonner";
 import { Terminal, CheckCircle } from "lucide-react";
 
 interface Field {
@@ -28,7 +29,6 @@ interface AuthFormProps {
   title: string;
   description: string;
   fields: Field[];
-  initialMessage?: { text: string; type: "success" | "error" } | null;
 }
 
 export function AuthForm({
@@ -37,15 +37,12 @@ export function AuthForm({
   title,
   description,
   fields,
-  initialMessage,
 }: AuthFormProps) {
-  const [message, setMessage] = useState(initialMessage || null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setMessage(null);
 
     const formData = new FormData(e.currentTarget);
     const payload: { [key: string]: string } = {};
@@ -57,10 +54,11 @@ export function AuthForm({
         { [key: string]: string }
       >(endpoint, payload, { headers: { "X-CSRF-Token": csrfToken || "" } });
 
-      setMessage({
-        text: res.message || "Success!",
-        type: res.success ? "success" : "error",
-      });
+      if (res.success) {
+        toast.success(res.message || "Success!");
+      } else {
+        toast.error(res.message || "Something went wrong.");
+      }
     } catch (err: any) {
       let errorMessage = "An unknown error occurred";
       let statusCode = err.response?.status;
@@ -89,15 +87,20 @@ export function AuthForm({
       } else {
         errorMessage = err.message;
       }
-
-      setMessage({
-        text: `Error ${statusCode}: ${errorMessage}`,
-        type: "error",
-      });
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+
+  if (!csrfToken) {
+    return (
+      <div className="flex justify-center items-center w-full p-4">
+        <Terminal className="h-6 w-6 mr-2 animate-spin" />
+        <span>Loading CSRF token...</span>
+      </div>
+    );
+  }
 
   return (
     <Card className="w-[400px] shadow-lg">
@@ -106,33 +109,6 @@ export function AuthForm({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        {message && (
-          <Alert
-            variant={message.type === "error" ? "destructive" : "default"}
-            className="mb-4"
-          >
-            {message.type === "error" ? (
-              <Terminal className="h-4 w-4" />
-            ) : (
-              <CheckCircle className="h-4 w-4" />
-            )}
-            <AlertTitle>
-              {message.type === "error" ? "Error" : "Status"}
-            </AlertTitle>
-            <AlertDescription>{message.text}</AlertDescription>
-          </Alert>
-        )}
-
-        {!csrfToken && (
-          <Alert variant="destructive" className="mb-4">
-            <Terminal className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>
-              CSRF token missing. Cannot submit form.
-            </AlertDescription>
-          </Alert>
-        )}
-
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input type="hidden" name="csrfToken" value={csrfToken || ""} />
           {fields.map((field) => (
@@ -148,11 +124,7 @@ export function AuthForm({
             </div>
           ))}
 
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading || !csrfToken}
-          >
+          <Button type="submit" className="w-full" disabled={loading}>
             {loading ? "Submitting..." : title}
           </Button>
         </form>

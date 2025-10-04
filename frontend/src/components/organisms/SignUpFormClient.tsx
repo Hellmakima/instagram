@@ -1,15 +1,11 @@
-// SignUpFormClient.tsx
+// components/organisms/SignUpFormClient.tsx
 import { AuthForm } from "./AuthFormClient";
 
 interface SignUpFormClientProps {
   csrfToken: string;
-  initialMessage?: { text: string; type: "success" | "error" };
 }
 
-export function SignUpFormClient({
-  csrfToken,
-  initialMessage,
-}: SignUpFormClientProps) {
+export function SignUpFormClient({ csrfToken }: SignUpFormClientProps) {
   return (
     <AuthForm
       csrfToken={csrfToken}
@@ -30,7 +26,6 @@ export function SignUpFormClient({
           placeholder: "••••••••",
         },
       ]}
-      initialMessage={initialMessage}
     />
   );
 }

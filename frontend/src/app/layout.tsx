@@ -5,6 +5,7 @@
 import "@/app/globals.css";
 import StoreProvider from "@/lib/store/StoreProvider";
 import type { Metadata } from "next";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Nmaa",
@@ -19,7 +20,10 @@ export default function RootLayout({
   return (
     <StoreProvider>
       <html lang="en">
-        <body suppressHydrationWarning>{children}</body>
+        <body suppressHydrationWarning>
+          {children}
+          <Toaster position="top-right" richColors />
+        </body>
       </html>
     </StoreProvider>
   );

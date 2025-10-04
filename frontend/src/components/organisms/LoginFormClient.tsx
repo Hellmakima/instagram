@@ -1,14 +1,11 @@
+// components/organisms/LoginFormClient.tsx
 import { AuthForm } from "./AuthFormClient";
 
 interface LoginFormClientProps {
   csrfToken: string;
-  initialMessage?: { text: string; type: "success" | "error" };
 }
 
-export function LoginFormClient({
-  csrfToken: csrfToken,
-  initialMessage: initialMessage,
-}: LoginFormClientProps) {
+export function LoginFormClient({ csrfToken }: LoginFormClientProps) {
   return (
     <AuthForm
       csrfToken={csrfToken}
@@ -28,7 +25,6 @@ export function LoginFormClient({
           placeholder: "••••••••",
         },
       ]}
-      initialMessage={initialMessage}
     />
   );
 }

@@ -1,3 +1,4 @@
+// app/(auth)/login/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +13,7 @@ import {
   TabsTrigger,
   TabsContent,
 } from "@/components/atoms/tabs"; // shadcn Tabs
+import { toast } from "sonner";
 
 interface CsrfResponse {
   csrf_token: string;
@@ -19,12 +21,6 @@ interface CsrfResponse {
 
 export default function AuthPage() {
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
-  const [initialMessage, setInitialMessage] = useState<
-    { text: string; type: "success" | "error" } | undefined
-  >({
-    text: "Loading...",
-    type: "success",
-  });
 
   useEffect(() => {
     const fetchCsrf = async () => {
@@ -33,21 +29,23 @@ export default function AuthPage() {
           "/auth/csrf-token"
         );
         setCsrfToken(res.data.csrf_token);
-        setInitialMessage({
-          text: res.message || "Ready to log in.",
-          type: "success",
-        });
+        toast.success(res.message || "Ready to log in.");
       } catch (err: any) {
-        const errorText = err.response?.data?.message || err.message;
-        setInitialMessage({
-          text: `Failed to initialize form: ${errorText}`,
-          type: "error",
-        });
+        console.error("Failed to fetch CSRF token:", err);
+        toast.error(`Failed to initialize form: ${err.message}`);
       }
     };
 
     fetchCsrf();
   }, []);
+
+  if (!csrfToken) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -61,17 +59,11 @@ export default function AuthPage() {
           </TabsList>
 
           <TabsContent value="login">
-            <LoginFormClient
-              csrfToken={csrfToken!}
-              initialMessage={initialMessage}
-            />
+            <LoginFormClient csrfToken={csrfToken} />
           </TabsContent>
 
           <TabsContent value="signup">
-            <SignUpFormClient
-              csrfToken={csrfToken!}
-              initialMessage={initialMessage}
-            />
+            <SignUpFormClient csrfToken={csrfToken} />
           </TabsContent>
         </Tabs>
       </main>
