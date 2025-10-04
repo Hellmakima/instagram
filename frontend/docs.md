@@ -5,6 +5,7 @@ npm i axios
 # shadcn
 
 npm i @shadcn
+npx shadcn add card
 npm i -D @types/react @types/react-dom
 
 $ npm list

@@ -517,3 +517,10 @@ It can be used to handle api responses in a cleaner way. (e.g. 401 unauthorized 
 Redux is used for global state management in React applications.
 needs 'use client' in the component using the state.
 installation: [video](https://www.youtube.com/watch?v=xfhQk9CRXbY) [docs](https://redux-toolkit.js.org/tutorials/quick-start)
+
+## Server actions
+
+Replaces the form onSubmit with a function that runs on the server.
+defined e.g. /src/actions/auth.ts
+
+We are not using this feature for now.

@@ -31,7 +31,7 @@
   "[python]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "workbench.colorTheme": "Rosely Light",
+  // "workbench.colorTheme": "Rosely Light",
   "diffEditor.hideUnchangedRegions.enabled": true,
   "editor.mouseWheelZoom": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode"

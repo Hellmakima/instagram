@@ -1,20 +1,82 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/atoms/button";
-import LoginForm from "./components/LoginForm";
+import { useEffect, useState } from "react";
+import { typedGet } from "@/lib/api";
+import { LoginFormClient } from "@/components/organisms/LoginFormClient";
+import { SignUpFormClient } from "@/components/organisms/SignUpFormClient";
+import { Header } from "@/components/organisms/Header";
+import { Footer } from "@/components/organisms/Footer";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from "@/components/atoms/tabs"; // shadcn Tabs
 
-export default function LoginPage() {
-  const router = useRouter();
+interface CsrfResponse {
+  csrf_token: string;
+}
+
+export default function AuthPage() {
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [initialMessage, setInitialMessage] = useState<
+    { text: string; type: "success" | "error" } | undefined
+  >({
+    text: "Loading...",
+    type: "success",
+  });
+
+  useEffect(() => {
+    const fetchCsrf = async () => {
+      try {
+        const res = await typedGet<{ data: CsrfResponse; message?: string }>(
+          "/auth/csrf-token"
+        );
+        setCsrfToken(res.data.csrf_token);
+        setInitialMessage({
+          text: res.message || "Ready to log in.",
+          type: "success",
+        });
+      } catch (err: any) {
+        const errorText = err.response?.data?.message || err.message;
+        setInitialMessage({
+          text: `Failed to initialize form: ${errorText}`,
+          type: "error",
+        });
+      }
+    };
+
+    fetchCsrf();
+  }, []);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md space-y-4">
-        <Button variant="default" onClick={() => router.back()}>
-          Back
-        </Button>
-        <LoginForm />
-      </div>
-    </main>
+    <div className="flex flex-col min-h-screen bg-background">
+      <Header />
+
+      <main className="flex-1 flex flex-col items-center justify-center p-4">
+        <Tabs defaultValue="login" className="w-[400px]">
+          <TabsList>
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="signup">Signup</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="login">
+            <LoginFormClient
+              csrfToken={csrfToken!}
+              initialMessage={initialMessage}
+            />
+          </TabsContent>
+
+          <TabsContent value="signup">
+            <SignUpFormClient
+              csrfToken={csrfToken!}
+              initialMessage={initialMessage}
+            />
+          </TabsContent>
+        </Tabs>
+      </main>
+
+      <Footer />
+    </div>
   );
 }

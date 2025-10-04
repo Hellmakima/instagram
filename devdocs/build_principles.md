@@ -236,7 +236,7 @@ sequenceDiagram
 
 ## Frontend
 
-- Pure vibe coding. (port 3000)
+- port 3000
 - SPA (single page app)
 - Stack: NextJS, Tailwind, TypeScript, Redux, Redux Toolkit, Axios, Cypress, Shadcn.
 - Use any copyrighted images, fonts, etc.

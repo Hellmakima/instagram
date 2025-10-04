@@ -1,0 +1,36 @@
+// SignUpFormClient.tsx
+import { AuthForm } from "./AuthFormClient";
+
+interface SignUpFormClientProps {
+  csrfToken: string;
+  initialMessage?: { text: string; type: "success" | "error" };
+}
+
+export function SignUpFormClient({
+  csrfToken,
+  initialMessage,
+}: SignUpFormClientProps) {
+  return (
+    <AuthForm
+      csrfToken={csrfToken}
+      endpoint="/auth/signup"
+      title="User Signup"
+      description="Enter your credentials to create your account."
+      fields={[
+        { name: "username", label: "Username", placeholder: "your_handle" },
+        {
+          name: "email",
+          label: "Email",
+          placeholder: "your_handle@example.com",
+        },
+        {
+          name: "password",
+          label: "Password",
+          type: "password",
+          placeholder: "••••••••",
+        },
+      ]}
+      initialMessage={initialMessage}
+    />
+  );
+}

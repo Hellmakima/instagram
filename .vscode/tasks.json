@@ -36,7 +36,7 @@
     {
       "label": "Run Caddy Gateway",
       "type": "shell",
-      "command": "caddyserver.exe run --config ${workspaceFolder}/utils/caddy.json",
+      "command": "caddyserver.exe run --config \"${workspaceFolder}/utils/caddy.json\"",
       "options": {
         "shell": {
           "executable": "cmd.exe",

@@ -1,3 +1,4 @@
+// lib/api.ts
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
 // 1. Define a consistent response shape for API calls (optional but good practice)
@@ -64,6 +65,3 @@ export async function typedPost<T, D = undefined>(
 
 // Export the axios instance as the default export
 export default api;
-
-// This now resolves your errors in AuthForm.tsx because
-// typedGet and typedPost are exported using the 'export' keyword.
