@@ -1,9 +1,8 @@
 // components/organisms/AuthFormClient.tsx
-// AuthFormClient.tsx
 "use client";
 
 import { useState } from "react";
-import { typedPost } from "@/lib/api";
+import { authRequest } from "@/lib/api/authApi";
 import { Input } from "@/components/atoms/input";
 import { Button } from "@/components/atoms/button";
 import {
@@ -14,7 +13,7 @@ import {
   CardDescription,
 } from "@/components/atoms/card";
 import { toast } from "sonner";
-import { Terminal, CheckCircle } from "lucide-react";
+import { Terminal } from "lucide-react";
 
 interface Field {
   name: string;
@@ -25,7 +24,7 @@ interface Field {
 
 interface AuthFormProps {
   csrfToken: string | null;
-  endpoint: string;
+  endpoint: string; // e.g., "/login" or "/register"
   title: string;
   description: string;
   fields: Field[];
@@ -45,14 +44,18 @@ export function AuthForm({
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const payload: { [key: string]: string } = {};
-    formData.forEach((value, key) => (payload[key] = value.toString()));
+    const payload: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      payload[key] = value.toString();
+    });
 
     try {
-      const res = await typedPost<
+      const res = await authRequest<
         { message?: string; success?: boolean },
-        { [key: string]: string }
-      >(endpoint, payload, { headers: { "X-CSRF-Token": csrfToken || "" } });
+        typeof payload
+      >("POST", endpoint, payload, {
+        headers: { "X-CSRF-Token": csrfToken || "" },
+      });
 
       if (res.success) {
         toast.success(res.message || "Success!");
@@ -61,33 +64,52 @@ export function AuthForm({
       }
     } catch (err: any) {
       let errorMessage = "An unknown error occurred";
-      let statusCode = err.response?.status;
 
-      if (err.response?.data?.detail) {
-        const detail = err.response.data.detail;
+      // BackendApiError (your custom error)
+      if (err?.serverResponse) {
+        const serverErr = err.serverResponse;
 
-        if (Array.isArray(detail)) {
-          errorMessage = detail
+        if (Array.isArray((serverErr.error as any)?.details)) {
+          // Pydantic validation errors
+          const details = (serverErr.error as any).details as Array<{
+            loc?: any[];
+            msg?: string;
+          }>;
+          errorMessage = details
             .map((d) => {
-              if (d.msg && d.loc) {
-                const field = Array.isArray(d.loc)
-                  ? d.loc.slice(1).join(".")
-                  : d.loc;
-                return `${field}: ${d.msg}`;
-              }
-              return JSON.stringify(d);
+              const fieldPath = Array.isArray(d.loc)
+                ? d.loc.slice(1).join(".") // skip "body"
+                : d.loc;
+              return fieldPath ? `${fieldPath}: ${d.msg}` : d.msg;
             })
             .join("; ");
-        } else if (typeof detail === "object") {
-          errorMessage =
-            detail.message || detail.error?.details || errorMessage;
+        } else if (serverErr.message) {
+          errorMessage = serverErr.message;
         }
-      } else if (err.response?.data?.message) {
-        errorMessage = err.response.data.message;
-      } else {
+      }
+      // Axios fallback
+      else if (err?.response?.data) {
+        const data = err.response.data;
+        if (Array.isArray(data.detail)) {
+          errorMessage = data.detail
+            .map((d: any) => {
+              const fieldPath = Array.isArray(d.loc)
+                ? d.loc.slice(1).join(".")
+                : d.loc;
+              return fieldPath ? `${fieldPath}: ${d.msg}` : d.msg;
+            })
+            .join("; ");
+        } else if (data.message) {
+          errorMessage = data.message;
+        }
+      }
+      // Generic JS error
+      else if (err.message) {
         errorMessage = err.message;
       }
+
       toast.error(errorMessage);
+      console.error("AuthForm error:", err);
     } finally {
       setLoading(false);
     }

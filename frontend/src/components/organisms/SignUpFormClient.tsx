@@ -9,7 +9,7 @@ export function SignUpFormClient({ csrfToken }: SignUpFormClientProps) {
   return (
     <AuthForm
       csrfToken={csrfToken}
-      endpoint="/auth/signup"
+      endpoint="/auth/register"
       title="User Signup"
       description="Enter your credentials to create your account."
       fields={[

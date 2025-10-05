@@ -2,7 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { typedGet } from "@/lib/api";
+
+import { getCsrfToken } from "@/lib/api/authApi";
+
 import { LoginFormClient } from "@/components/organisms/LoginFormClient";
 import { SignUpFormClient } from "@/components/organisms/SignUpFormClient";
 import { Header } from "@/components/organisms/Header";
@@ -12,7 +14,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@/components/atoms/tabs"; // shadcn Tabs
+} from "@/components/atoms/tabs";
 import { toast } from "sonner";
 
 interface CsrfResponse {
@@ -25,9 +27,8 @@ export default function AuthPage() {
   useEffect(() => {
     const fetchCsrf = async () => {
       try {
-        const res = await typedGet<{ data: CsrfResponse; message?: string }>(
-          "/auth/csrf-token"
-        );
+        // ✅ match your new authApi.getCsrfToken()
+        const res = await getCsrfToken<CsrfResponse>();
         setCsrfToken(res.data.csrf_token);
         toast.success(res.message || "Ready to log in.");
       } catch (err: any) {

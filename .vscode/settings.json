@@ -4,7 +4,17 @@
     "**/__pycache__": true,
     "**/.pytest_cache": true,
     "**/.venv": true,
-    "**/.git": true
+    "**/.git": true,
+    "frontend/.next": true,
+    "frontend/node_modules": true,
+    "frontend/components.json": true,
+    "frontend/eslint.config.mjs": true,
+    "frontend/next-env.d.ts": true,
+    "frontend/next.config.ts": true,
+    "frontend/package-lock.json": true,
+    "frontend/package.json": true,
+    "frontend/postcss.config.mjs": true,
+    "frontend/tsconfig.json": true
   },
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
