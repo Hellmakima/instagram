@@ -31,13 +31,14 @@ from app.schemas.responses import (
     InternalServerError, 
     SuccessMessageResponse,
 )
-from app.services.to_doc import prepare_user_for_db
-
+from app.services.user_create import create_user
 from app.db.repositories.refresh_token_repo import RefreshTokenRepository
 from app.db.repositories.user_repo import UserRepository
 from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
 
 import logging
+request_logger = logging.getLogger("app_requests")
+# TODO: remove below loggers
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
 db_logger = logging.getLogger("app_db")
@@ -75,76 +76,15 @@ async def generate_csrf_token(
 @limiter.limit("10/minute")
 async def register(
     form_data: UserCreate,
-    request: Request, # needed for csrf
+    request: Request, # required by verify_csrf
     _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
 ):
-    '''
-    # User Enumeration Risk (Partial):
-    The current check if await users_col(db).find_one({"$and": [{"$or": [{"username": form_data.username}, {"email": form_data.email}]}, {"is_verified": True}]}) correctly avoids leaking which specific field (username or email) is taken if an account exists and is verified. This is good. Proactive Suggestion: However, if an unverified user exists with the same username/email, the current logic would still allow a new registration, potentially leading to duplicate unverified accounts or race conditions if verification is asynchronous. Consider adding a check for any existing user (verified or unverified) and then handling the "unverified user exists" case differently (e.g., re-sending verification email).
-    '''
-    flow_logger.info("in register endpoint")
-
-    # Check if user already exists
+    request_logger.info("in register endpoint")
     try:
-        if await user_repo.find_verified(form_data.username, form_data.email):
-            flow_logger.info("Registration failed: User with provided username or email already exists.")
-            # Do NOT specify which field is taken.
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=APIErrorResponse(
-                    message="Username or email is already in use",
-                    error=ErrorDetail(
-                        code="USER_EXISTS",
-                        details="An account with this username or email already exists."
-                    )
-                ).model_dump()
-            )
-    except HTTPException:
+        await create_user(form_data, user_repo)
+    except Exception:
         raise
-    except Exception as e:
-        flow_logger.error("Database error during user existence check: %s", str(e))
-        raise InternalServerError()
-
-    user_doc = await prepare_user_for_db(form_data)
-
-    # TODO: add email verification
-    # currently, users are set as unverified, need to verify them manually
-    # After this, call resource-server to create new user.
-    '''
-    Recommendation: Implement an email verification flow:
-
-        Upon registration, set is_verified to False.
-
-        Generate a unique, time-limited verification token.
-
-        Store this token (hashed) with the user record or in a separate collection.
-
-        Send an email to the user's provided address with a link containing the verification token.
-
-        Create a new endpoint (e.g., /verify-email) that accepts this token, verifies it, and updates is_verified to True.
-    '''
-
-    try:
-        # res = await users_col(db).insert_one(user_doc)
-        res = await user_repo.insert(user_doc)
-        db_logger.info("User record inserted successfully.")
-        flow_logger.info("User record inserted successfully.")
-        # rec = await users_col(db).find_one({"_id": res.inserted_id}, projection={"_id": 1})
-        rec = await user_repo.find_by_id(res.inserted_id)
-        flow_logger.info("User record fetched successfully.")
-    except Exception as e:
-        db_logger.error("Database error during user save/fetch: %s", str(e))
-        flow_logger.error("Database error during user save/fetch: %s", str(e))
-        raise InternalServerError()
-
-    if not rec:
-        flow_logger.error("User record not found immediately after successful insert for username: %s", form_data.username)
-        raise InternalServerError()
-
-    security_logger.info("New user registered successfully with id '%s'.", rec["_id"])
-
-    # Return success response
     return SuccessMessageResponse(
         message="User registered successfully. Please proceed to login."
     )
