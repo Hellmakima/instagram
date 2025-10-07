@@ -3,6 +3,8 @@
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
+from bson.objectid import ObjectId
+from app.models.auth import User
 
 import logging
 flow_logger = logging.getLogger("app_flow")
@@ -55,28 +57,13 @@ class UserRepository:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
 
-    async def insert(self, user_doc: dict) -> Optional[str]:
+    async def insert(self, user_doc: User) -> ObjectId:
         flow_logger.info("in insert")
         try:
-            res = await self.collection.insert_one(user_doc)
-            if res:
-                db_logger.info("User record inserted successfully.")
-                return res.inserted_id
-            db_logger.info("User record not found.")
-            return None
+            res = await self.collection.insert_one(user_doc.model_dump())
+            db_logger.info("User record inserted successfully.")
+            return res.inserted_id
         except Exception as e:
-            db_logger.error("Database error during user save/fetch: %s", str(e))
+            db_logger.error("Database error during user insert: %s", str(e))
             raise
 
-    # async def find_by_id(self, user_id: str) -> Optional[str]:
-    #     flow_logger.info("in find_by_id")
-    #     try:
-    #         rec = await self.collection.find_one({"_id": user_id}, projection={"_id": 1})
-    #         if rec:
-    #             db_logger.info("User record fetched successfully.")
-    #             return rec["_id"]
-    #         db_logger.info("User record not found.")
-    #         return None
-    #     except Exception as e:
-    #         db_logger.error("Database error during user save/fetch: %s", str(e))
-    #         raise

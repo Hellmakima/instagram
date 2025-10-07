@@ -81,10 +81,7 @@ async def register(
     user_repo: UserRepository = Depends(get_user_repo),
 ):
     request_logger.info("in register endpoint")
-    try:
-        await create_user(form_data, user_repo)
-    except Exception:
-        raise
+    await create_user(form_data, user_repo)
     return SuccessMessageResponse(
         message="User registered successfully. Please proceed to login."
     )

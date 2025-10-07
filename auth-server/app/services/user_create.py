@@ -85,16 +85,8 @@ async def create_user(
     )
 
     try:
-        res = await user_repo.insert(user_doc.model_dump())
-        if not res:
-            flow_logger.error("User record not inserted.")
-            raise Exception("User record not inserted.")
+        res = await user_repo.insert(user_doc)
         flow_logger.info("User record inserted successfully.")
-        # rec = await user_repo.find_by_id(res)
-        # if not rec:
-            # flow_logger.error("User record not found immediately after successful insert for username: %s", form_data.username)
-            # raise Exception("User record not found.")
-        # flow_logger.info("User record fetched successfully.")
     except Exception as e:
         flow_logger.error("Database error during user save/fetch: %s", str(e))
         raise InternalServerError()
