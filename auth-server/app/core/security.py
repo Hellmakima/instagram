@@ -5,7 +5,6 @@ Contains the security related functions like hashing, verifying passwords, creat
 JWT is used for authentication.
 """
 from fastapi import HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 
 from jose import jwt
 from jose.exceptions import ExpiredSignatureError, JWTClaimsError, JWTError
@@ -23,8 +22,6 @@ import logging
 flow_logger = logging.getLogger("app_flow")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
 
 async def get_password_hash(password: str) -> str:
     flow_logger.info("in get_password_hash")
@@ -53,7 +50,7 @@ def create_refresh_token(
 ) -> str:
     flow_logger.info("in create_refresh_token")
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data.id, "type": "Bearer"}
+    to_encode = {"exp": expire, "sub": data.id, "type": "refresh"}
     encoded_jwt = jwt.encode(to_encode, settings.REFRESH_TOKEN_JWT_SECRET_KEY, algorithm=settings.REFRESH_TOKEN_JWT_ALGORITHM)
     return encoded_jwt
 

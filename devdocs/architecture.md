@@ -12,7 +12,8 @@
 
 ### Internal Endpoints
 
-- GET `/user/{username}`
+- GET `/user_id/{username}` (get user_id by username)
+- GET `/username/{user_id}` (get username by user_id)
 
 ## Resource Server
 

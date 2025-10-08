@@ -9,12 +9,13 @@
 
 ## Architecture
 
-- caching (normalization in mongo)
+- decide the DB (wheather to keep using MongoDB or switch to PostgreSQL)
+- caching (denormalization in DB)
   - keep recent comments, likes, etc. for each post.
 
 **Resource Server (Validation):** The Resource Server performs three checks _internally_ without calling the Auth Server:
 
-- **Signature:** It uses the Auth Server's publicly available **public key** to verify the JWT's signature. This confirms the token was genuinely issued by the Auth Server and hasn't been tampered with.
+- **JWT validation**
   - **Claims:** It checks critical claims (payload fields) like:
     - `jti` (JWT ID): Is the token unique?
     - `exp` (Expiration Time): Is the token still valid?
