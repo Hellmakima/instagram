@@ -15,7 +15,15 @@ class Settings(BaseSettings):
 
     MONGODB_URI: str = Field(..., description="MongoDB URI")
     MONGODB_DBNAME: str = Field(..., description="MongoDB Database")
+
     USER_COLLECTION: str = Field(..., description="User Database")
+    POSTS_COLLECTION: str = Field(..., description="Posts Database")
+    POST_LIKES_COLLECTION: str = Field(..., description="Post Likes Database")
+    COMMENTS_COLLECTION: str = Field(..., description="Comments Database")
+    COMMENT_LIKES_COLLECTION: str = Field(..., description="Comment Likes Database")
+    FOLLOWS_COLLECTION: str = Field(..., description="Follows Database")
+    
+    ACCESS_TOKEN_PUBLIC_JWT_SECRET_KEY: str = Field(..., description="Access Token Public JWT Secret Key")
     CSRF_SECRET: str = Field(..., description="CSRF Secret")
     
     @field_validator('REFRESH_TOKEN_EXPIRE_MINUTES', mode='before')

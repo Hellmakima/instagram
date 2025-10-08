@@ -19,4 +19,10 @@ class UserMe(User):
     username: str
     # email: str  # Add other fields you want to expose
 
-
+# TODO: place this in a separate file
+class Follows(BaseModel):
+    """
+    Follows Id
+    """
+    follower_id: str
+    following_id: str
