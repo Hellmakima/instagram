@@ -10,6 +10,9 @@ updates:
     directory: "/auth-server"
     schedule:
       interval: "weekly"
+    ignore:
+      - dependency-name: "bcrypt"
+        versions: ["*"] # ignore all versions
 
   # Python (uv) - Resource Server
   - package-ecosystem: "uv"
