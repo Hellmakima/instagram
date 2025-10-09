@@ -4,7 +4,7 @@ from fastapi import (
     HTTPException,
     status,
 )
-from app.db.repositories.user_repo import UserRepository
+from app.db.repositories.user import User as UserRepository
 from app.api.dependencies.db_deps import get_user_repo
 from app.schemas.auth import TokenData
 from app.schemas.responses import (

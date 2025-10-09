@@ -31,9 +31,9 @@ from app.schemas.responses import (
     InternalServerError, 
     SuccessMessageResponse,
 )
-from app.services.user_create import create_user
-from app.db.repositories.refresh_token_repo import RefreshTokenRepository
-from app.db.repositories.user_repo import UserRepository
+from app.services.auth.user_create import create_user
+from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
+from app.db.repositories.user import User as UserRepository
 from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
 
 import logging

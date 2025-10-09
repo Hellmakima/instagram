@@ -6,7 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
 
 
-class RefreshTokenRepository:
+class RefreshToken:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db.get_collection(settings.REFRESH_TOKEN_COLLECTION)
 

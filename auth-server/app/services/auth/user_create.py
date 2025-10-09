@@ -2,14 +2,13 @@
 
 from datetime import datetime, timedelta, timezone
 from app.schemas.auth import UserCreate
-from app.models.auth import User
-from app.db.repositories.user_repo import UserRepository
+from app.models.auth import User as UserModel
 from app.schemas.responses import (
     APIErrorResponse, 
     ErrorDetail, 
     InternalServerError,
 )
-from app.db.repositories.user_repo import UserRepository
+from app.db.repositories.user import User as UserRepository
 from app.core.security import get_password_hash
 from fastapi import (
     HTTPException,
@@ -68,7 +67,7 @@ async def create_user(
 
     hashed_password = await get_password_hash(form_data.password)
 
-    user_doc = User(
+    user_doc = UserModel(
         username=form_data.username,
         email=form_data.email,
         hashed_password=hashed_password,

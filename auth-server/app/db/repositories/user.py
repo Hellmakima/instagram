@@ -4,13 +4,13 @@ from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
 from bson.objectid import ObjectId
-from app.models.auth import User
+from app.models.auth import User as UserModel
 
 import logging
 flow_logger = logging.getLogger("app_flow")
 db_logger = logging.getLogger("app_db")
 
-class UserRepository:
+class User:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db.get_collection(settings.USER_COLLECTION)
 
@@ -57,7 +57,7 @@ class UserRepository:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
 
-    async def insert(self, user_doc: User) -> ObjectId:
+    async def insert(self, user_doc: UserModel) -> ObjectId:
         flow_logger.info("in insert")
         try:
             res = await self.collection.insert_one(user_doc.model_dump())
