@@ -35,7 +35,7 @@ _(No endpoints listed in the diagram)_
 - is_suspended
 - suspended_till
 - last_activity_at
-- is_deleted
+- is_pending_deletion
 - delete_at
 
 ### refresh_tokens

@@ -15,7 +15,7 @@ Might need GrpahQL for storing relations between users, posts, etc.
     "is_blocked": true,
     "blocked_till": null, // UTC timestamp or null
     "is_verified": true,
-    "is_deleted": false,
+    "is_pending_deletion": false,
     "deleted_ttl": null, // will deleted after this timestamp or null
     "email": "instaclone@gmail.com",
     "phone": null,
@@ -37,7 +37,7 @@ Might need GrpahQL for storing relations between users, posts, etc.
         */
         "media_link": "link", // post file blob or link
         "created": "2025-08-11T11:30:11.838487+00:00", // timestamp
-        "is_deleted": false,
+        "is_pending_deletion": false,
         "likes_count": "2", // cache
         "likes": [
           {

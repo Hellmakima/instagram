@@ -14,7 +14,7 @@ async def test_find_by_username_or_email_found(
     mock_user_data = {
         "_id": "60a123456789abcdef0123456",
         "hashed_password": "hashed_password_string",
-        "is_deleted": False,
+        "is_pending_deletion": False,
         "is_blocked": False,
         "is_verified": True,
     }
@@ -35,7 +35,7 @@ async def test_find_by_username_or_email_found(
         projection={
             "_id": 1,
             "hashed_password": 1,
-            "is_deleted": 1,
+            "is_pending_deletion": 1,
             "is_blocked": 1,
             "is_verified": 1,
         },

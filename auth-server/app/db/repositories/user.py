@@ -22,7 +22,7 @@ class User:
                 projection={
                     "_id": 1,
                     "hashed_password": 1,
-                    "is_deleted": 1,
+                    "is_pending_deletion": 1,
                     "is_blocked": 1,
                     "is_verified": 1,
                 },

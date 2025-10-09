@@ -76,7 +76,7 @@ async def create_user(
         is_suspended=False,
         suspended_till=None,
         last_activity_at=datetime.now(timezone.utc),
-        is_deleted=True,
+        is_pending_deletion=True,
         # by default, set to delete within a few minutes, coz not verified.
         # same time as email link expiry.
         # Remove this once verified.

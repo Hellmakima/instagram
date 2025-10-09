@@ -49,7 +49,7 @@ async def login_user(
     if (
         not rec 
         or not is_password_valid 
-        or rec.get("is_deleted") 
+        or rec.get("is_pending_deletion") 
         or rec.get("is_blocked") 
         or not rec.get("is_verified")
     ):

@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     await db[settings.USER_COLLECTION].create_index(
         [("delete_at", 1)],
         expireAfterSeconds=0,
-        partialFilterExpression={"is_deleted": True}
+        partialFilterExpression={"is_pending_deletion": True}
     )
     # already exists, doesn't make a difference
     await db[settings.USER_COLLECTION].create_index("_id")

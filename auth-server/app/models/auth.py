@@ -11,6 +11,6 @@ class User(BaseModel):
     is_suspended: bool
     suspended_till: Optional[datetime]
     last_activity_at: datetime
-    is_deleted: bool
+    is_pending_deletion: bool
     delete_at: datetime
     

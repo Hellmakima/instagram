@@ -73,7 +73,7 @@ _Search for `TODO` in all files to see all the todos_
   - Add Mongo TTL for refresh tokens
   - Add TTL for is_blocked
     - put blocked_till field in user schema and make a service to unblock users every X days.
-  - same for is_deleted
+  - same for is_pending_deletion
     - but here the enty moves to a separate collection with PII removed.
 - redo cookie setting, add samesite, httponly, secure, path, domain, etc once respective frontend is done.
 - use `pytest-cov`
