@@ -1,4 +1,4 @@
-# app/services/user.py
+# app/services/auth/user_create.py
 
 from datetime import datetime, timedelta, timezone
 from app.schemas.auth import UserCreate

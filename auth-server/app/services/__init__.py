@@ -1,7 +1,6 @@
 """
-Folder: app/api
+Folder: app/services/
 
-Contains all the api endpoints that are called by the client
-Take in Schemas and send out Models to repository and return Responses
-raises the HTTPException or InternalServerError
+Contains all the services for the app.
+I am currently going one folder for each endpoint.
 """

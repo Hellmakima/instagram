@@ -125,7 +125,7 @@
 
         async function getCsrfToken() {
             try {
-                const response = await fetch('/auth/csrf-token');
+                const response = await fetch('/v1/auth/csrf-token');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 csrfToken = result.data.csrf_token;
@@ -151,7 +151,7 @@
             const password = document.getElementById('password').value;
 
             try {
-                const response = await fetch('/auth/register', {
+                const response = await fetch('/v1/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

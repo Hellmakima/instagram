@@ -9,7 +9,7 @@ export function LoginFormClient({ csrfToken }: LoginFormClientProps) {
   return (
     <AuthForm
       csrfToken={csrfToken}
-      endpoint="/auth/login"
+      endpoint="/v1/auth/login"
       title="User Login"
       description="Enter your credentials to access your account."
       fields={[

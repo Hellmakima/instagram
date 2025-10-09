@@ -102,3 +102,4 @@ async def login_user(
     security_logger.info("User '%s' logged in successfully.", rec["_id"])
 
     return access_token, refresh_token
+

@@ -32,6 +32,7 @@ from app.schemas.responses import (
     SuccessMessageResponse,
 )
 from app.services.auth.user_create import create_user
+from app.services.auth.user_login import login_user
 from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
 from app.db.repositories.user import User as UserRepository
 from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
@@ -110,76 +111,15 @@ async def login(
 ):
     flow_logger.info("in login endpoint")
 
-    try:
-        rec = await user_repo.find_by_username_or_email(form_data.username_or_email)
-        flow_logger.info("Fetched user record: %s", str(rec))
-    except Exception as e:
-        flow_logger.error("Error fetching user from DB: %s", str(e))
-        raise InternalServerError()
-    is_password_valid = False
-    if rec:
-        is_password_valid = await verify_password(form_data.password, rec.get("hashed_password", ""))
-        flow_logger.info("Password verification result: %s", str(is_password_valid))
+    client_ip = request.headers.get("x-forwarded-for") or (request.client.host if request.client else "unknown")
 
-    # Generic check for ALL failure conditions to prevent user enumeration
-    # TODO: maybe separate this based on condition, Gemini says it's a risk to leak this.
-    if (
-        not rec 
-        or not is_password_valid 
-        or rec.get("is_deleted") 
-        or rec.get("is_blocked") 
-        or not rec.get("is_verified")
-    ):
-        '''
-        # IP Address Logging (TODO: implement this to add IP address of client):
+    access_token, refresh_token = await login_user(
+        form_data,
+        user_repo,
+        refresh_token_repo,
+        client_ip
+    )
 
-        Correction: request.client.host will give you the direct client IP. If you're behind a reverse proxy (like Nginx, AWS ALB, Cloudflare), you must use request.headers.get("x-forwarded-for") or similar headers, as request.client.host will show the proxy's IP.
-
-        Recommendation: Implement robust IP address logging. If using a reverse proxy, ensure it's configured to pass the X-Forwarded-For header correctly, and your application trusts this header. Add an X-Real-IP header if X-Forwarded-For is not sufficient.
-        '''
-        # request.headers.get("x-forwarded-for", request.client.host)
-        flow_logger.info(
-            "Failed login attempt for user '%s'. IP: %s. Details: %s",
-            form_data.username_or_email,
-            request.client.host if request.client else "unknown",
-            {"password_valid": is_password_valid, "rec": rec}
-            # TODO: implement this to add IP address of client. gets complicated if using reverse proxy
-        )
-        security_logger.warning(
-            "Failed login attempt for user '%s'. IP: %s", 
-            form_data.username_or_email,
-            request.client.host if request.client else "unknown"
-            # TODO: implement this to add IP address of client. gets complicated if using reverse proxy
-        )
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=APIErrorResponse(
-                message="Invalid credentials",
-                error=ErrorDetail(
-                    code="INVALID_CREDENTIALS",
-                    details="Invalid username, password, or account status."
-                )
-            ).model_dump()
-        )
-
-    # Generate authentication tokens and set cookie
-    tok_data = TokenData(id=rec["_id"])
-    access_token = create_access_token(tok_data)
-    refresh_token = create_refresh_token(tok_data)
-
-    try:
-        # TODO: add TTL in mongoDB
-        '''
-        Token Expiration & Storage:
-        MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
-        Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
-        '''
-        await refresh_token_repo.insert(rec["_id"], refresh_token)
-    except Exception as e:
-        flow_logger.error("Error saving refresh token to DB: %s", str(e))
-        raise InternalServerError()
-
-    
     # Set the refresh token as an HttpOnly cookie
     response.set_cookie(
         key="access_token",
@@ -202,8 +142,6 @@ async def login(
         secure=True,
         samesite="lax",
     )
-
-    security_logger.info("User '%s' logged in successfully.", rec["_id"])
 
     # Return success response
     return SuccessMessageResponse(
