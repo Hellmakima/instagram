@@ -30,9 +30,10 @@ from app.schemas.responses import (
     InternalServerError, 
     SuccessMessageResponse,
 )
-from app.services.auth.user_create import create_user
-from app.services.auth.user_login import login_user
-from app.services.auth.user_logout import logout_user
+from app.services.auth.user_create import create_user as create_user_service
+from app.services.auth.user_login import login_user as login_user_service
+from app.services.auth.user_logout import logout_user as logout_user_service
+from app.services.auth.user_refresh_token import refresh_access_token as refresh_access_token_service
 from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
 from app.db.repositories.user import User as UserRepository
 from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
@@ -41,7 +42,6 @@ import logging
 request_logger = logging.getLogger("app_requests")
 # TODO: remove below loggers
 flow_logger = logging.getLogger("app_flow")
-security_logger = logging.getLogger("security_logger")
 db_logger = logging.getLogger("app_db")
 
 router = APIRouter()
@@ -84,7 +84,7 @@ async def register(
     user_repo: UserRepository = Depends(get_user_repo),
 ):
     request_logger.info("in register endpoint")
-    await create_user(form_data, user_repo)
+    await create_user_service(form_data, user_repo)
     return SuccessMessageResponse(
         message="User registered successfully. Please proceed to login."
     )
@@ -115,7 +115,7 @@ async def login(
 
     client_ip = request.headers.get("x-forwarded-for") or (request.client.host if request.client else "unknown")
 
-    access_token, refresh_token = await login_user(
+    access_token, refresh_token = await login_user_service(
         form_data,
         user_repo,
         refresh_token_repo,
@@ -173,7 +173,7 @@ async def logout(
     access_token = request.cookies.get("access_token", "")
     refresh_token = request.cookies.get("refresh_token", "")
 
-    await logout_user(access_token, refresh_token, refresh_token_repo)
+    await logout_user_service(access_token, refresh_token, refresh_token_repo)
 
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
@@ -201,74 +201,22 @@ async def refresh_access_token(
 ):
     flow_logger.info("in refresh token endpoint")
 
-    try:
-        token = request.cookies.get("access_token")
-        if token is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=APIErrorResponse(
-                    message="Invalid credentials",
-                    error=ErrorDetail(
-                        code="INVALID_CREDENTIALS",
-                        details="Invalid access token."
-                    )
-                ).model_dump()
-            )
-        user = verify_token(token=token, token_type="access")
-        flow_logger.info("refresh token verified.")
-    except HTTPException:
-        flow_logger.error("Refresh token not found or expired.")
-        raise
-    except Exception as e:
-        flow_logger.error("Error verifying refresh token: %s", str(e))
-        raise InternalServerError()
+    refresh_token = request.cookies.get("refresh_token", "")
 
-    async with session.start_transaction():
-        try:
-            refresh_token_doc = await refresh_token_repo.find_by_token(request.cookies.get("refresh_token", ""))
+    new_access_token, new_refresh_token = await refresh_access_token_service(
+        refresh_token=refresh_token,
+        refresh_token_repo=refresh_token_repo,
+        session=session
+    )
 
-            if not refresh_token_doc:
-                flow_logger.warning("Revoked or invalid refresh token used for refresh attempt.")
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail=APIErrorResponse(
-                        message="Unauthorized",
-                        error=ErrorDetail(
-                            code="REFRESH_TOKEN_INVALID",
-                            details="Refresh token not found, revoked, or expired."
-                        )
-                    ).model_dump()
-                )
-            db_logger.info("Found refresh token.")
-
-            await refresh_token_repo.revoke(refresh_token_doc["_id"])
-            db_logger.info("Old refresh token revoked successfully.")
-
-            # Generate and insert the new refresh token
-            user_token_payload = TokenData(id=user.id)
-            new_refresh_token = create_refresh_token(user_token_payload)
-
-            await refresh_token_repo.insert(user.id, new_refresh_token)
-            db_logger.info("New refresh token inserted successfully.")
-
-            # Generate new access token
-            new_access_token = create_access_token(user_token_payload)
-
-        except HTTPException:
-            raise
-        except Exception as e:
-            db_logger.error("Transaction failed during token refresh: %s", str(e))
-            raise InternalServerError()
-    
-    # Set the new tokens
-    response = Response(content=new_access_token, media_type="text/plain")
+    response = Response(content="OK", media_type="text/plain")
     response.set_cookie(
         key="access_token",
         value=new_access_token,
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        httponly=True, 
+        httponly=True,
         secure=True,
-        samesite="lax", 
+        samesite="lax",
     )
     response.set_cookie(
         key="refresh_token",
@@ -279,6 +227,4 @@ async def refresh_access_token(
         samesite="lax",
     )
 
-    return SuccessMessageResponse(
-        message="Token refreshed successfully."
-    )
+    return SuccessMessageResponse(message="Token refreshed successfully.")

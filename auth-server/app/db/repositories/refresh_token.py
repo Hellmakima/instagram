@@ -36,6 +36,7 @@ class RefreshToken:
             db_logger.error("Failed to insert refresh token for user_id=%s: %s", user_id, str(e))
             raise
 
+    # TODO: decide what to do with this
     async def delete_by_token(self, token: str):
         try:
             return await self.collection.delete_one({"refresh_token": token})
