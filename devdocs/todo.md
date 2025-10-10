@@ -71,7 +71,7 @@ _Search for `TODO` in all files to see all the todos_
 - start versioning
 - TTL stuff
   - Add Mongo TTL for refresh tokens
-  - Add TTL for is_blocked
+  - Add TTL for is_suspended
     - put blocked_till field in user schema and make a service to unblock users every X days.
   - same for is_pending_deletion
     - but here the enty moves to a separate collection with PII removed.

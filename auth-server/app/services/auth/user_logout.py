@@ -44,7 +44,7 @@ async def logout_user(
         raise InternalServerError()
     
     try:
-        await refresh_token_repo.delete_by_token(refresh_token)
+        await refresh_token_repo.revoke(refresh_token)
     except Exception as e:
         flow_logger.error("Error deleting refresh token: %s", str(e))
         raise InternalServerError()

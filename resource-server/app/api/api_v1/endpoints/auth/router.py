@@ -191,7 +191,7 @@ async def login(
         not rec 
         or not is_password_valid 
         or rec.get("is_deleted") 
-        or rec.get("is_blocked") 
+        or rec.get("is_suspended") 
         or not rec.get("is_verified")
     ):
         '''

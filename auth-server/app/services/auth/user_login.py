@@ -41,7 +41,7 @@ async def login_user(
         raise InternalServerError()
     is_password_valid = False
     if rec:
-        is_password_valid = await verify_password(form_data.password, rec.get("hashed_password", ""))
+        is_password_valid = await verify_password(form_data.password, rec.hashed_password)
         flow_logger.info("Password verification result: %s", str(is_password_valid))
 
     # Generic check for ALL failure conditions to prevent user enumeration
@@ -49,9 +49,9 @@ async def login_user(
     if (
         not rec 
         or not is_password_valid 
-        or rec.get("is_pending_deletion") 
-        or rec.get("is_blocked") 
-        or not rec.get("is_verified")
+        or rec.is_pending_deletion
+        or rec.is_suspended
+        or not rec.is_verified
     ):
         '''
         # IP Address Logging (TODO: implement this to add IP address of client):
@@ -84,7 +84,7 @@ async def login_user(
         )
 
     # Generate authentication tokens and set cookie
-    tok_data = TokenData(id=rec["_id"])
+    tok_data = TokenData(id=rec.id)
     access_token = create_access_token(tok_data)
     refresh_token = create_refresh_token(tok_data)
 
@@ -94,11 +94,11 @@ async def login_user(
         MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
         Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
         '''
-        await refresh_token_repo.insert(rec["_id"], refresh_token)
+        await refresh_token_repo.insert(rec.id, refresh_token)
     except Exception as e:
         flow_logger.error("Error saving refresh token to DB: %s", str(e))
         raise InternalServerError()
     
-    security_logger.info("User '%s' logged in successfully.", rec["_id"])
+    security_logger.info("User '%s' logged in successfully.", rec.id)
 
     return access_token, refresh_token

@@ -64,6 +64,8 @@ async def generate_csrf_token(
     )
 
 
+# TODO: implement session=Depends(get_session)
+
 @router.post(
     "/register",
     response_model=SuccessMessageResponse,

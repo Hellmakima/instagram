@@ -12,7 +12,7 @@ Might need GrpahQL for storing relations between users, posts, etc.
   {
     "_id": "19d0d713edbf4e5bae2ee8751b38ec85", // uuid
     "username": "hellmakima",
-    "is_blocked": true,
+    "is_suspended": true,
     "blocked_till": null, // UTC timestamp or null
     "is_verified": true,
     "is_pending_deletion": false,

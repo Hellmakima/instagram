@@ -95,7 +95,7 @@
             <button type="submit">Login</button>
         </form>
 
-        <button id="logoutButton" style="display:none;">Logout</button>
+        <button id="logoutButton" style="display:none;margin-top: 10px;">Logout</button>
 
         <div id="message"></div>
         <p id="next-step"></p>
@@ -163,6 +163,7 @@
         });
 
         logoutButton.addEventListener('click', async () => {
+            getCsrfToken(); // Temporary fix
             try {
                 const response = await fetch('/v1/auth/logout', {
                     method: 'POST',
