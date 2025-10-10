@@ -1,10 +1,19 @@
 {
   "files.exclude": {
-    "**/__init__.py": true,
+    // Python
     "**/__pycache__": true,
     "**/.pytest_cache": true,
     "**/.venv": true,
     "**/.git": true,
+    // My inconvenience
+    "**/__init__.py": true,
+    "**/.env.example": true,
+    "**/Dockerfile": true,
+    // UV
+    "**/uv.lock": true,
+    "**/pyproject.toml": true,
+    "**/.python-version": true,
+    // Frontend
     "frontend/.next": true,
     "frontend/node_modules": true,
     "frontend/components.json": true,

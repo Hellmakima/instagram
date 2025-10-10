@@ -2,12 +2,16 @@
 
 _Search for `TODO` in all files to see all the todos_
 
-## High Priority/Current Tasks
+## Ongoing Tasks
+
+- setup resource-server
+
+## High Priority
 
 - write tests for the project so far
   - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
-- setup separate repositories for each service
-- mTLS or API key for internal communication
+- define models for repos in app/models/ for auth server
+- setup redis for server communication
 
 ## Upcomming **Waku-Waku**
 
@@ -64,6 +68,7 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Medium Priority Tasks
 
+- setup separate repositories for each server
 - get resource-server running.
 - Create a DatabaseProtocol or abstract interface for every database method (find_one, insert_one, delete_many, etc.) and use it in the repositories and the apis. Won't be doing this for auth-server, but it will be for the other services.
 - update `devdocs/file_structure.ini` with new structure.
@@ -92,10 +97,10 @@ _Search for `TODO` in all files to see all the todos_
 - search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 - update requirements.txt
 - code review
-  - look for proper logging
+  - proper logging of FE and BE
   - error handling
   - type checking
-  - look for what can be a bottleneck for scalability
+  - rate limiting for each endpoint
 
 ## Low Priority Tasks
 

@@ -66,6 +66,23 @@ class User:
         print(f"Ascending {self.username} to heaven...")
 ```
 
+## Repositories
+
+- Thin layer between the database and the application. Only change this when you need to change the database.
+- Separates the database logic from the application logic.
+- My Pattern:
+
+```py
+# app/db/repositories/entity_repo.py
+class EntityRepository:
+    async def create(self, data: dict): ...
+    async def get_entity(self, entity_id: str): ...
+    async def get_entities(self, conditions: dict): ...
+    async def update_entity(self, entity_id: str, data: dict): ...
+    async def delete_entity(self, entity_id: str): ...
+    async def delete_entities(self, conditions: dict): ...
+```
+
 ## API
 
 - RESTful API used for all operations.
@@ -111,6 +128,15 @@ error responses:
 3. **Rolling deploys** = your infra might briefly have two Frontend versions (old & new) in parallel.
 4. **Debugging**: when something breaks, you'll want to know _which version_ of the API it came from.
 5. **Graceful deprecation**: versioning lets you phase things out without nuking everyone at once.
+
+## Coding sequence
+
+1. API endpoints
+1. Models
+1. Repositories
+1. Schemas
+1. Router
+1. Services
 
 ## Authentication
 

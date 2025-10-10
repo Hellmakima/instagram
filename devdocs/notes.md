@@ -53,7 +53,7 @@ A **flawed approach** is using a single function that checks for a token in eith
 The **correct approach** is to maintain a single API version but with separate, explicit authentication flows:
 
 1.  **For Web Browsers**: Use a dedicated endpoint (`/auth/login_web`) that returns an **`HttpOnly` cookie**. This prevents JavaScript from accessing the token, mitigating XSS attacks.
-2.  **For Mobile/APIs**: Use a separate endpoint (`/auth/login_mobile`) that returns a **JWT in the JSON response body**. The client stores and sends this token in the `Authorization: Bearer` header. Use `OAuth2PasswordBearer` for these endpoints.
+2.  **For Mobile/APIs**: Use a separate endpoint (`/auth/login_mobile`) that returns a **JWT in the JSON response body**. The client stores and sends this token in the `Authorization: Bearer` header. Maybe use `OAuth2PasswordBearer` for these endpoints.
 
 ### **Backend (Flask/FastAPI) Setup**
 
