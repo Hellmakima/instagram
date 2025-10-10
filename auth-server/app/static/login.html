@@ -94,6 +94,9 @@
 
             <button type="submit">Login</button>
         </form>
+
+        <button id="logoutButton" style="display:none;">Logout</button>
+
         <div id="message"></div>
         <p id="next-step"></p>
     </div>
@@ -101,6 +104,7 @@
     <script>
         let csrfToken = null;
         const messageDiv = document.getElementById('message');
+        const logoutButton = document.getElementById('logoutButton');
 
         function displayMessage(msg, type) {
             messageDiv.textContent = msg;
@@ -148,12 +152,33 @@
                 if (response.ok) {
                     displayMessage(`Login successful: ${result.message || 'Welcome!'}`, 'success');
                     document.getElementById('next-step').innerHTML = `You are now logged in.`;
+                    logoutButton.style.display = 'inline-block';
                 } else {
                     const errorMsg = result.detail?.message || result.message || 'Unknown error';
                     displayMessage(`Login failed: ${errorMsg}`, 'error');
                 }
             } catch (error) {
                 displayMessage(`Network error during login: ${error.message}`, 'error');
+            }
+        });
+
+        logoutButton.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/v1/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-Token': csrfToken
+                    }
+                });
+                if (response.ok) {
+                    displayMessage("Logged out successfully.", 'success');
+                    logoutButton.style.display = 'none';
+                    document.getElementById('next-step').innerHTML = '';
+                } else {
+                    displayMessage("Logout failed.", 'error');
+                }
+            } catch (error) {
+                displayMessage(`Network error during logout: ${error.message}`, 'error');
             }
         });
 

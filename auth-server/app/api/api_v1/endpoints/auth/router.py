@@ -16,7 +16,6 @@ from app.core.config import settings
 from app.core.security import (
     create_access_token,
     create_refresh_token,
-    verify_password,
     verify_token,
 )
 from app.core.csrf import CsrfProtect, verify_csrf
@@ -33,6 +32,7 @@ from app.schemas.responses import (
 )
 from app.services.auth.user_create import create_user
 from app.services.auth.user_login import login_user
+from app.services.auth.user_logout import logout_user
 from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
 from app.db.repositories.user import User as UserRepository
 from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
@@ -166,44 +166,18 @@ async def logout(
     _: None = Depends(verify_csrf),
     refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
 ):
-    flow_logger.info("in logout endpoint")
+    request_logger.info("in logout endpoint")
 
-    try:
-        token = request.cookies.get("access_token")
-        if token is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail=APIErrorResponse(
-                    message="Invalid credentials",
-                    error=ErrorDetail(
-                        code="INVALID_CREDENTIALS",
-                        details="Invalid access token."
-                    )
-                ).model_dump()
-            )
-        user = verify_token(token=token, token_type="access")
-        flow_logger.info("auth token verified.")
-    except Exception as e:
-        flow_logger.error("Error verifying auth token: %s", str(e))
-        raise InternalServerError()
-    
-    try:
-        await refresh_token_repo.delete_by_token(request.cookies.get("refresh_token", ""))
-        db_logger.info("Refresh token deleted successfully.")
-    except Exception as e:
-        db_logger.error("Error deleting refresh token: %s", str(e))
-        flow_logger.error("Error deleting refresh token: %s", str(e))
-        raise InternalServerError()
+    access_token = request.cookies.get("access_token", "")
+    refresh_token = request.cookies.get("refresh_token", "")
 
-    # Unset the refresh token cookie
+    await logout_user(access_token, refresh_token, refresh_token_repo)
+
     response.delete_cookie("access_token")
     response.delete_cookie("refresh_token")
 
-    security_logger.info("User '%s' logged out successfully.", user.id)
+    return SuccessMessageResponse(message="Logout successful.")
 
-    return SuccessMessageResponse(
-        message="Logout successful."
-    )
 
 
 @router.post(
