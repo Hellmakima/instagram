@@ -10,25 +10,17 @@ _Search for `TODO` in all files to see all the todos_
 
 - write tests for the project so far
   - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
-- define models for repos in app/models/ for auth server
 - setup redis for server communication
 
 ## Upcomming **Waku-Waku**
 
-- design a logo for the app. The logo must comply with the following rules:
-  - Vector design, square format
-  - Works in both light & dark mode
-  - Recognizable even when pixelated
-  - Animated
-  - Symbolizes growth, privacy, and security
-  - Color palette applied
-  - I'm thinking sequoia seed or sapling as a logo
 - add health check endpoints
 - make a youtube video about this project
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
 - improve project documentation
   - verify requirements.txt by making a new venv and testing the project.
+- a socket connection with the frontend to record last activity, realtime notifications, logout, etc.
 - format code with annotations
 
   eg:
@@ -38,8 +30,6 @@ _Search for `TODO` in all files to see all the todos_
     bool verified = is_verified(login_form)
     return SuccessResponse('You did good')
   ```
-
-- use `uv` package manager instead of `pip` and `venv` after getting python 3.14
 
 ## Research
 
@@ -68,6 +58,8 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Medium Priority Tasks
 
+- logo animation
+- implement more from [Auth-server](https://github.com/hellmakima/instagram/blob/main/auth-server/app/api/structure.md)
 - setup separate repositories for each server
 - get resource-server running.
 - Create a DatabaseProtocol or abstract interface for every database method (find_one, insert_one, delete_many, etc.) and use it in the repositories and the apis. Won't be doing this for auth-server, but it will be for the other services.

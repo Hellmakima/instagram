@@ -2,7 +2,7 @@
 
 ## Auth Server
 
-### FE Endpoints
+### Routes
 
 - GET `/auth/csrf-token`
 - POST `/auth/register`
@@ -17,9 +17,43 @@
 
 ## Resource Server
 
-### FE Endpoints
+### Routes
 
-_(No endpoints listed in the diagram)_
+- GET `/profile/{user_id}`
+  ```json
+  {
+    "user_id": "123456789",
+    "username": "user1",
+    "description": "This is my description",
+    "profile_picture": "https://example.com/profile_picture.jpg",
+    "following_count": 10,
+    "followers_count": 20,
+    "posts_count": 30
+  }
+  ```
+- GET `/posts/{user_id}`
+  ```json
+  [
+    {
+      "post_id": "123456789",
+      "user_id": "123456789",
+      "timestamp": "2023-01-01T00:00:00Z",
+      "shares": 10,
+      "caption": "This is my caption",
+      "type": "photo",
+      "media": [
+        {
+          "media_id": "123456789",
+          "type": "photo"
+        }
+      ]
+    }
+  ]
+  ```
+  <!-- - GET `/comments/{post_id}`
+    - GET `/follows/{user_id}`
+    - GET `/followers/{user_id}`
+    - GET `/likes/{post_id}` -->
 
 # Databases
 
@@ -55,3 +89,35 @@ _(No endpoints listed in the diagram)_
 - description
 - display_name
 - profile_picture_url
+
+### posts
+
+- \_id
+- user_id (FK)
+- caption
+- timestamp
+- shares
+- media
+
+<!-- ### post_likes
+
+- user_id (FK)
+- post_id (FK)
+
+### comments
+
+- \_id
+- post_id (FK)
+- user_id (FK)
+- timestamp
+- reply_to
+
+### comment_likes
+
+- comment_id (FK)
+- user_id (FK)
+
+### follows
+
+- follower_id (FK)
+- following_id (FK) -->

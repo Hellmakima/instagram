@@ -22,7 +22,7 @@ from slowapi.errors import RateLimitExceeded
 
 from app.core.csrf import csrf_exception_handler, CsrfProtectError
 from app.core.lifespan import lifespan
-from app.api.api_v1.router import router
+from app.api.router import router
 
 from app.utils.loggers import init_loggers
 init_loggers()

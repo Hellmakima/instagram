@@ -1,11 +1,11 @@
 <h1 align="center">﷽</h1>
 
-# Instagrm Clone (Full-Stack Instagram-like Application)
+# Nmaa – Full-Stack Social Media App
 
 A full-stack Instagram-like application built using **FastAPI**, **MongoDB**, and **Next.js**
-Designed with modularity, clarity, and scalability in mind
+Designed with modularity, clarity, and scalability.
 
-This project is currently in the early stages of development and is being prepared for migration into a microservices architecture across multiple repositories
+This project is currently in the early stages of development.
 
 ---
 
@@ -24,20 +24,30 @@ This project is currently in the early stages of development and is being prepar
 
 ## Features
 
-- Microservices Architecture: Separate Auth and Resource servers
-- JWT Authentication and Refresh Token management
-- Automatic Swagger/OpenAPI documentation for each server
-- Built with FastAPI, MongoDB, and Next.js for a modern, high-performance stack
-- Asynchronous backend design for high concurrency and I/O efficiency
-- Rate Limiting implemented on the Auth Server to prevent abuse and brute-force attacks
-- CORS headers implemented on the Frontend to allow requests from any origin
-- Type-safe development using TypeScript on the frontend and Pydantic/type hints on the backend
+- **Microservices Architecture** – Modular Auth and Resource servers
+- **JWT Auth & Refresh Tokens** – Secure authentication and session management
+- **Async FastAPI** – Non-blocking I/O and dependency injection
+- **Redis Caching** – In-memory performance optimization
+- **MongoDB (Motor)** – Async NoSQL document database
+- **Next.js (TypeScript)** – Modern frontend with Tailwind, Redux Toolkit, and Shadcn UI
+- **Docker Support** – Ready for containerized deployment
+
+---
+
+## Tech Stack
+
+| Layer          | Tech                                                            |
+| -------------- | --------------------------------------------------------------- |
+| Backend        | FastAPI, Motor, Redis, Pydantic, bcrypt                         |
+| Frontend       | Next.js, TypeScript, TailwindCSS, Redux Toolkit, Shadcn, lucide |
+| Infrastructure | Docker, Caddy (reverse proxy), MongoDB                          |
+| Testing & Dev  | pytest, VS Code Tasks                                           |
 
 ---
 
 ## Getting Started
 
-This project has a multi-server architecture, so it's supposed to be in multiple repositories, but for now, we're keeping it all in one. Each server has its own folder
+This project has a multi-server architecture, so it's supposed to be in multiple repositories, but for now, we're keeping it all in one. Each server has its own folder (auth-server, resource-server and frontend)
 
 So you get all the servers by cloning this repository
 

@@ -77,6 +77,7 @@ class User:
 class EntityRepository:
     async def create(self, data: dict): ...
     async def get_entity(self, entity_id: str): ...
+    async def get_entitiy_by_conditions(self, conditions: dict): ...
     async def get_entities(self, conditions: dict): ...
     async def update_entity(self, entity_id: str, data: dict): ...
     async def delete_entity(self, entity_id: str): ...
@@ -129,14 +130,31 @@ error responses:
 4. **Debugging**: when something breaks, you'll want to know _which version_ of the API it came from.
 5. **Graceful deprecation**: versioning lets you phase things out without nuking everyone at once.
 
+## Planning sequence
+
+- DB Schema
+- Routes
+  - What will the FE request
+    - Optimal requests that are reusable or bundled together.
+- Models and Schemas
+- Repositories and Services
+  - How to handle requests with minimal DB operations
+
 ## Coding sequence
 
-1. API endpoints
-1. Models
-1. Repositories
-1. Schemas
-1. Router
-1. Services
+- Repositories and Models as required
+  - Repositories use db_logger to log all db operations
+  - Repositories take in Models and return Models. Models can be skipped for single return-type e.g., get_user_by_id -> input: str
+- Router and schemas as required
+  - Router takes in request body in defined Schema, validates request,
+  - calls service with respective repository,
+  - returns response in defined Schema.
+  - Any error is handled by the services or validators.
+- Services
+  - The heart of the application
+  - Business logic for the API endpoints
+  - Handles all sorts of external calls and errors.
+  - Takes in a Schema and Repository and returns a Schema or a processed Model.
 
 ## Authentication
 

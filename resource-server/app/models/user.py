@@ -6,11 +6,11 @@ Contains the user models for db repositories
 from pydantic import BaseModel
 
 
-class UserModel(BaseModel):
+class User(BaseModel):
     user_id: str
-    bio: str
+    description: str
     profile_picture: str
-    name: str
+    display_name: str
 
 
 # TODO: place this in a separate file

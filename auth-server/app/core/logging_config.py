@@ -7,7 +7,6 @@ These are not loaded from .env file.
 
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings
-from typing import Literal
 
 class LogSettings(BaseSettings):
     LOG_FLOW: bool = True

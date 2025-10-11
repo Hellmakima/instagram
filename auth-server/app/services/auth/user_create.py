@@ -29,7 +29,7 @@ async def create_user(
 
     # Check if user already exists
     try:
-        if await user_repo.find_verified(form_data.username, form_data.email):
+        if await user_repo.get_verified(form_data.username, form_data.email):
             flow_logger.info("Registration failed: User with provided username or email already exists.")
             # Do NOT specify which field is taken.
             raise HTTPException(
@@ -84,7 +84,7 @@ async def create_user(
     )
 
     try:
-        res = await user_repo.insert(user_doc)
+        res = await user_repo.create(user_doc)
         flow_logger.info("User record inserted successfully.")
     except Exception as e:
         flow_logger.error("Database error during user save/fetch: %s", str(e))

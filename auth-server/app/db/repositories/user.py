@@ -17,8 +17,8 @@ class User:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db.get_collection(settings.USER_COLLECTION)
 
-    async def find_by_username_or_email(self, identifier: str) -> Optional[UserOutModel]:
-        flow_logger.info("in find_by_username_or_email")
+    async def get_by_username_or_email(self, identifier: str) -> Optional[UserOutModel]:
+        flow_logger.info("in get_by_username_or_email")
         try:
             rec = await self.collection.find_one(
                 {"$or": [{"username": identifier}, {"email": identifier}]},
@@ -45,8 +45,8 @@ class User:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
 
-    async def find_verified(self, username: str, email: str) -> Optional[dict]:
-        flow_logger.info("in find_verified")
+    async def get_verified(self, username: str, email: str) -> Optional[dict]:
+        flow_logger.info("in get_verified")
         try:                
             rec = await self.collection.find_one(
                 {
@@ -66,7 +66,7 @@ class User:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
 
-    async def insert(self, user_doc: UserModel) -> ObjectId:
+    async def create(self, user_doc: UserModel) -> ObjectId:
         flow_logger.info("in insert")
         try:
             res = await self.collection.insert_one(user_doc.model_dump())

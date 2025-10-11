@@ -5,11 +5,11 @@ from unittest.mock import AsyncMock, Mock
 
 
 @pytest.mark.asyncio
-async def test_find_by_username_or_email_found(
+async def test_get_by_username_or_email_found(
     mock_db_client: Mock,
     mock_db_collection: AsyncMock
 ):
-    """Tests that find_by_username_or_email returns a user if found."""
+    """Tests that get_by_username_or_email returns a user if found."""
     # Define the mock return value for the find_one method
     mock_user_data = {
         "_id": "60a123456789abcdef0123456",
@@ -24,7 +24,7 @@ async def test_find_by_username_or_email_found(
     repo = UserRepository(db=mock_db_client)
 
     # Call the method under test
-    user = await repo.find_by_username_or_email(identifier="testuser")
+    user = await repo.get_by_username_or_email(identifier="testuser")
 
     # Assertions:
     # 1. The method returned the expected data.
@@ -43,11 +43,11 @@ async def test_find_by_username_or_email_found(
 
 
 @pytest.mark.asyncio
-async def test_find_by_username_or_email_not_found(
+async def test_get_by_username_or_email_not_found(
     mock_db_client: Mock,
     mock_db_collection: AsyncMock
 ):
-    """Tests that find_by_username_or_email returns None if no user is found."""
+    """Tests that get_by_username_or_email returns None if no user is found."""
     # Mock find_one to return None, simulating no user found
     mock_db_collection.find_one.return_value = None
 
@@ -55,7 +55,7 @@ async def test_find_by_username_or_email_not_found(
     repo = UserRepository(db=mock_db_client)
 
     # Call the method under test
-    user = await repo.find_by_username_or_email(identifier="nonexistent_user")
+    user = await repo.get_by_username_or_email(identifier="nonexistent_user")
 
     # Assertions:
     assert user is None

@@ -34,7 +34,7 @@ async def login_user(
     flow_logger.info("in login endpoint")    
 
     try:
-        rec = await user_repo.find_by_username_or_email(form_data.username_or_email)
+        rec = await user_repo.get_by_username_or_email(form_data.username_or_email)
         flow_logger.info("Fetched user record: %s", str(rec))
     except Exception as e:
         flow_logger.error("Error fetching user from DB: %s", str(e))
