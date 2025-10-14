@@ -1,4 +1,4 @@
-# app/db/repositories/user_repo.py
+# app/repositories/user.py
 # TODO: make corresponding changes to AuthServer
 
 """

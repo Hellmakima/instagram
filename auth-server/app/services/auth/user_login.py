@@ -7,8 +7,8 @@ from app.schemas.responses import (
     ErrorDetail, 
     InternalServerError,
 )
-from app.db.repositories.user import User as UserRepository
-from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
+from app.repositories.user import User as UserRepository
+from app.repositories.refresh_token import RefreshToken as RefreshTokenRepository
 from app.core.security import verify_password
 from fastapi import (
     HTTPException,

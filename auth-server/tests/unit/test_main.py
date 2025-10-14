@@ -1,18 +1,24 @@
 # tests/test_main.py
+
+
 from fastapi.testclient import TestClient
 import pytest
 from unittest.mock import patch
 
-from app.main import app
+# from app.main import app
 
-client = TestClient(app)
+# client = TestClient(app)
 
-def test_root_endpoint():
+@pytest.fixture
+def client(app):
+    return TestClient(app)
+
+def test_root_endpoint(client):
     response = client.get("/")
     assert response.status_code == 200
     # assert response.json() == {"message": "Hello World"}
 
-def test_static_mount():
+def test_static_mount(client):
     response = client.get("/static/")
     # The exact response depends on your static files
     # At least check it doesn't 404
@@ -54,7 +60,7 @@ def test_static_mount():
 
 #     test_client.get("/")
 #     assert "hit" in called
-        
+
 """
 1. The FastAPI app starts without errors.
 2. The root endpoint returns the expected response.

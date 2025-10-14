@@ -1,4 +1,4 @@
-# app/db/repositories/comment_repo.py
+# app/repositories/comment.py
 
 """
 Comments Collection:

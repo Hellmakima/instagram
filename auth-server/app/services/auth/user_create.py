@@ -8,7 +8,7 @@ from app.schemas.responses import (
     ErrorDetail, 
     InternalServerError,
 )
-from app.db.repositories.user import User as UserRepository
+from app.repositories.user import User as UserRepository
 from app.core.security import get_password_hash
 from fastapi import (
     HTTPException,

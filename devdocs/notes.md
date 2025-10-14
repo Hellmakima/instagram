@@ -240,6 +240,7 @@ Rule of thumb: **don't test everything, test what can break.**
   - Shared setup/teardown helpers.
   - Declared once, available across all tests in that directory tree.
   - Great for DB setup, app clients, mock configs.
+  - I am not completely sure on how and when to use them so I'm using them when I repeat the same setup more than once. e.g., in `test_db.py`. I've skipped the `conftest.py` when the fixture is only used in the same file.
 
 - **Parametrization** → one test covers multiple inputs/expected outputs.
 - **Test discovery:**
@@ -360,6 +361,13 @@ Rule of thumb: **don't test everything, test what can break.**
 
 - (Optional later): regression, property-based, performance, security, etc.
 
+### Mock Classes
+
+Mock classes are used for mocking objects in unit tests.
+
+**AsyncMock** for async methods
+**MagicMock** for sync methods
+
 ### File Structure
 
 Recommended pattern:
@@ -370,13 +378,13 @@ project/
     routes/
       auth.py
     repos/
-      refresh_token_repo.py
+      refresh_token.py
   tests/
     unit/
       routes/
         test_auth.py              # unit tests for login (mock repo)
       repos/
-        test_refresh_token_repo.py # unit tests for repo insert/find
+        test_refresh_token.py # unit tests for repo insert/find
     integration/
       test_auth_flow.py           # full login + token in DB
     functional/

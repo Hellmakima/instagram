@@ -1,4 +1,4 @@
-# app/db/repositories/post_repo.py
+# app/repositories/post.py
 
 """
 Posts Collection:

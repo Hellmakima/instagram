@@ -1,4 +1,4 @@
-# app/db/repositories/post_like_repo.py
+# app/repositories/post_like.py
 
 """
 Post Likes Collection:

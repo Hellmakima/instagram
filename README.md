@@ -47,17 +47,11 @@ This project is currently in the early stages of development.
 
 ## Getting Started
 
-This project has a multi-server architecture, so it's supposed to be in multiple repositories, but for now, we're keeping it all in one. Each server has its own folder (auth-server, resource-server and frontend)
-
-So you get all the servers by cloning this repository
+This project has a multi-server architecture, each server has its own folder (auth-server, resource-server and frontend)
 
 ```bash
 git clone https://github.com/hellmakima/instagram.git
 ```
-
-I'm using [uv](https://github.com/astral-sh/uv) package manager instead of `pip` and `venv`. You can install dependencies with `pip` using `instagram/devdocs/requirements.txt` or one by one with `instagram/devdocs/pips.txt`
-
-Sorry for also including `.vscode` folder, but it has tasks setup that you can use to run the servers
 
 ### Auth Server
 

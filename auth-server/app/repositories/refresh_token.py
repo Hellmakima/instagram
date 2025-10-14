@@ -1,4 +1,4 @@
-# app/db/repositories/refresh_token_repo.py
+# app/repositories/refresh_token.py
 
 from datetime import datetime, timezone, timedelta
 from typing import Optional

@@ -2,7 +2,7 @@ from typing import List, Optional
 from datetime import datetime, timezone
 
 # Assuming your repository and models/schemas are available
-from app.db.repositories.comment_repo import CommentRepository
+from app.repositories.comment_repo import CommentRepository
 from app.schemas.comment import CommentCreate
 from app.models.comment import CommentModel # Assuming this is the final DB-ready model
 

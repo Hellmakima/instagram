@@ -73,7 +73,7 @@ class User:
 - My Pattern:
 
 ```py
-# app/db/repositories/entity_repo.py
+# app/repositories/entity.py
 class EntityRepository:
     async def create(self, data: dict): ...
     async def get_entity(self, entity_id: str): ...

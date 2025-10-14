@@ -3,8 +3,8 @@
 from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from app.db.db import get_db, get_client
-from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
-from app.db.repositories.user import User as UserRepository
+from app.repositories.refresh_token import RefreshToken as RefreshTokenRepository
+from app.repositories.user import User as UserRepository
 
 
 def get_user_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> UserRepository:

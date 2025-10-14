@@ -1,4 +1,4 @@
-# app/db/repositories/user_repo.py
+# app/repositories/user.py
 
 from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -75,4 +75,3 @@ class User:
         except Exception as e:
             db_logger.error("Database error during user insert: %s", str(e))
             raise
-

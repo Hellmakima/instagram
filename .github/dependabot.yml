@@ -9,7 +9,7 @@ updates:
   - package-ecosystem: "uv"
     directory: "/auth-server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     ignore:
       - dependency-name: "bcrypt"
         versions: ["*"] # ignore all versions
@@ -18,26 +18,26 @@ updates:
   - package-ecosystem: "uv"
     directory: "/resource-server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   # Node.js (npm)
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   # Docker
   - package-ecosystem: "docker"
     directory: "/auth-server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   - package-ecosystem: "docker"
     directory: "/resource-server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
 
   - package-ecosystem: "docker"
     directory: "/frontend"
     schedule:
-      interval: "weekly"
+      interval: "monthly"

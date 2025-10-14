@@ -5,14 +5,19 @@
     "**/.pytest_cache": true,
     "**/.venv": true,
     "**/.git": true,
+
     // My inconvenience
     "**/__init__.py": true,
     "**/.env.example": true,
     "**/Dockerfile": true,
+    // "**/db": true,
+    // "**/core": true,
+
     // UV
     "**/uv.lock": true,
     "**/pyproject.toml": true,
     "**/.python-version": true,
+
     // Frontend
     "frontend/.next": true,
     "frontend/node_modules": true,

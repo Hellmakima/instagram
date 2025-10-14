@@ -9,7 +9,7 @@ _Search for `TODO` in all files to see all the todos_
 ## High Priority
 
 - write tests for the project so far
-  - clone (fastapi-motor-mongo-template)[https://github.com/alexk1919/fastapi-motor-mongo-template] and use it as a reference
+- complete the resource-server repositories, models, services and endpoints
 - setup redis for server communication
 
 ## Upcomming **Waku-Waku**

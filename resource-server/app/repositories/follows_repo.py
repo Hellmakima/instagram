@@ -1,4 +1,4 @@
-# app/db/repositories/follows_repo.py
+# app/repositories/follows.py
 
 """
 Follows Collection:

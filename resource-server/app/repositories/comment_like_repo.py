@@ -1,4 +1,4 @@
-# app/db/repositories/comment_like_repo.py
+# app/repositories/comment_like.py
 
 """
 Comment Likes Collection:

@@ -4,7 +4,6 @@
 from fastapi import (
     APIRouter, 
     Depends, 
-    HTTPException, 
     Request, 
     Response, 
     status,
@@ -13,29 +12,21 @@ from slowapi import Limiter
 from slowapi.util import get_remote_address
 
 from app.core.config import settings
-from app.core.security import (
-    create_access_token,
-    create_refresh_token,
-    verify_token,
-)
 from app.core.csrf import CsrfProtect, verify_csrf
 from app.schemas.auth import (
     LoginForm,
-    TokenData,
     UserCreate,
 )
 from app.schemas.responses import (
     APIErrorResponse, 
-    ErrorDetail, 
-    InternalServerError, 
     SuccessMessageResponse,
 )
 from app.services.auth.user_create import create_user as create_user_service
 from app.services.auth.user_login import login_user as login_user_service
 from app.services.auth.user_logout import logout_user as logout_user_service
 from app.services.auth.user_refresh_token import refresh_access_token as refresh_access_token_service
-from app.db.repositories.refresh_token import RefreshToken as RefreshTokenRepository
-from app.db.repositories.user import User as UserRepository
+from app.repositories.refresh_token import RefreshToken as RefreshTokenRepository
+from app.repositories.user import User as UserRepository
 from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
 
 import logging
