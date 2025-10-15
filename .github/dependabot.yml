@@ -5,39 +5,59 @@
 
 version: 2
 updates:
-  # Python (uv) - Auth Server
   - package-ecosystem: "uv"
     directory: "/auth-server"
     schedule:
       interval: "monthly"
     ignore:
       - dependency-name: "bcrypt"
-        versions: ["*"] # ignore all versions
+        versions: ["*"]
+    groups:
+      all-deps:
+        patterns:
+          - "*"
 
-  # Python (uv) - Resource Server
   - package-ecosystem: "uv"
     directory: "/resource-server"
     schedule:
       interval: "monthly"
+    groups:
+      all-deps:
+        patterns:
+          - "*"
 
-  # Node.js (npm)
   - package-ecosystem: "npm"
     directory: "/frontend"
     schedule:
       interval: "monthly"
+    groups:
+      all-deps:
+        patterns:
+          - "*"
 
-  # Docker
   - package-ecosystem: "docker"
     directory: "/auth-server"
     schedule:
       interval: "monthly"
+    groups:
+      all-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/resource-server"
     schedule:
       interval: "monthly"
+    groups:
+      all-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "docker"
     directory: "/frontend"
     schedule:
       interval: "monthly"
+    groups:
+      all-deps:
+        patterns:
+          - "*"
