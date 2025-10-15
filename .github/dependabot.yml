@@ -4,60 +4,48 @@
 # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
-updates:
-  - package-ecosystem: "uv"
-    directory: "/auth-server"
+
+multi-ecosystem-groups:
+  uv:
     schedule:
       interval: "monthly"
+  npm:
+    schedule:
+      interval: "monthly"
+  docker:
+    schedule:
+      interval: "monthly"
+
+updates:
+  # Python (uv) - Auth Server
+  - package-ecosystem: "uv"
+    directory: "/auth-server"
+    multi-ecosystem-group: "uv"
     ignore:
       - dependency-name: "bcrypt"
         versions: ["*"]
-    groups:
-      all-deps:
-        patterns:
-          - "*"
 
+  # Python (uv) - Resource Server
   - package-ecosystem: "uv"
     directory: "/resource-server"
-    schedule:
-      interval: "monthly"
-    groups:
-      all-deps:
-        patterns:
-          - "*"
+    multi-ecosystem-group: "uv"
 
+  # Node.js (npm) - Frontend
   - package-ecosystem: "npm"
     directory: "/frontend"
-    schedule:
-      interval: "monthly"
-    groups:
-      all-deps:
-        patterns:
-          - "*"
+    multi-ecosystem-group: "npm"
 
+  # Docker - Auth Server
   - package-ecosystem: "docker"
     directory: "/auth-server"
-    schedule:
-      interval: "monthly"
-    groups:
-      all-deps:
-        patterns:
-          - "*"
+    multi-ecosystem-group: "docker"
 
+  # Docker - Resource Server
   - package-ecosystem: "docker"
     directory: "/resource-server"
-    schedule:
-      interval: "monthly"
-    groups:
-      all-deps:
-        patterns:
-          - "*"
+    multi-ecosystem-group: "docker"
 
+  # Docker - Frontend
   - package-ecosystem: "docker"
     directory: "/frontend"
-    schedule:
-      interval: "monthly"
-    groups:
-      all-deps:
-        patterns:
-          - "*"
+    multi-ecosystem-group: "docker"
