@@ -18,6 +18,7 @@ _Search for `TODO` in all files to see all the todos_
 - make a youtube video about this project
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
+- need to think on what happens for multiple devices, a service to revoke all tokens, keep track of logged in devices, maybe add /revoke_all_by_user_id endpoint
 - improve project documentation
   - verify requirements.txt by making a new venv and testing the project.
 - a socket connection with the frontend to record last activity, realtime notifications, logout, etc.

@@ -15,7 +15,7 @@ class RefreshToken:
     async def find_by_token(self, token: str) -> Optional[dict]:
         try:
             return await self.collection.find_one(
-                {"refresh_token": token, "revoked": False},
+                {"refresh_token": token, "revoked": False, "expires_at": {"$gt": datetime.now(timezone.utc)}}, # shouldn't need expires_at check but good to have.
                 projection={"_id": 1, "user_id": 1, "expires_at": 1, "revoked": 1},
             )
         except Exception as e:
