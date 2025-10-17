@@ -8,10 +8,10 @@
 
     // My inconvenience
     "**/__init__.py": true,
-    "**/.env.example": true,
+    // "**/.env.example": true,
     "**/Dockerfile": true,
-    // "**/db": true,
-    // "**/core": true,
+    "**/db": true,
+    "**/core": true,
 
     // UV
     "**/uv.lock": true,
