@@ -60,7 +60,6 @@ It uses JWT for authentication and refresh tokens for session management
 
 **MongoDB**
 Database: instagram_auth
-Collections: users, refresh_tokens
 
 ```bash
 cd instagram/auth-server
@@ -74,7 +73,6 @@ The resource server is responsible for handling all the media files and their me
 
 **MongoDB**
 Database: instagram_resource
-Collections: users
 
 ```bash
 cd instagram/resource-server
@@ -116,11 +114,9 @@ npm run dev
 You're all set!
 visit `nmaa.com` in your favorite browser
 
-## Contributors & Tools
+### Tests
 
-- [Supermaven VS Code Extension](https://marketplace.visualstudio.com/items?itemName=Supermaven.supermaven) - Massive shoutout to for unlimited free fancy auto-completions
-- [Gemini](https://gemini.google.com/app?hl=en-IN) - Great teacher after some tweaking
-- [ChatGPT](https://chatgpt.com/?temporary-chat=true) - For any small tasks and questions
+There are tests in each server in `test` folder. You can run them by running `uv run pytest` in the respective server folder.
 
 ---
 

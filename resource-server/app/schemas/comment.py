@@ -11,10 +11,10 @@ class CommentCreate(BaseModel):
     # The ID of the post the comment belongs to.
     # We expect a string representation of a MongoDB ObjectId (or a UUID).
     post_id: str
-    
+
     # Optional: If this comment is a reply, this holds the parent comment's ID.
     parent_comment_id: Optional[str] = None
-    
+
     # NOTE: user_id and timestamp are intentionally omitted here. 
     # They should be inserted by the server for security (Principle 1).
     # TODO: add user_id and timestamp via some service

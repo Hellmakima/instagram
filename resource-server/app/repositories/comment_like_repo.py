@@ -30,4 +30,3 @@ class CommentLikeRepository:
     async def get_likes_count(self, comment_id: str) -> int:
         """Get the count of likes for the given comment."""
         return await self.collection.count_documents({"comment_id": comment_id})
-    

@@ -23,7 +23,7 @@ class UserCreate(BaseModel):
         max_length=72,
         description="Raw password (will be hashed)"
     )
-    
+
     @field_validator('username')
     def validate_username_characters(cls, v: str) -> str:
         # Allow only alphanumeric characters, periods, underscores, and hyphens.
@@ -50,7 +50,7 @@ class UserCreate(BaseModel):
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v): # Example special characters
             raise ValueError("Password must contain at least one special character.")
         return v
-    
+
     @model_validator(mode="after")
     def validate_password_similarity(self):
         # Ensure password does not contain username or email
@@ -59,7 +59,7 @@ class UserCreate(BaseModel):
         if self.email.split("@")[0].lower() in self.password.lower():
             raise ValueError("Password must not contain the email name part.")
         return self
-    
+
 class LoginForm(BaseModel):
     username_or_email: str = Field(..., description="Username or email of the user")
     password: str = Field(..., description="Password of the user")

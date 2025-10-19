@@ -28,7 +28,7 @@ class CommentRepository:
         except PyMongoError as e:
             # Handle database error (e.g., connection issues, duplicate key errors)
             raise Exception(f"Error creating comment: {e}")
-    
+
 
     async def get_comments(self, post_id: str) -> List[CommentModel]:
         """
@@ -48,7 +48,7 @@ class CommentRepository:
 
         # Ensure self.collection is the correct MongoDB collection object
         return await self.collection.find({"post_id": post_id}).to_list(length=None)
-    
+
     async def get_comments_paginated(self, post_id: str, limit: int = 20, skip: int = 0) -> List[CommentModel]:
         # ... ID Validation logic ...
 

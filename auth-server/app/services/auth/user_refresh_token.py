@@ -6,13 +6,12 @@ from app.schemas.responses import (
     ErrorDetail, 
     InternalServerError,
 )
-from app.repositories.refresh_token import RefreshToken as RefreshTokenRepository
+from app.repositories.interfaces import RefreshTokenRepositoryInterface as RefreshTokenRepository
 from app.core.security import verify_token
 from fastapi import (
     HTTPException,
     status,
 )
-from typing import Tuple
 
 from app.schemas.auth import TokenData
 from app.core.security import (
@@ -34,9 +33,9 @@ async def refresh_access_token(
     generate and store a new refresh token, and generate a new access token.
     Returns (new_access_token, new_refresh_token)
     """
-    
+
     flow_logger.info("in refresh token endpoint")
-    
+
     try:
         if not refresh_token:
             raise HTTPException(
@@ -50,6 +49,18 @@ async def refresh_access_token(
                 ).model_dump()
             )
         user = verify_token(token=refresh_token, token_type="refresh")
+        if not user or not getattr(user, "id", None):
+            flow_logger.error("Invalid refresh token payload")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail=APIErrorResponse(
+                    message="Invalid credentials",
+                    error=ErrorDetail(
+                        code="INVALID_CREDENTIALS",
+                        details="Invalid refresh token payload."
+                    )
+                ).model_dump(),
+            )
         flow_logger.info("refresh token verified: %s", str(user.id))
     except HTTPException:
         flow_logger.error("Refresh token not found or expired.")
@@ -81,19 +92,22 @@ async def refresh_access_token(
             flow_logger.info("Old refresh token revoked successfully.")
 
             # Generate and insert the new refresh token
-            user_token_payload = TokenData(id=user.id)
+            uid = str(user.id)
+            user_token_payload = TokenData(id=uid)
             new_refresh_token = create_refresh_token(user_token_payload)
-
-            await refresh_token_repo.insert(user.id, new_refresh_token, session)
-            flow_logger.info("New refresh token inserted successfully.")
-
-            # Generate new access token
             new_access_token = create_access_token(user_token_payload)
+
+            if not new_refresh_token or not new_access_token:
+                flow_logger.error("Failed to create new tokens during refresh")
+                raise InternalServerError()
+
+            await refresh_token_repo.insert(uid, new_refresh_token, session)
+            flow_logger.info("New refresh token inserted successfully.")
 
         except HTTPException:
             raise
         except Exception as e:
             flow_logger.error("Transaction failed during token refresh: %s", str(e))
             raise InternalServerError()
-    
+
     return new_access_token, new_refresh_token

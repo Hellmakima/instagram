@@ -2,13 +2,13 @@
 
 from datetime import datetime, timedelta, timezone
 from app.schemas.auth import UserCreate
-from app.models.auth import User as UserModel
+from app.models.auth import UserCreate as UserCreateModel
 from app.schemas.responses import (
     APIErrorResponse, 
     ErrorDetail, 
     InternalServerError,
 )
-from app.repositories.user import User as UserRepository
+from app.repositories.interfaces import UserRepositoryInterface as UserRepository
 from app.core.security import get_password_hash
 from fastapi import (
     HTTPException,
@@ -47,7 +47,7 @@ async def create_user(
     except Exception as e:
         flow_logger.error("Database error during user existence check: %s", str(e))
         raise InternalServerError()
-    
+
     # TODO: add email verification
     # currently, users are set as unverified, need to verify them manually
     # After this, call resource-server to create new user.
@@ -67,16 +67,14 @@ async def create_user(
 
     hashed_password = await get_password_hash(form_data.password)
 
-    user_doc = UserModel(
+    user_doc = UserCreateModel(
         username=form_data.username,
         email=form_data.email,
         hashed_password=hashed_password,
         created_at=datetime.now(timezone.utc),
         is_verified=False,
-        is_suspended=False,
         suspended_till=None,
         last_activity_at=datetime.now(timezone.utc),
-        is_pending_deletion=True,
         # by default, set to delete within a few minutes, coz not verified.
         # same time as email link expiry.
         # Remove this once verified.

@@ -65,6 +65,20 @@
       },
       "problemMatcher": [],
       "isBackground": true
+    },
+    {
+      "label": "Run Auth Server Tests",
+      "type": "shell",
+      "command": "uv run pytest -q",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/c"]
+        },
+        "cwd": "${workspaceFolder}/auth-server"
+      },
+      "problemMatcher": [],
+      "isBackground": true
     }
   ]
 }

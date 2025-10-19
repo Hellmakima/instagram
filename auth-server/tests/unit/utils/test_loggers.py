@@ -1,16 +1,36 @@
-# test_loggers.py
+# app/tests/unit/utils/test_loggers.py
+
 import logging
-import os
 from pathlib import Path
 import pytest
 from app.utils.loggers import init_loggers
 
-@pytest.fixture(scope="module")
-def setup_logs(tmp_path_factory):
+@pytest.fixture(scope="function")
+def setup_logs(tmp_path_factory, monkeypatch):
     tmp_dir = tmp_path_factory.mktemp("logs_test")
-    os.chdir(tmp_dir)  # isolate log files
+    # Ensure init_loggers writes to tmp_dir by setting AUTH_SERVER_LOG_DIR
+    log_dir = tmp_dir / "logs"
+    monkeypatch.setenv("AUTH_SERVER_LOG_DIR", str(log_dir))
+    # Make sure any previously-configured handlers (from app import) are removed/closed
+    try:
+        logging.shutdown()
+    except Exception:
+        pass
+    # Clear handlers on root and all existing loggers so init_loggers creates fresh handlers
+    logging.root.handlers.clear()
+    for name, obj in list(logging.root.manager.loggerDict.items()):
+        if isinstance(obj, logging.Logger):
+            obj.handlers.clear()
+            obj.filters.clear()
+
     init_loggers()
-    return tmp_dir
+    try:
+        yield tmp_dir
+    finally:
+        # Explicit cleanup: remove any logs directory created under the tmp dir
+        import shutil
+        logs_dir = tmp_dir / "logs"
+        shutil.rmtree(logs_dir, ignore_errors=True)
 
 def test_flow_logger_writes_file(setup_logs):
     logger = logging.getLogger("app_flow")

@@ -1,0 +1,20 @@
+// This doesn't work, but just a reference
+[
+  {
+    "key": "ctrl+0",
+    "command": "-workbench.action.focusSideBar"
+  },
+  {
+    "key": "ctrl+0",
+    "command": "workbench.action.focusSideBar"
+  },
+  {
+    "key": "ctrl+shift+numpad_subtract",
+    "command": "editor.action.fontZoomOut"
+  },
+  {
+    "key": "ctrl+shift+numpad_add",
+    "command": "editor.action.fontZoomIn"
+  }
+]
+// TODO: add tasks

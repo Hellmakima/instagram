@@ -17,6 +17,7 @@ from app.core.config import settings
 from app.schemas.auth import TokenData
 from app.schemas.responses import APIErrorResponse, ErrorDetail
 from app.core.config import settings
+from typing import Optional
 
 import logging
 flow_logger = logging.getLogger("app_flow")
@@ -35,30 +36,57 @@ async def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(
     data: TokenData,
-) -> str:
+) -> Optional[str]:
+    """
+    Creates an access token.
+    """
     flow_logger.info("in create_access_token")
-    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data.id, "type": "access"}
-    # to_encode (more data)= {"exp": expire, "sub": data.username, "type": "Bearer", "field": "value"}
-    # encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    encoded_jwt = jwt.encode(to_encode, settings.ACCESS_TOKEN_PRIVATE_JWT_SECRET_KEY, algorithm=settings.ACCESS_TOKEN_JWT_ALGORITHM)
-    return encoded_jwt
+    try:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        to_encode = {"exp": expire, "sub": data.id, "type": "access"}
+        encoded_jwt = jwt.encode(to_encode, settings.ACCESS_TOKEN_PRIVATE_JWT_SECRET_KEY, algorithm=settings.ACCESS_TOKEN_JWT_ALGORITHM)
+        return encoded_jwt
+    except JWTError as e:
+        flow_logger.error("Error creating access token: %s", str(e))
+        return None    
 
 
 def create_refresh_token(
     data: TokenData,
-) -> str:
+) -> Optional[str]:
+    """
+    Creates a refresh token.
+    """
     flow_logger.info("in create_refresh_token")
-    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"exp": expire, "sub": data.id, "type": "refresh"}
-    encoded_jwt = jwt.encode(to_encode, settings.REFRESH_TOKEN_JWT_SECRET_KEY, algorithm=settings.REFRESH_TOKEN_JWT_ALGORITHM)
-    return encoded_jwt
+    try:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
+        to_encode = {"exp": expire, "sub": data.id, "type": "refresh"}
+        encoded_jwt = jwt.encode(to_encode, settings.REFRESH_TOKEN_JWT_SECRET_KEY, algorithm=settings.REFRESH_TOKEN_JWT_ALGORITHM)
+        return encoded_jwt
+    except JWTError as e:
+        flow_logger.error("Error creating refresh token: %s", str(e))
+        return None
 
-
+def create_email_verification_token(
+    token_data: TokenData
+) -> Optional[str]:
+    """
+    Generates a time-limited token specifically for email verification.
+    """
+    flow_logger.info("in create_email_verification_token")
+    try:
+        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES)
+        to_encode = {"exp": expire, "sub": token_data.id, "type": "email_verification"}
+        encoded_jwt = jwt.encode(to_encode, settings.EMAIL_VERIFICATION_TOKEN_SECRET_KEY, algorithm=settings.EMAIL_VERIFICATION_TOKEN_JWT_ALGORITHM)
+        return encoded_jwt
+    except JWTError as e:
+        flow_logger.error("Error creating email verification token: %s", str(e))
+        return None
+    
 def verify_token(
     token: str, 
     token_type: str,
-) -> TokenData:
+) -> Optional[TokenData]:
     """
     Verify the token and return the user's data.
     Raises HTTPException if the token is invalid or expired.
@@ -88,6 +116,12 @@ def verify_token(
                 token=token,
                 key=settings.REFRESH_TOKEN_JWT_SECRET_KEY,
                 algorithms=[settings.REFRESH_TOKEN_JWT_ALGORITHM]
+            )
+        elif token_type == "email_verification":
+            decoded_token = jwt.decode(
+                token=token,
+                key=settings.EMAIL_VERIFICATION_TOKEN_SECRET_KEY,
+                algorithms=[settings.EMAIL_VERIFICATION_TOKEN_JWT_ALGORITHM]
             )
         else:
             flow_logger.error("Invalid token type: %s", token_type)

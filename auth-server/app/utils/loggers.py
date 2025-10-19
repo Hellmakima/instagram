@@ -35,7 +35,9 @@ in formatters:
 """
 
 def init_loggers():
-    os.makedirs('logs', exist_ok=True)
+    # Allow overriding log directory via environment (useful for tests)
+    base_dir = os.getenv('AUTH_SERVER_LOG_DIR') or 'logs'
+    os.makedirs(base_dir, exist_ok=True)
 
     LOG_CONFIG = {
         "version": 1,
@@ -69,7 +71,7 @@ def init_loggers():
             #     "fmt": "%(asctime)s %(name)s %(levelname)s %(message)s"
             # }
         },
-        
+
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
@@ -78,7 +80,7 @@ def init_loggers():
             },
             "security_file": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": "logs/security.log",
+                "filename": os.path.join(base_dir, "security.log"),
                 "formatter": "verbose",
                 "encoding": "utf-8",
                 "backupCount": settings.LOG_BACKUP_COUNT,
@@ -92,7 +94,7 @@ def init_loggers():
             },
             "flow_file": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": "logs/flow.log",
+                "filename": os.path.join(base_dir, "flow.log"),
                 "formatter": "verbose",
                 "encoding": "utf-8",
                 "backupCount": settings.LOG_BACKUP_COUNT,
@@ -101,7 +103,7 @@ def init_loggers():
             },
             "db_file": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "filename": "logs/db.log",
+                "filename": os.path.join(base_dir, "db.log"),
                 "formatter": "verbose",
                 "encoding": "utf-8",
                 "backupCount": settings.LOG_BACKUP_COUNT,
@@ -109,7 +111,7 @@ def init_loggers():
                 "level": "DEBUG"
             }
         },
-        
+
         "loggers": {
             "security_logger": {
                 "handlers": ["security_file"],
@@ -133,7 +135,7 @@ def init_loggers():
                 "propagate": False
             }
         },
-        
+
         "root": {
             # Fallback
             "handlers": ["console"],
@@ -171,4 +173,3 @@ def init_loggers():
         LOG_CONFIG["handlers"]["security_file"]["formatter"] = "verbose"
 
     dictConfig(LOG_CONFIG)
-

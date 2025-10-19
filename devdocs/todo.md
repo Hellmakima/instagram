@@ -4,15 +4,22 @@ _Search for `TODO` in all files to see all the todos_
 
 ## Ongoing Tasks
 
-- setup resource-server
+- complete the auth-server
+  - add password change
+- html for email verification
 
 ## High Priority
 
+_Next steps_
+
+- setup resource-server
 - write tests for the project so far
 - complete the resource-server repositories, models, services and endpoints
 - setup redis for server communication
 
 ## Upcomming **Waku-Waku**
+
+_Exciting tasks_
 
 - add health check endpoints
 - make a youtube video about this project
@@ -22,6 +29,7 @@ _Search for `TODO` in all files to see all the todos_
 - improve project documentation
   - verify requirements.txt by making a new venv and testing the project.
 - a socket connection with the frontend to record last activity, realtime notifications, logout, etc.
+- add basic pages such contact, about, etc. in the frontend
 - format code with annotations
 
   eg:
@@ -35,6 +43,10 @@ _Search for `TODO` in all files to see all the todos_
 ## Research
 
 - MVC structure
+- `ruff` for linting
+  - cd C:\Users\Sufiyan Attar\Documents\instagram\auth-server; py -m uv run ruff check .
+  - or if ruff isn't installed:
+  - cd C:\Users\Sufiyan Attar\Documents\instagram\auth-server; py -m uv run flake8 .
 - ORM
 - see if we need `psutil` for health checks and other stuff
 - learn `git rebase` specifically [squash](https://www.youtube.com/watch?v=gXCkYkLQ3To)
@@ -90,10 +102,16 @@ _Search for `TODO` in all files to see all the todos_
 - search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 - update requirements.txt
 - code review
-  - proper logging of FE and BE
+  - proper logging for FE and BE
   - error handling
   - type checking
   - rate limiting for each endpoint
+  - add docstrings
+  - clean up
+    - remove unused imports
+    - remove commented code or comments
+    - format code
+    - remove trailing whitespace
 
 ## Low Priority Tasks
 

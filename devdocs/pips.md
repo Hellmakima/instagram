@@ -8,6 +8,7 @@ fastapi # for APIs
 fastapi-csrf-protect # for CSRF protection
 motor # for MongoDB connection
 passlib[bcrypt]==1.7.4 # for password hashing
+pydantic[email]
 python-jose[cryptography] # for JWT
 python-json-logger # for logging
 slowapi # for rate limiting
@@ -16,6 +17,7 @@ uvicorn[standard] # for running the app, if failed to install then do uvicorn or
 **Development:**
 pytest
 pytest-asyncio # for async tests eg: motor
+pytest-dotenv # for loading .env.test variables
 pytest-mock # for mock objects
 httpx
 

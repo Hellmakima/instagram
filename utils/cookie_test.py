@@ -16,7 +16,7 @@ app.add_middleware(
 csrf = CsrfProtect()
 
 class CsrfSettings(BaseSettings):
-    secret_key: str|None = "CSRF_SECRET"
+    secret_key: str = "CSRF_SECRET_KEY"
     cookie_samesite: str = "lax"
     cookie_secure: bool = False
 

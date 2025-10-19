@@ -89,18 +89,16 @@
     <div class="container">
         <h2>User Registration</h2>
         <!-- single line -->
-        <h4 style="color: green; font-family: monospace;">
-            # <a style="color: #007bff;">TODO</a>: add email verification (PS: Verify manually)
-        </h4>
         <form id="registerForm">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" autocomplete="username" required><br>
+            <input type="text" id="username" name="username" autocomplete="username" value="sufiyan234" required>
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" autocomplete="email" required><br>
+            <input type="email" id="email" name="email" autocomplete="email" value="sufiyanhattar@gmail.com" required>
 
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" autocomplete="new-password" required><br>
+            <input type="password" id="password" name="password" autocomplete="new-password" value="asdASD123!@#"
+                required>
 
             <label style="font-size: small;">
                 <input type="checkbox" id="tos" required>
@@ -125,7 +123,7 @@
 
         async function getCsrfToken() {
             try {
-                const response = await fetch('/v1/auth/csrf-token');
+                const response = await fetch('/v1/auth/csrf-token', { credentials: 'same-origin' });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 csrfToken = result.data.csrf_token;
@@ -137,45 +135,85 @@
             }
         }
 
-        document.getElementById('registerForm').addEventListener('submit', async (event) => {
-            event.preventDefault(); // Prevent default form submission
-
-            if (!csrfToken) {
-                displayMessage("CSRF token not available. Please refresh the page or ensure token fetching works.", 'error');
-                console.error("CSRF token not available.");
-                return;
-            }
-
-            const username = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
+        async function sendRegisterRequest(data, retry = true) {
             try {
                 const response = await fetch('/v1/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-Token': csrfToken // Send the CSRF token in the header
+                        'X-CSRF-Token': csrfToken
                     },
-                    body: JSON.stringify({ username, email, password })
+                    credentials: 'same-origin',
+                    body: JSON.stringify(data)
                 });
 
                 const result = await response.json();
 
-                if (response.ok) {
-                    displayMessage(`Registration successful: ${result.message}`, 'success');
-                    console.log("Registration successful:", result);
-                    document.getElementById('next-step').innerHTML = `Verify your email and continue to login`;
-                } else {
-                    const errorMsg = result.detail ? result.detail.message : (result.message || 'Unknown error');
-                    displayMessage(`Registration failed: ${errorMsg}`, 'error');
-                    console.error("Registration failed:", result);
+                if (!response.ok && result?.error?.code === "CSRF_INVALID_TOKEN" && retry) {
+                    console.warn("CSRF token invalid, refetching...");
+                    await getCsrfToken();
+                    return sendRegisterRequest(data, false); // retry once
                 }
-            } catch (error) {
-                displayMessage(`Network error during registration: ${error.message}`, 'error');
-                console.error("Network error during registration:", error);
+
+                return { response, result };
+            } catch (err) {
+                console.error("Network error during registration:", err);
+                return { response: null, result: { message: err.message } };
+            }
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!csrfToken) {
+                displayMessage("CSRF token not available. Please refresh.", 'error');
+                return;
+            }
+
+            const data = {
+                username: document.getElementById('username').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            const { response, result } = await sendRegisterRequest(data);
+
+            if (response && response.ok) {
+                displayMessage(`Registration successful: ${result.message}`, 'success');
+                document.getElementById('next-step').innerHTML = `Attempting to send verification email...`;
+                getCsrfToken(); // refresh token again
+
+                // fetch user id and send verification email (same as before)
+                try {
+                    const idResp = await fetch(`/v1/users/${encodeURIComponent(data.username)}`, { credentials: 'same-origin' });
+                    if (idResp.ok) {
+                        const idResult = await idResp.json();
+                        const userId = idResult.id || idResult.data?.id || idResult?.id;
+                        if (userId) {
+                            const sendResp = await fetch(`/v1/email/send-verification-email?user_id=${encodeURIComponent(userId)}&email=${encodeURIComponent(data.email)}`, {
+                                method: 'GET',
+                                headers: { 'X-CSRF-Token': csrfToken },
+                                credentials: 'same-origin'
+                            });
+                            const sendResult = await sendResp.json();
+                            document.getElementById('next-step').innerHTML =
+                                sendResp.ok && sendResult.ok ? `Verification email sent. Check your inbox.` : `Failed to send verification email.`;
+                        } else {
+                            document.getElementById('next-step').innerHTML = `Could not determine user id.`;
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error sending verification email', err);
+                    document.getElementById('next-step').innerHTML = `Error triggering verification email.`;
+                }
+
+            } else {
+                const errorMsg = result?.error?.details || result.message || 'Unknown error';
+                displayMessage(`Registration failed: ${errorMsg}`, 'error');
+                console.error("Registration failed:", result);
             }
         });
+
 
         // Fetch CSRF token when the page loads
         getCsrfToken();

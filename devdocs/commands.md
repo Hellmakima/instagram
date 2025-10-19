@@ -10,6 +10,7 @@ git branch dev     # Create new branch named 'dev'
 git checkout dev   # Switch to branch 'dev'
 # Merge/Pull via GitHub web interface
 git branch -D dev  # Delete branch 'dev'
+git tag -f <tag_name> <commit_hash> # Force create a tag for a specific commit
 ```
 
 ---

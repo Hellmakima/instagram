@@ -114,7 +114,7 @@
 
         async function getCsrfToken() {
             try {
-                const response = await fetch('/v1/auth/csrf-token');
+                const response = await fetch('/v1/auth/csrf-token', { credentials: 'same-origin' });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const result = await response.json();
                 csrfToken = result.data.csrf_token;
@@ -144,6 +144,7 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': csrfToken
                     },
+                    credentials: 'same-origin',
                     body: JSON.stringify({ username_or_email, password })
                 });
 
@@ -170,6 +171,7 @@
                     headers: {
                         'X-CSRF-Token': csrfToken
                     }
+                    ,credentials: 'same-origin'
                 });
                 if (response.ok) {
                     displayMessage("Logged out successfully.", 'success');

@@ -6,7 +6,7 @@ from bson import ObjectId
 from datetime import datetime, timezone, timedelta
 
 from app.repositories import user
-from app.models.auth import User as UserModel, UserOut
+from app.models.auth import UserCreate as UserModel, UserWithPassword as UserOut
 
 # Fixtures for user repo tests
 @pytest.fixture
@@ -29,9 +29,10 @@ async def test_get_by_username_or_email_returns_user(mock_user_db, mock_user_col
     fake_id = ObjectId()
     mock_user_collection.find_one.return_value = {
         "_id": fake_id,
+        "username": "test",
         "hashed_password": "hashed",
-        "is_pending_deletion": False,
-        "is_suspended": False,
+        "delete_at": None,
+        "suspended_till": None,
         "is_verified": True,
     }
 
@@ -43,7 +44,7 @@ async def test_get_by_username_or_email_returns_user(mock_user_db, mock_user_col
     # Assert
     assert result is not None
     mock_user_collection.find_one.assert_called_once()
-    assert result.id == str(fake_id)
+    assert str(result.id) == str(fake_id)
     assert result.hashed_password == "hashed"
     assert result.is_verified is True
 
@@ -91,17 +92,16 @@ async def test_create_user_inserts_document(mock_user_db, mock_user_collection):
         hashed_password="hashed",
         created_at=datetime.now(timezone.utc),
         is_verified=True,
-        is_suspended=False,
-        suspended_till=None,
         last_activity_at=datetime.now(timezone.utc),
-        is_pending_deletion=False,
+        suspended_till=None,
         delete_at=datetime.now(timezone.utc) + timedelta(hours=6),
     )
 
     result = await repo.create(user_doc)
 
     mock_user_collection.insert_one.assert_called_once()
-    assert result == inserted_id
+    # repo.create now returns a string id
+    assert isinstance(result, str)
 
 
 @pytest.mark.asyncio

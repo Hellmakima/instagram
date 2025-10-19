@@ -43,7 +43,7 @@ def find_non_ascii_lines(content):
 
 def is_ascii_file(file_path):
     encodings_to_try = ['utf-8', 'utf-16', 'latin1']  # latin1 handles anything without error
-    
+
     for enc in encodings_to_try:
         try:
             with open(file_path, 'r', encoding=enc) as f:

@@ -69,7 +69,7 @@ def init_loggers():
             #     "fmt": "%(asctime)s %(name)s %(levelname)s %(message)s"
             # }
         },
-        
+
         "handlers": {
             "console": {
                 "class": "logging.StreamHandler",
@@ -109,7 +109,7 @@ def init_loggers():
                 "level": "DEBUG"
             }
         },
-        
+
         "loggers": {
             "security_logger": {
                 "handlers": ["security_file"],
@@ -133,7 +133,7 @@ def init_loggers():
                 "propagate": False
             }
         },
-        
+
         "root": {
             # Fallback
             "handlers": ["console"],

@@ -130,9 +130,13 @@ error responses:
 4. **Debugging**: when something breaks, you'll want to know _which version_ of the API it came from.
 5. **Graceful deprecation**: versioning lets you phase things out without nuking everyone at once.
 
-## Planning sequence
+## Building Sequence
 
-- DB Schema
+- Routes (what are the apps requirements)
+- DB Schema plan
+- Models
+  - Consider each field and make classes for each individual create, update, operation.
+- Repositories
 - Routes
   - What will the FE request
     - Optimal requests that are reusable or bundled together.

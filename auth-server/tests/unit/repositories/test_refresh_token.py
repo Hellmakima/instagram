@@ -55,7 +55,7 @@ async def test_insert_calls_collection_with_correct_doc(mock_refresh_token_db, m
     repo = refresh_token_repo.RefreshToken(mock_refresh_token_db)
     user_id = "user123"
     token = "token123"
-    
+
     # Mock settings for deterministic calculation
     with patch('app.repositories.refresh_token.settings') as mock_settings:
         mock_settings.REFRESH_TOKEN_EXPIRE_MINUTES = EXPIRE_MINUTES
