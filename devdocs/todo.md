@@ -16,11 +16,13 @@ _Next steps_
 - write tests for the project so far
 - complete the resource-server repositories, models, services and endpoints
 - setup redis for server communication
+- capture user_agent and ip for refresh_tokens
 
 ## Upcomming **Waku-Waku**
 
 _Exciting tasks_
 
+- update python version to 3.14
 - add health check endpoints
 - make a youtube video about this project
 - add a simple user profile page and start looking into how to implement it.
@@ -30,6 +32,8 @@ _Exciting tasks_
   - verify requirements.txt by making a new venv and testing the project.
 - a socket connection with the frontend to record last activity, realtime notifications, logout, etc.
 - add basic pages such contact, about, etc. in the frontend
+- make redux handle csrf, auth, etc.
+- setup variables to use with tailwind
 - format code with annotations
 
   eg:

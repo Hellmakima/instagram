@@ -2,9 +2,7 @@
 
 # Python
 __pycache__/
-*.pyc
-venv/
-*.log
-.vscode/
+*.py[co]
 
+*.log
 .env

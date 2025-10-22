@@ -11,8 +11,8 @@ router = APIRouter()
 
 """
 TODO:
-GET /send-verification-email
-GET /verify-email?token=...
+This is trash and needs to be rewritten properly.
+There is no proper use of schemas, responses, error handling, logging, etc.
 """
 
 @router.get("/send-verification-email")

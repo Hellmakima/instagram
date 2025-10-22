@@ -10,6 +10,7 @@ git branch dev     # Create new branch named 'dev'
 git checkout dev   # Switch to branch 'dev'
 # Merge/Pull via GitHub web interface
 git branch -D dev  # Delete branch 'dev'
+git tag <tag_name># create a tag
 git tag -f <tag_name> <commit_hash> # Force create a tag for a specific commit
 ```
 
@@ -61,3 +62,15 @@ Paste the keys in the `.env` file. Use quotes and put `\n` for each line.
 
 **Note:** The private key should be kept private and never shared.
 I have shared mine with you, but you should never.
+
+## .env.enc file
+
+- Encrypt the `.env` file
+
+```bash
+py .\utils\cerberus.py encrypt --infile <path_to_env_file> --outfile <path_to_encrypted_env_file>
+```
+
+```bash
+py .\utils\cerberus.py decrypt --infile <path_to_encrypted_env_file> --outfile <path_to_env_file>
+```

@@ -98,7 +98,7 @@ async def login_user(
         MongoDB TTL (TODO: add TTL in mongoDB): This is crucial. Without TTL indexes, your refresh_tokens_col will grow indefinitely, impacting performance and potentially allowing very old tokens to remain in the database even if expired (though your query checks expires_at).
         Recommendation: Add a TTL index to the expires_at field in your refresh_tokens_col collection. Example: db.refresh_tokens.create_index("expires_at", expireAfterSeconds=0).
         '''
-        await refresh_token_repo.insert(str(rec.id), refresh_token)
+        await refresh_token_repo.insert(str(rec.id), refresh_token, form_data.user_agent)
     except Exception as e:
         flow_logger.error("Error saving refresh token to DB: %s", str(e))
         raise InternalServerError()

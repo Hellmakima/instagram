@@ -1,24 +1,11 @@
 <h1 align="center">﷽</h1>
 
-# Nmaa – Full-Stack Social Media App
+# <img src="https://github.com/Hellmakima/instagram/raw/main/frontend/public/favicon.ico" alt="favicon" width="32" height="32"> Nmaa (نما)
 
 A full-stack Instagram-like application built using **FastAPI**, **MongoDB**, and **Next.js**
-Designed with modularity, clarity, and scalability.
+Designed with modularity, clarity, and scalability
 
 This project is currently in the early stages of development.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Getting Started](#getting-started)
-  - [Auth Server](#auth-server)
-  - [Resource Server](#resource-server)
-  - [Gateway Server](#gateway-server)
-  - [Frontend](#frontend)
-- [Contributors & Tools](#contributors--tools)
-- [Author](#author)
 
 ---
 
@@ -47,19 +34,22 @@ This project is currently in the early stages of development.
 
 ## Getting Started
 
-This project has a multi-server architecture, each server has its own folder (auth-server, resource-server and frontend)
+This project has a multi-server architecture, each server has its own folder (`auth-server`, `resource-server`, and `frontend`).
 
 ```bash
 git clone https://github.com/hellmakima/instagram.git
 ```
 
-### Auth Server
+**Note:** Some critical files might be hidden, please check .vscode/settings.json for the correct settings.
 
-The auth server is responsible for user authentication, password management, and user management
-It uses JWT for authentication and refresh tokens for session management
+<details>
+  <summary><b>Auth Server</b></summary>
+
+The auth server is responsible for user authentication, password management, and user management.
+It uses JWT for authentication and refresh tokens for session management.
 
 **MongoDB**
-Database: instagram_auth
+Database: `instagram_auth`
 
 ```bash
 cd instagram/auth-server
@@ -67,12 +57,15 @@ uv sync --frozen
 uv run uvicorn app.main:app --reload --port 5001
 ```
 
-### Resource Server
+</details>
 
-The resource server is responsible for handling all the media files and their metadata
+<details>
+  <summary><b>Resource Server</b></summary>
+
+The resource server handles all media files and their metadata.
 
 **MongoDB**
-Database: instagram_resource
+Database: `instagram_resource`
 
 ```bash
 cd instagram/resource-server
@@ -80,20 +73,34 @@ uv sync --frozen
 uv run uvicorn app.main:app --reload --port 5002
 ```
 
-### Gateway Server
+</details>
 
-This is reverse proxy for handling all the requests from the frontend and redirecting them to the appropriate server
+<details>
+  <summary><b>Gateway Server</b></summary>
 
-This is just a temporary solution to redirect requests. This will be replaced by `nginx`
+This is a reverse proxy that routes all frontend requests to the correct backend server.
+Currently implemented with **Caddy**, but will later be replaced by **nginx**.
 
-You can skip this and configure `instagram/frontend/.env` to proxy requests to the appropriate server along with CORS headers in main.py of respective server
+You can skip this and configure `instagram/frontend/.env` to proxy requests directly, along with setting proper CORS headers in each server’s `main.py`.
 
-1. Download [caddyserver](https://caddyserver.com/download)
-2. copy `instagram/utils/caddy.json` to the same folder
-3. run `caddy_windows_amd64.exe run`
-4. in a new terminal, run `caddy_windows_amd64.exe  reload --config caddy.json`
+**Setup:**
 
-You'll also need to set up `hosts` file in `C:\Windows\System32\drivers\etc` with the following content:
+1. Download [Caddy Server](https://caddyserver.com/download)
+2. Copy `instagram/utils/caddy.json` to the same folder
+3. Run:
+
+   ```bash
+   caddy_windows_amd64.exe run
+   ```
+
+4. In a new terminal:
+
+   ```bash
+   caddy_windows_amd64.exe reload --config caddy.json
+   ```
+
+**Hosts Configuration (Windows):**
+Edit `C:\Windows\System32\drivers\etc\hosts`:
 
 ```
 127.0.0.1 nmaa.com
@@ -101,9 +108,12 @@ You'll also need to set up `hosts` file in `C:\Windows\System32\drivers\etc` wit
 127.0.0.1 resource.nmaa.com
 ```
 
-### Frontend
+</details>
 
-The frontend is a Next.js application
+<details>
+  <summary><b>Frontend</b></summary>
+
+The frontend is a **Next.js** application.
 
 ```bash
 cd instagram/frontend
@@ -111,12 +121,21 @@ npm i
 npm run dev
 ```
 
-You're all set!
-visit `nmaa.com` in your favorite browser
+Then visit `nmaa.com` in your browser.
 
-### Tests
+</details>
 
-There are tests in each server in `test` folder. You can run them by running `uv run pytest` in the respective server folder.
+<details>
+  <summary><b>Tests</b></summary>
+
+Each server contains tests in its `test` folder.
+Run them using:
+
+```bash
+uv run pytest
+```
+
+</details>
 
 ---
 
@@ -126,4 +145,4 @@ Developed by [@hellmakima](https://github.com/hellmakima)
 
 ---
 
-Pull requests, suggestions, and collaborations are welcome
+Pull requests, suggestions, and collaborations are welcome.

@@ -2,6 +2,8 @@
 
 Add packages with `pip install <package-name>` or `uv add <package-name>`
 
+**Note:** some packages need specific versions.
+
 **Production:**
 bcrypt==3.2.0 # for password hashing
 fastapi # for APIs
@@ -19,13 +21,9 @@ pytest
 pytest-asyncio # for async tests eg: motor
 pytest-dotenv # for loading .env.test variables
 pytest-mock # for mock objects
-httpx
+httpx # for testing
 
 ---
-
-# for gate.py (temporary)
-
-httpx # for making HTTP requests to downstream services
 
 ## for utilities
 

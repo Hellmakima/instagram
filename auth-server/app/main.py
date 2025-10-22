@@ -16,6 +16,7 @@ auth-server$ uv run uvicorn app.main:app --reload --port 5001
 import sys
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -61,6 +62,10 @@ try:
     @app.get("/", include_in_schema=False)
     def root():
         return {"status": "ok"}
+    
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():
+        return FileResponse(path="app/static/favicon.ico", media_type="image/x-icon")
     
     security_logger.info("Auth Server started successfully.")
 

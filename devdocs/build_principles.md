@@ -132,33 +132,49 @@ error responses:
 
 ## Building Sequence
 
-- Routes (what are the apps requirements)
-- DB Schema plan
-- Models
-  - Consider each field and make classes for each individual create, update, operation.
-- Repositories
-- Routes
-  - What will the FE request
-    - Optimal requests that are reusable or bundled together.
-- Models and Schemas
-- Repositories and Services
-  - How to handle requests with minimal DB operations
+## Workflow
 
-## Coding sequence
+1. **Get requirements**
 
-- Repositories and Models as required
-  - Repositories use db_logger to log all db operations
-  - Repositories take in Models and return Models. Models can be skipped for single return-type e.g., get_user_by_id -> input: str
-- Router and schemas as required
-  - Router takes in request body in defined Schema, validates request,
-  - calls service with respective repository,
-  - returns response in defined Schema.
-  - Any error is handled by the services or validators.
-- Services
-  - The heart of the application
-  - Business logic for the API endpoints
-  - Handles all sorts of external calls and errors.
-  - Takes in a Schema and Repository and returns a Schema or a processed Model.
+- clearly define what is the current target.
+
+2. **DB Design**
+
+- If new collections are needed, design them and create the necessary indexes.
+
+3. **Model Design**
+
+- If new models are needed, design them.
+
+4. **Repositories**
+
+- Repositories use db_logger to log all db operations
+- Repositories take in Models and return Models. Models can be skipped for single return-type e.g., get_user_by_id -> input: str
+
+5. **Schema Design**
+
+- Define new schemas for new requests and responses.
+
+6. **API Design**
+
+- Router takes in request body in defined Schema, calls validation checks, calls respective service with the Schemas and repositories, returns response in defined Schema.
+- Any error is handled by the services or validators.
+
+6. **Security Analysis**
+
+- Identify potential vulnerabilities and weaknesses.
+
+7. **Service Design**
+
+- Business logic for the API endpoints
+- Handles all sorts of external calls and errors.
+- Takes in a Schema and Repository and returns a Schema, a processed Model or HTTPException.
+
+8. **Testing**
+
+- Write unit and integration tests for each new implementation.
+
+9. **Documentation**
 
 ## Authentication
 

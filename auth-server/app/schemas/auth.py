@@ -63,6 +63,7 @@ class UserCreate(BaseModel):
 class LoginForm(BaseModel):
     username_or_email: str = Field(..., description="Username or email of the user")
     password: str = Field(..., description="Password of the user")
+    user_agent: str = Field(..., description="User agent string of the client")
 
 class TokenData(BaseModel):
     id: str = Field(..., description="Unique ID of the user")

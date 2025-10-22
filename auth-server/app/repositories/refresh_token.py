@@ -24,6 +24,7 @@ from typing import Optional, Any
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
 from bson import ObjectId
+from app.models.refresh_token import RefreshTokenCreate as RefreshTokenCreateModel
 
 import logging
 db_logger = logging.getLogger("app_db")
@@ -45,22 +46,23 @@ class RefreshToken(RefreshTokenRepositoryInterface):
             db_logger.error("Failed to find refresh token for token=%s: %s", token, str(e))
             raise
 
-    async def insert(self, user_id: str, refresh_token: str, session: Any = None):
+    async def insert(self, user_id: str, refresh_token: str, user_agent:str, session: Any = None):
         # if user_id is a valid ObjectId string, store as ObjectId for consistency
         try:
             uid: Any = ObjectId(user_id) if ObjectId.is_valid(user_id) else user_id
         except Exception:
             uid = user_id
 
-        doc = {
-            "user_id": uid,
-            "refresh_token": refresh_token,
-            "expires_at": datetime.now(timezone.utc)
+        doc = RefreshTokenCreateModel(
+            user_id=uid,
+            refresh_token=refresh_token,
+            expires_at=datetime.now(timezone.utc)
             + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES),
-            "revoked": False,
-        }
+            revoked=False,
+            user_agent=user_agent,
+        )
         try:
-            return await self.collection.insert_one(doc, session=session)
+            return await self.collection.insert_one(doc.model_dump(), session=session)
         except Exception as e:
             db_logger.error("Failed to insert refresh token for user_id=%s: %s", user_id, str(e))
             raise

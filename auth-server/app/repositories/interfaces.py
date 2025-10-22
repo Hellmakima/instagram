@@ -9,6 +9,11 @@ from app.models.auth import (
     UserId as UserIdModel,
 )
 
+from app.models.refresh_token import (
+    RefreshTokenCreate as RefreshTokenCreateModel,
+    RefreshTokenOut as RefreshTokenOutModel,
+)
+
 
 class UserRepositoryInterface(ABC):
     @abstractmethod
@@ -20,7 +25,7 @@ class UserRepositoryInterface(ABC):
         """Get a user by username or email."""
 
     @abstractmethod
-    async def get_verified(self, username: str, email: str) -> Optional[dict]:
+    async def get_verified(self, username: str, email: str) -> Optional[UserDetailedModel]:
         """Return a record if username/email exists and is verified."""
 
     @abstractmethod
@@ -38,17 +43,17 @@ class UserRepositoryInterface(ABC):
 
 class RefreshTokenRepositoryInterface(ABC):
     @abstractmethod
-    async def insert(self, user_id: str, refresh_token: str, session: Any = None) -> Any:
+    async def insert(self, user_id: str, refresh_token: str, user_agent: str, session: Any = None) -> None:
         """Insert a refresh token record."""
 
     @abstractmethod
-    async def find_by_token(self, token: str) -> Optional[dict]:
+    async def find_by_token(self, token: str) -> Optional[RefreshTokenOutModel]:
         """Find a refresh token record by token string."""
 
     @abstractmethod
-    async def revoke(self, token_id: Any, session: Any = None) -> Any:
+    async def revoke(self, token_id: Any, session: Any = None) -> None:
         """Revoke a refresh token by id."""
 
     @abstractmethod
-    async def delete_by_token(self, token: str) -> Any:
+    async def delete_by_token(self, token: str) -> None:
         """Delete a refresh token document by token string."""

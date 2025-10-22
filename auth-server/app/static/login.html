@@ -136,6 +136,7 @@
 
             const username_or_email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const user_agent = navigator.userAgent;
 
             try {
                 const response = await fetch('/v1/auth/login', {
@@ -145,7 +146,7 @@
                         'X-CSRF-Token': csrfToken
                     },
                     credentials: 'same-origin',
-                    body: JSON.stringify({ username_or_email, password })
+                    body: JSON.stringify({ username_or_email, password, user_agent })
                 });
 
                 const result = await response.json();
@@ -171,7 +172,7 @@
                     headers: {
                         'X-CSRF-Token': csrfToken
                     }
-                    ,credentials: 'same-origin'
+                    , credentials: 'same-origin'
                 });
                 if (response.ok) {
                     displayMessage("Logged out successfully.", 'success');
