@@ -42,7 +42,7 @@ def test_login_sets_cookies(app):
         try:
             with TestClient(app) as client:
                 csrf = get_csrf_token(client)
-                payload = {"username_or_email": "u1", "password": "Abcd1234!@"}
+                payload = {"username_or_email": "u1", "password": "Abcd1234!@", "user_agent": "user_agent"}
                 resp = client.post('/v1/auth/login', json=payload, headers={'X-CSRF-Token': csrf})
                 assert resp.status_code == 200
                 # Test cookies were set (TestClient stores cookies)

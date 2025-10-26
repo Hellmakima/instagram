@@ -13,6 +13,7 @@ router = APIRouter()
 TODO:
 This is trash and needs to be rewritten properly.
 There is no proper use of schemas, responses, error handling, logging, etc.
+Use `from fastapi import Query` for query params.
 """
 
 @router.get("/send-verification-email")

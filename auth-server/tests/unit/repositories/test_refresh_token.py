@@ -8,7 +8,7 @@ from app.repositories import refresh_token as refresh_token_repo
 # --- Fixtures and Mocks ---
 # Note: For production, settings.REFRESH_TOKEN_EXPIRE_MINUTES should be mocked here too.
 # Assuming a setting of 10 minutes for this example.
-EXPIRE_MINUTES = 10 
+EXPIRE_MINUTES = 10
 MOCKED_NOW = datetime(2025, 10, 16, 8, 37, 12, 529748, tzinfo=timezone.utc)
 MOCKED_EXPIRY = MOCKED_NOW + timedelta(minutes=EXPIRE_MINUTES)
 
@@ -40,7 +40,7 @@ async def test_find_by_token_calls_collection_correctly(mock_refresh_token_db, m
 
     mock_refresh_token_collection.find_one.assert_awaited_once_with(
         {
-            "refresh_token": token, 
+            "refresh_token": token,
             "revoked": False,
             "expires_at": {"$gt": MOCKED_NOW},
         },
@@ -55,13 +55,14 @@ async def test_insert_calls_collection_with_correct_doc(mock_refresh_token_db, m
     repo = refresh_token_repo.RefreshToken(mock_refresh_token_db)
     user_id = "user123"
     token = "token123"
+    user_agent = "user_agent"
 
     # Mock settings for deterministic calculation
     with patch('app.repositories.refresh_token.settings') as mock_settings:
         mock_settings.REFRESH_TOKEN_EXPIRE_MINUTES = EXPIRE_MINUTES
         mock_refresh_token_collection.insert_one = AsyncMock(return_value="inserted")
 
-        result = await repo.insert(user_id, token)
+        result = await repo.insert(user_id, token, user_agent)
 
     mock_refresh_token_collection.insert_one.assert_awaited_once()
 
@@ -113,7 +114,7 @@ async def test_find_by_token_rejects_revoked_token(mock_refresh_token_db, mock_r
     token = "token123"
 
     # CRITICAL FIX: The mock must return None to simulate the DB rejecting the token due to the "revoked": False filter.
-    mock_refresh_token_collection.find_one = AsyncMock(return_value=None) 
+    mock_refresh_token_collection.find_one = AsyncMock(return_value=None)
 
     result = await repo.find_by_token(token)
 
@@ -121,7 +122,7 @@ async def test_find_by_token_rejects_revoked_token(mock_refresh_token_db, mock_r
     mock_refresh_token_collection.find_one.assert_awaited_once_with(
         {
             "refresh_token": token,
-            "revoked": False, 
+            "revoked": False,
             "expires_at": {"$gt": MOCKED_NOW},
         },
         projection={"_id": 1, "user_id": 1, "expires_at": 1, "revoked": 1},

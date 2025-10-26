@@ -8,13 +8,16 @@ version: 2
 multi-ecosystem-groups:
   uv:
     schedule:
-      interval: "monthly"
+      interval: "cron"
+      cron: "0 0 1 * *"
   npm:
     schedule:
-      interval: "monthly"
+      interval: "cron"
+      cron: "0 0 1 * *"
   docker:
     schedule:
-      interval: "monthly"
+      interval: "cron"
+      cron: "0 0 1 * *"
 
 updates:
   # Python (uv) - Auth Server

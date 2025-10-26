@@ -2,14 +2,14 @@
 # Contains /register, /login, /logout, /refresh_token, also /csrf-token for now
 
 from fastapi import (
-    APIRouter, 
-    Depends, 
-    Request, 
-    Response, 
+    APIRouter,
+    Depends,
+    Request,
+    Response,
     status,
 )
-from slowapi import Limiter
-from slowapi.util import get_remote_address
+from fastapi_limiter import FastAPILimiter
+from fastapi_limiter.depends import RateLimiter
 
 from app.core.config import settings
 from app.core.csrf import CsrfProtect, verify_csrf
@@ -18,7 +18,7 @@ from app.schemas.auth import (
     UserCreate,
 )
 from app.schemas.responses import (
-    APIErrorResponse, 
+    APIErrorResponse,
     SuccessMessageResponse,
 )
 from app.services.auth.user_create import create_user as create_user_service
@@ -36,7 +36,6 @@ flow_logger = logging.getLogger("app_flow")
 db_logger = logging.getLogger("app_db")
 
 router = APIRouter()
-limiter = Limiter(key_func=get_remote_address)  # IP-based rate limiting
 
 # TODO: fix it's place. (decide which file to put this function)
 @router.get(
@@ -67,12 +66,12 @@ async def generate_csrf_token(
         500: {"model": APIErrorResponse, "description": "Internal Server Error"},
     }
 )
-@limiter.limit("10/minute")
 async def register(
     form_data: UserCreate,
     request: Request, # required by verify_csrf
     _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
+    __rate_limiter__: None = Depends(RateLimiter(times=10, seconds=60)),
 ):
     request_logger.info("in register endpoint")
     await create_user_service(form_data, user_repo)
@@ -82,7 +81,7 @@ async def register(
 
 
 @router.post(
-        "/login", 
+        "/login",
         summary="Login with username/password",
         response_model=SuccessMessageResponse,
         status_code=status.HTTP_200_OK,
@@ -92,7 +91,6 @@ async def register(
             500: {"model": APIErrorResponse, "description": "Internal Server Error"},
         }
 )
-@limiter.limit("10/hour")
 # TODO: use redis and make this rate limiting only for failed attempts and suspend for a while.
 async def login(
     form_data: LoginForm,
@@ -100,7 +98,8 @@ async def login(
     response: Response,
     _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
-    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo)
+    refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
+    __rate_limiter__: None = Depends(RateLimiter(times=10, seconds=3600)),
 ):
     flow_logger.info("in login endpoint")
 
@@ -174,7 +173,7 @@ async def logout(
 
 
 @router.post(
-        "/refresh_token", 
+        "/refresh_token",
         summary="Rotate access token",
         response_model=SuccessMessageResponse,
         status_code=status.HTTP_200_OK,

@@ -16,18 +16,13 @@ auth-server$ uv run uvicorn app.main:app --reload --port 5001
 import sys
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 
-from slowapi import Limiter, _rate_limit_exceeded_handler
-from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
-
 import logging
+from app.utils.loggers import init_loggers
 
 try:
-    from app.utils.loggers import init_loggers
     init_loggers()
     security_logger = logging.getLogger("security_logger")
     security_logger.info("Attempting to start Auth Server.")
@@ -45,10 +40,6 @@ try:
         allow_headers=["*"],
     )
 
-    limiter = Limiter(key_func=get_remote_address)
-    app.state.limiter = limiter
-
-    app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler) # type: ignore
     app.add_exception_handler(CsrfProtectError, csrf_exception_handler)
 
     # Use an absolute path to the static directory so tests or VS Code runs from a
@@ -62,11 +53,7 @@ try:
     @app.get("/", include_in_schema=False)
     def root():
         return {"status": "ok"}
-    
-    @app.get("/favicon.ico", include_in_schema=False)
-    def favicon():
-        return FileResponse(path="app/static/favicon.ico", media_type="image/x-icon")
-    
+
     security_logger.info("Auth Server started successfully.")
 
 except Exception as e:

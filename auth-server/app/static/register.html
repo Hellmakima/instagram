@@ -5,100 +5,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Test</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-            /* margin-top: 80px; */
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: auto;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="email"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #message {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-            /* Hidden by default */
-        }
-
-        #message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        #message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div class="container">
         <h2>User Registration</h2>
-        <!-- single line -->
         <form id="registerForm">
             <label for="username">Username:</label>
-            <input type="text" id="username" name="username" autocomplete="username" value="sufiyan234" required>
+            <input type="text" id="username" name="username" autocomplete="username" required>
 
             <label for="email">Email:</label>
-            <input type="email" id="email" name="email" autocomplete="email" value="sufiyanhattar@gmail.com" required>
+            <input type="email" id="email" name="email" autocomplete="email" required>
 
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password" autocomplete="new-password" value="asdASD123!@#"
-                required>
+            <input type="password" id="password" name="password" autocomplete="new-password" required>
 
             <label style="font-size: small;">
                 <input type="checkbox" id="tos" required>
@@ -107,68 +28,23 @@
 
             <button type="submit">Register</button>
         </form>
+
         <div id="message"></div>
-        <p id="next-step"></p>
     </div>
 
-    <script>
-        let csrfToken = null;
+    <script type="module">
+        import { apiRequest } from './reqHandler.js';
+
         const messageDiv = document.getElementById('message');
 
         function displayMessage(msg, type) {
             messageDiv.textContent = msg;
-            messageDiv.className = type; // 'success' or 'error'
+            messageDiv.className = type;
             messageDiv.style.display = 'block';
         }
 
-        async function getCsrfToken() {
-            try {
-                const response = await fetch('/v1/auth/csrf-token', { credentials: 'same-origin' });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const result = await response.json();
-                csrfToken = result.data.csrf_token;
-                console.log("CSRF Token obtained:", csrfToken);
-                displayMessage(result.message || "CSRF token fetched. Ready to register.", 'success');
-            } catch (error) {
-                console.error("Failed to get CSRF token:", error);
-                displayMessage(`Error fetching CSRF token: ${error.message}`, 'error');
-            }
-        }
-
-        async function sendRegisterRequest(data, retry = true) {
-            try {
-                const response = await fetch('/v1/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': csrfToken
-                    },
-                    credentials: 'same-origin',
-                    body: JSON.stringify(data)
-                });
-
-                const result = await response.json();
-
-                if (!response.ok && result?.error?.code === "CSRF_INVALID_TOKEN" && retry) {
-                    console.warn("CSRF token invalid, refetching...");
-                    await getCsrfToken();
-                    return sendRegisterRequest(data, false); // retry once
-                }
-
-                return { response, result };
-            } catch (err) {
-                console.error("Network error during registration:", err);
-                return { response: null, result: { message: err.message } };
-            }
-        }
-
-        document.getElementById('registerForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            if (!csrfToken) {
-                displayMessage("CSRF token not available. Please refresh.", 'error');
-                return;
-            }
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
 
             const data = {
                 username: document.getElementById('username').value,
@@ -176,47 +52,38 @@
                 password: document.getElementById('password').value
             };
 
-            const { response, result } = await sendRegisterRequest(data);
+            try {
+                const res = await apiRequest('/v1/auth/register', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
 
-            if (response && response.ok) {
-                displayMessage(`Registration successful: ${result.message}`, 'success');
-                document.getElementById('next-step').innerHTML = `Attempting to send verification email...`;
-                getCsrfToken(); // refresh token again
+                displayMessage(`Registration successful: ${res.message} Sent verification email.`, 'success');
 
-                // fetch user id and send verification email (same as before)
+                // Attempt to fetch user ID and trigger verification email
                 try {
-                    const idResp = await fetch(`/v1/users/${encodeURIComponent(data.username)}`, { credentials: 'same-origin' });
-                    if (idResp.ok) {
-                        const idResult = await idResp.json();
-                        const userId = idResult.id || idResult.data?.id || idResult?.id;
-                        if (userId) {
-                            const sendResp = await fetch(`/v1/email/send-verification-email?user_id=${encodeURIComponent(userId)}&email=${encodeURIComponent(data.email)}`, {
-                                method: 'GET',
-                                headers: { 'X-CSRF-Token': csrfToken },
-                                credentials: 'same-origin'
-                            });
-                            const sendResult = await sendResp.json();
-                            document.getElementById('next-step').innerHTML =
-                                sendResp.ok && sendResult.ok ? `Verification email sent. Check your inbox.` : `Failed to send verification email.`;
+                    const userData = await apiRequest(`/v1/users/${encodeURIComponent(data.username)}`, { method: 'GET' });
+                    const userId = userData.id || userData.data?.id;
+                    if (userId) {
+                        const emailRes = await apiRequest(`/v1/email/send-verification-email?user_id=${encodeURIComponent(userId)}&email=${encodeURIComponent(data.email)}`, { method: 'GET' });
+                        if (emailRes.ok) {
+                            displayMessage(`Verification email sent.`, 'success');
                         } else {
-                            document.getElementById('next-step').innerHTML = `Could not determine user id.`;
+                            displayMessage(`Failed to send verification email.`, 'error');
                         }
+                    } else {
+                        displayMessage(`Could not determine user id.`, 'error');
                     }
                 } catch (err) {
-                    console.error('Error sending verification email', err);
-                    document.getElementById('next-step').innerHTML = `Error triggering verification email.`;
+                    // console.error('Error sending verification email', err);
+                    displayMessage('Error triggering verification email.', 'error');
                 }
 
-            } else {
-                const errorMsg = result?.error?.details || result.message || 'Unknown error';
+            } catch (err) {
+                const errorMsg = err.data?.message || err.data?.error?.details || 'Unknown error';
                 displayMessage(`Registration failed: ${errorMsg}`, 'error');
-                console.error("Registration failed:", result);
             }
         });
-
-
-        // Fetch CSRF token when the page loads
-        getCsrfToken();
     </script>
 </body>
 

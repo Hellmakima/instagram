@@ -1,24 +1,61 @@
 # still under construction
 version: "3.9"
 services:
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # redis-auth for auth-server
+  redis-auth:
+    image: redis:7
+    container_name: redis-auth
+    ports:
+      - "6379:6379" # optional, only if you need host access
+    volumes:
+      - redis_auth_data:/data
+    command: ["redis-server", "--appendonly", "yes"] # persistence for tokens
+
+  redis-bus:
+    image: redis:7
+    container_name: redis-bus
+    ports:
+      - "6380:6379" # optional, avoid port conflicts
+    volumes:
+      - redis_bus_data:/data
+
   auth:
     build: auth-server
     ports:
       - "5001:5001"
+    depends_on:
+      - mongo
+      - redis-auth
+      - redis-bus
+      # mongo:
+      #   condition: service_healthy
+
   posts:
     build: resources-server
     ports:
       - "5002:5002"
-  mongo:
-    # we'll still need to create collections.
-    image: mongo:6.0
-    ports:
-      - "27017:27017"
+    depends_on:
+      - mongo
+      - redis-bus
+
   nginx:
-    image: nginx:1.23.4
+    image: nginx:alpine
     ports:
       - "80:80"
     volumes:
+      # TODO: look into this
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/static:/var/www/static
     depends_on:
@@ -27,3 +64,5 @@ services:
 
 volumes:
   mongo_data:
+  redis_auth_data:
+  redis_bus_data:

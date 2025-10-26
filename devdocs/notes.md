@@ -169,12 +169,12 @@ Think of Nginx or Traefik as a bouncer at the door. Their job is to filter reque
 - **How they do it**: They apply a coarse-grained rate limit, typically based on the source IP address. For example, you might configure Nginx to allow only 100 requests per second from a single IP on your public API, or a stricter 5 requests per minute on your login page.
 - **Why it's important**: This layer is incredibly fast and efficient. It stops a significant amount of malicious traffic before it ever hits your FastAPI application, saving your app's resources for legitimate requests.
 
-### **Tier 2: The Specific Business Logic (slowapi)**
+### **Tier 2: The Specific Business Logic (fastapi-limiter)**
 
-`slowapi` and its Redis backend are for handling the nuanced logic that a proxy cannot. This is about protecting a specific user account, not just the API endpoint in general.
+`fastapi-limiter` and its Redis backend are for handling the nuanced logic that a proxy cannot. This is about protecting a specific user account, not just the API endpoint in general.
 
 - **What they protect against**: Targeted brute-force attacks on a single user's account. This requires knowing the username and tracking its state.
-- **How they do it**: Your FastAPI code, using `slowapi` and Redis, can perform a **stateful check**. It tracks the number of failed attempts for a specific username. This logic is much more granular than what a proxy can provide.
+- **How they do it**: Your FastAPI code, using `fastapi-limiter` and Redis, can perform a **stateful check**. It tracks the number of failed attempts for a specific username. This logic is much more granular than what a proxy can provide.
 - **Why it's important**: This is how you implement the specific requirement you mentioned: "5 failed attempts and then suspend for 12 hours." This logic is tied to your business rules and requires a persistent store (Redis) to work across multiple application instances.
 
 In a robust architecture, these two layers work in tandem to provide comprehensive security. The proxy handles the high-volume, low-effort attacks, while your application handles the specific, high-value logic for account protection.

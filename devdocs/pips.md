@@ -13,7 +13,8 @@ passlib[bcrypt]==1.7.4 # for password hashing
 pydantic[email]
 python-jose[cryptography] # for JWT
 python-json-logger # for logging
-slowapi # for rate limiting
+fastapi-limiter # for rate limiting
+aioredis # for Redis connection for fastapi-limiter
 uvicorn[standard] # for running the app, if failed to install then do uvicorn or use gunicorn
 
 **Development:**

@@ -21,26 +21,13 @@ This project is currently in the early stages of development.
 
 ---
 
-## Tech Stack
-
-| Layer          | Tech                                                            |
-| -------------- | --------------------------------------------------------------- |
-| Backend        | FastAPI, Motor, Redis, Pydantic, bcrypt                         |
-| Frontend       | Next.js, TypeScript, TailwindCSS, Redux Toolkit, Shadcn, lucide |
-| Infrastructure | Docker, Caddy (reverse proxy), MongoDB                          |
-| Testing & Dev  | pytest, VS Code Tasks                                           |
-
----
-
 ## Getting Started
 
-This project has a multi-server architecture, each server has its own folder (`auth-server`, `resource-server`, and `frontend`).
+This project has a multi-server architecture with a monorepo.
 
 ```bash
 git clone https://github.com/hellmakima/instagram.git
 ```
-
-**Note:** Some critical files might be hidden, please check .vscode/settings.json for the correct settings.
 
 <details>
   <summary><b>Auth Server</b></summary>

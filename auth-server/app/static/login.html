@@ -2,84 +2,10 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Test</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 400px;
-            margin: auto;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="email"] {
-            width: calc(100% - 20px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #218838;
-        }
-
-        #message {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-        }
-
-        #message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        #message.error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -92,17 +18,18 @@
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" autocomplete="current-password" required>
 
-            <button type="submit">Login</button>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit">Login</button>
+                <button type="button" id="logoutButton">Logout</button>
+            </div>
         </form>
 
-        <button id="logoutButton" style="display:none;margin-top: 10px;">Logout</button>
-
         <div id="message"></div>
-        <p id="next-step"></p>
     </div>
 
-    <script>
-        let csrfToken = null;
+    <script type="module">
+        import { apiRequest } from './reqHandler.js';
+
         const messageDiv = document.getElementById('message');
         const logoutButton = document.getElementById('logoutButton');
 
@@ -112,81 +39,33 @@
             messageDiv.style.display = 'block';
         }
 
-        async function getCsrfToken() {
-            try {
-                const response = await fetch('/v1/auth/csrf-token', { credentials: 'same-origin' });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                const result = await response.json();
-                csrfToken = result.data.csrf_token;
-                console.log("CSRF Token obtained:", csrfToken);
-                displayMessage(result.message || "CSRF token fetched. Ready to login.", 'success');
-            } catch (error) {
-                console.error("Failed to get CSRF token:", error);
-                displayMessage(`Error fetching CSRF token: ${error.message}`, 'error');
-            }
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-
-            if (!csrfToken) {
-                displayMessage("CSRF token not available. Refresh the page.", 'error');
-                return;
-            }
-
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
             const username_or_email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const user_agent = navigator.userAgent;
 
             try {
-                const response = await fetch('/v1/auth/login', {
+                const res = await apiRequest('/v1/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': csrfToken
-                    },
-                    credentials: 'same-origin',
                     body: JSON.stringify({ username_or_email, password, user_agent })
                 });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    displayMessage(`Login successful: ${result.message || 'Welcome!'}`, 'success');
-                    document.getElementById('next-step').innerHTML = `You are now logged in.`;
-                    logoutButton.style.display = 'inline-block';
-                } else {
-                    const errorMsg = result.detail?.message || result.message || 'Unknown error';
-                    displayMessage(`Login failed: ${errorMsg}`, 'error');
-                }
-            } catch (error) {
-                displayMessage(`Network error during login: ${error.message}`, 'error');
+                displayMessage(`Login successful: ${res.message || 'Welcome!'}`, 'success');
+                logoutButton.style.display = 'inline-block';
+            } catch (err) {
+                displayMessage(`Login failed: ${err.data?.message || err.data?.detail?.message || 'Unknown error'}`, 'error');
             }
         });
 
         logoutButton.addEventListener('click', async () => {
-            getCsrfToken(); // Temporary fix
             try {
-                const response = await fetch('/v1/auth/logout', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-Token': csrfToken
-                    }
-                    , credentials: 'same-origin'
-                });
-                if (response.ok) {
-                    displayMessage("Logged out successfully.", 'success');
-                    logoutButton.style.display = 'none';
-                    document.getElementById('next-step').innerHTML = '';
-                } else {
-                    displayMessage("Logout failed.", 'error');
-                }
-            } catch (error) {
-                displayMessage(`Network error during logout: ${error.message}`, 'error');
+                await apiRequest('/v1/auth/logout', { method: 'POST' });
+                displayMessage('Logged out successfully.', 'success');
+                logoutButton.style.display = 'none';
+            } catch {
+                displayMessage('Logout failed.', 'error');
             }
         });
-
-        getCsrfToken();
     </script>
 </body>
 

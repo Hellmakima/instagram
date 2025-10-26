@@ -122,16 +122,6 @@ error responses:
 
 - JWT passed as Authorization: Bearer <token> header in secured routes
 
-### why API versioning is necessary
-
-1. **Clients other than your Frontend** may emerge (mobile app, partner apps, CLI tools, toaster, fridge).
-2. **Long-lived requests** (like queued jobs or pre-signed URLs) might break if you roll out changes unversioned.
-3. **Rolling deploys** = your infra might briefly have two Frontend versions (old & new) in parallel.
-4. **Debugging**: when something breaks, you'll want to know _which version_ of the API it came from.
-5. **Graceful deprecation**: versioning lets you phase things out without nuking everyone at once.
-
-## Building Sequence
-
 ## Workflow
 
 1. **Get requirements**
@@ -160,21 +150,29 @@ error responses:
 - Router takes in request body in defined Schema, calls validation checks, calls respective service with the Schemas and repositories, returns response in defined Schema.
 - Any error is handled by the services or validators.
 
-6. **Security Analysis**
+7. **Security Analysis**
 
 - Identify potential vulnerabilities and weaknesses.
 
-7. **Service Design**
+8. **Service Design**
 
 - Business logic for the API endpoints
 - Handles all sorts of external calls and errors.
 - Takes in a Schema and Repository and returns a Schema, a processed Model or HTTPException.
 
-8. **Testing**
+9. **HTML**
+
+- Make sample html pages in `/app/static`.
+
+10. **Testing**
 
 - Write unit and integration tests for each new implementation.
 
-9. **Documentation**
+11. **Documentation**
+
+12. **Figma Designs**
+
+13. **Vibe Code Frontend with Figma MCP**
 
 ## Authentication
 
@@ -186,8 +184,11 @@ error responses:
   - managed by gateway server
   - Actually not quite necessary, but good to have
   - Checked for every request
+- Heavy rate limiting with `fastapi-limiter`
 - Passwords hashed using bcrypt via passlib
 - Only store hashed passwords in DB
+
+<!-- TODO: remove/redo this -->
 
 ```mermaid
 sequenceDiagram

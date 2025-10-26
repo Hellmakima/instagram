@@ -67,6 +67,8 @@ I have shared mine with you, but you should never.
 
 - Encrypt the `.env` file
 
+default values: .env and .env.enc
+
 ```bash
 py .\utils\cerberus.py encrypt --infile <path_to_env_file> --outfile <path_to_encrypted_env_file>
 ```

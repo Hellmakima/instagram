@@ -5,68 +5,64 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Instaclone auth</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Instaclone Auth</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
+        /* Landing page overrides */
         body {
-            margin: 0;
-            padding: 0;
-            font-family: "Segoe UI";
-            background-color: #f7f7f7;
-            color: #333;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
+            background-color: #f4f4f4;
+            color: #333;
         }
 
         h1 {
-            font-size: 5em;
-            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 3rem;
             color: #fc6bd0;
+            margin-bottom: 0.5em;
         }
 
         p {
-            margin: 0.5em 0;
-            font-size: 30px;
-        }
-
-        ul {
-            margin: 1em auto 0;
-            padding: 0;
-            list-style: none;
-            width: fit-content;
-            display: contents;
-        }
-
-        li {
+            font-size: 1.2rem;
             margin: 0.3em 0;
-            font-size: 40px;
         }
 
-        a {
-            color: #3498db;
+        .links {
+            display: flex;
+            gap: 20px;
+            margin-top: 1em;
+        }
+
+        .links a {
             text-decoration: none;
-            transition: color 0.2s;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: 0.2s;
+            font-weight: 500;
         }
 
-        a:hover {
-            color: #21618c;
+        .links a:hover {
+            background-color: #21618c;
         }
     </style>
 </head>
 
 <body>
     <h1>Instagram Clone</h1>
-    <p>You can find the source code on <a href="https://github.com/hellmakima/instagram">GitHub</a>.</p>
-    <p>Other valid URLs:</p>
-    <ul>
-        <!-- <li><a href="/">Home</a></li> -->
-        <li><a href="/static/login.html" target="_blank" rel="noopener noreferrer">Login</a></li>
-        <li><a href="/static/register.html" target="_blank" rel="noopener noreferrer">Register</a></li>
-        <!-- <li><a href="/auth/forgot-password">Forgot Password</a></li> -->
-        <!-- <li><a href="/auth/reset-password">Reset Password</a></li> -->
-    </ul>
+    <p>Source code available on <a href="https://github.com/hellmakima/instagram" target="_blank"
+            rel="noopener noreferrer">GitHub</a></p>
+
+    <div class="links">
+        <a href="/static/login.html">Login</a>
+        <a href="/static/register.html">Register</a>
+    </div>
 </body>
 
 </html>

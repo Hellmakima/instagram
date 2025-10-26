@@ -48,6 +48,9 @@ class Settings(BaseSettings):
     SMTP_HOST: str = Field(..., description="SMTP host for sending emails")
     SMTP_PORT: int = Field(..., description="SMTP port for sending emails")
 
+    # Redis Settings
+    REDIS_URL: str = Field(..., description="Redis URL")
+
     @field_validator('REFRESH_TOKEN_EXPIRE_MINUTES', mode='before')
     @classmethod
     def set_refresh_minutes(cls, v, info):

@@ -23,6 +23,7 @@ _Next steps_
 _Exciting tasks_
 
 - update python version to 3.14
+- checkout new other flags for `uvicorn`.
 - add health check endpoints
 - make a youtube video about this project
 - add a simple user profile page and start looking into how to implement it.
@@ -46,12 +47,12 @@ _Exciting tasks_
 
 ## Research
 
+- [This](https://github.com/benavlabs/FastAPI-boilerplate) boilerplate is interesting.
 - MVC structure
 - `ruff` for linting
   - cd C:\Users\Sufiyan Attar\Documents\instagram\auth-server; py -m uv run ruff check .
   - or if ruff isn't installed:
   - cd C:\Users\Sufiyan Attar\Documents\instagram\auth-server; py -m uv run flake8 .
-- ORM
 - see if we need `psutil` for health checks and other stuff
 - learn `git rebase` specifically [squash](https://www.youtube.com/watch?v=gXCkYkLQ3To)
 - in-memory sort operations in MongoDB
@@ -65,6 +66,11 @@ _Exciting tasks_
     - Handles SSL certs automatically via Let’s Encrypt.
     - Supports sticky sessions, load balancing, middleware (rate limiting, auth, etc.).
     - Popular in containerized setups since you don’t need to manually edit configs when services come/go.
+- See how docker-compose is setup
+  - for dev, stage, prod
+  - for Mongo/Postgres/Redis with multiple connections (user, pass)
+  - dependabot for updating dependencies
+  - redis as communication between services (master + replica), individual for each service for rate limiting
 
 ## Read
 
@@ -94,6 +100,8 @@ _Exciting tasks_
 - add password related endpoints (change password, forgot password, reset password)
 - add user related endpoints (create user, delete user, update user)
 - Require re-authentication for key operations (email changes, MFA toggles).
+- switch to `PostgreSQL` once close to stable.
+- move to python 3.14 once all the build-wheels are available.
 - lockouts, CAPTCHA, MFA.
 - logout
   - move it to new folder `auth-server/app/api/api_v1/logout/router.py`
@@ -121,8 +129,8 @@ _Exciting tasks_
 
 - separate repository for each server
 - use `requirements.txt` for prod, `requirements-dev.txt` for pytest/locust/dev tools for each server.
+- try out [fastapi-cli](https://github.com/fastapi/fastapi-cli) and [SQLModel](https://github.com/fastapi/sqlmodel) for ORM.
 - setup nginx
-  - set it up like `utils/nginx-gateway/gate.py`
   - rate limiting
   - route with subdomains
   - add CORS headers
