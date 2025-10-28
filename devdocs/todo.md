@@ -16,16 +16,16 @@ _Next steps_
 - write tests for the project so far
 - complete the resource-server repositories, models, services and endpoints
 - setup redis for server communication
-- capture user_agent and ip for refresh_tokens
+- capture user_agent and IP for refresh_tokens
 
-## Upcomming **Waku-Waku**
+## Upcoming **Waku-Waku**
 
 _Exciting tasks_
 
 - update python version to 3.14
 - checkout new other flags for `uvicorn`.
 - add health check endpoints
-- make a youtube video about this project
+- make a YouTube video about this project
 - add a simple user profile page and start looking into how to implement it.
   - DB schema, user images, etc
 - need to think on what happens for multiple devices, a service to revoke all tokens, keep track of logged in devices, maybe add /revoke_all_by_user_id endpoint

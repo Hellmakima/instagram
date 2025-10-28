@@ -4,8 +4,13 @@ from app.services.email.verification import send_verification_email as send_veri
 from app.services.email.verification import verify_email_token as verify_email_token_service
 from app.repositories.interfaces import UserRepositoryInterface as UserRepository
 from app.api.dependencies.db_deps import get_user_repo
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, status
 from app.core.csrf import verify_csrf
+from app.schemas.responses import (
+    APIErrorResponse,
+    SuccessMessageResponse,
+)
+from app.schemas.auth import UserId as UserIdSchema
 
 router = APIRouter()
 
@@ -16,8 +21,18 @@ There is no proper use of schemas, responses, error handling, logging, etc.
 Use `from fastapi import Query` for query params.
 """
 
-@router.get("/send-verification-email")
+@router.get(
+    "/send-verification-email",
+    response_model=SuccessMessageResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"model": APIErrorResponse, "description": "Bad Request"},
+        403: {"model": APIErrorResponse, "description": "Forbidden (CSRF error)"},
+        500: {"model": APIErrorResponse, "description": "Internal Server Error"},
+    }
+)
 async def send_verification_email(
+    form_data: UserIdSchema,
     request: Request,
     _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),

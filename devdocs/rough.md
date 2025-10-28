@@ -1,5 +1,4 @@
 """
-
 ### File: **project/rough.md**
 
 Contains rough notes on the project
@@ -9,14 +8,14 @@ Contains rough notes on the project
 
 - `https://www.instagram.com/<username>/`
   - goes to profile page
-  - if it's same as username, the ui changes a bit
+  - if it's same as username, the UI changes a bit
 - `https://www.instagram.com/<username>/reels/`
 - `https://www.instagram.com/<username>/tagged/`
 
 ### Core page
 
 - `https://www.instagram.com/`
-  - shows recent posts and reels and stuff from algorith (mix of following and explore)
+  - shows recent posts and reels and stuff from algorithm (mix of following and explore)
   - includes stories, suggested users, ads, threads from threads
   - if not logged in, it redirects to login page
 - `https://www.instagram.com/explore/`
@@ -41,7 +40,7 @@ Contains rough notes on the project
 - `https://www.instagram.com/p/<post_id>/?img_index=4`
   - goes to post (img_index is for multi-image posts)
   - it's a popup window
-  - if opeened in new tab, shows related posts below
+  - if opened in new tab, shows related posts below
 - `https://www.instagram.com/<username>/following/`
   - pop-up window with following list
 

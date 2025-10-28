@@ -23,7 +23,7 @@
   - ideally, the code should be self-explanatory, but still have comments
   - no use of `global` or `print`
   - no unused imports
-- Ocassionally search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
+- Occasionally search python.analysis.typeCheckingMode in VS Code and enable to look up potential errors
 
 ### Python Code Documentation
 

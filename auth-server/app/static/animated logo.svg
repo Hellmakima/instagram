@@ -1,0 +1,66 @@
+<svg width="700" height="700" viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x2="0" y1="0" x1="800" y2="800" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="hsl(120,100%,50%)"/>
+      <stop offset="100%" stop-color="hsl(240,100%,50%)"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(-380,-273) scale(1.50)">
+    <!-- animate each petal group -->
+      <g class="petal">
+        <path fill="url(#grad1)" d="M384.12,494.55 C399.29,710.43 663.7,789.11 762.24,546.48 C723.86,586.56 651.84,642.22 530.34,613.1 C539.25,580.29 544.29,545.53 527.35,517.04 L498.8,541.44 C511.48,559.51 513.13,583.39 511.41,607.28 C428.39,568.32 405.25,522.82 384.12,494.55 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M549.72,594.49 C680.82,565.97 750.35,484.83 755.33,359.88 C826.61,497.41 718.83,634.85 550.11,604.1 L549.72,594.49 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M551.13,576.62 C680.36,557.18 770.71,440.92 727.97,293.74 Q705.96,288.54 680.16,296.69 C703.86,423.17 652.95,518.05 551.13,576.62 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M586.87,534.22 C690.52,454.66 682.92,309.71 636.19,215.25 C617.9,228.68 601.45,244.4 586.28,261.62 C631.42,366.04 628.31,460.02 586.87,534.22 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M575.49,525.81 C638.58,429.29 591.18,269.63 521.36,186.35 C501.93,208.66 484.38,236.76 468.1,268.31 C536.18,341.49 581.18,451.53 575.49,525.81 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M549.06,476.47 C549.06,492.67 535.93,505.81 519.72,505.81 C503.51,505.81 490.37,492.67 490.37,476.47 C490.37,460.26 503.51,447.12 519.72,447.12 C535.93,447.12 549.06,460.26 549.06,476.47 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M466.11,526.85 C425.38,463.17 425.52,363.44 462.67,285.35 C480.81,304.84 497.48,328.39 512.37,356.86 C478.37,421.87 461.12,474.91 466.11,526.85 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M482.23,569.56 C374.19,507.4 332.42,361.67 404.64,216.93 C424.93,231.07 439.36,246.16 452.59,260.84 C397.48,398.3 423.52,502.64 482.23,569.56 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M372.35,461.59 C368.05,451.98 363.61,436.83 359.57,419.92 C252.15,538.14 327.76,730.79 551.18,710.84 C431,685 359.62,578.49 372.35,461.59 Z"/>
+      </g>
+      <g class="petal">
+        <path fill="url(#grad1)" d="M305.5,599.83 C206.98,427.63 293.86,315.73 363.82,287.64 C358.95,327.41 354.24,365.85 359.5,392.98 C309.54,447.67 284.87,518.74 305.5,599.83 Z"/>
+      </g>
+    </g>
+  <style>
+    .petal {
+      transform-origin: center;
+      transform-box: fill-box;
+      opacity: 0;
+      transform: scale(0.2);
+      animation: bloom 1.5s ease-out forwards;
+    }
+    <!-- .petal:nth-child(1) { animation-delay: 0s; }
+    .petal:nth-child(2) { animation-delay: 0.2s; }
+    .petal:nth-child(3) { animation-delay: 0.4s; }
+    .petal:nth-child(4) { animation-delay: 0.6s; }
+    .petal:nth-child(5) { animation-delay: 0.8s; }
+    .petal:nth-child(6) { animation-delay: 1.0s; }
+    .petal:nth-child(7) { animation-delay: 1.2s; }
+    .petal:nth-child(8) { animation-delay: 1.4s; }
+    .petal:nth-child(9) { animation-delay: 1.6s; }
+    .petal:nth-child(10) { animation-delay: 1.8s; } -->
+    @keyframes bloom {
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</svg>

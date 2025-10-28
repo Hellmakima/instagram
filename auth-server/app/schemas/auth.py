@@ -7,18 +7,21 @@ Contains the auth incomming request schema. Describes JSON Structures for fronte
 from pydantic import BaseModel, Field, field_validator, model_validator
 import re
 
+class UserId(BaseModel):
+    user_id: str = Field(..., description="Unique ID of the user")
+
 class UserCreate(BaseModel):
     # TODO: id: str = Field(default=uuid.uuid4().hex, description="Unique ID of the user")
     # TODO: decide if username is all lowercase, and if it can include . _ -
     username: str = Field(
-        ..., 
-        min_length=4, 
-        max_length=20, 
+        ...,
+        min_length=4,
+        max_length=20,
         description="Username of the user"
     )
     email: str = Field(..., description="Email of the user")
     password: str = Field(
-        ..., 
+        ...,
         min_length=10,
         max_length=72,
         description="Raw password (will be hashed)"

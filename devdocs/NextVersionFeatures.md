@@ -9,7 +9,7 @@
 
 ## Architecture
 
-- decide the DB (wheather to keep using MongoDB or switch to PostgreSQL)
+- decide the DB (weather to keep using MongoDB or switch to PostgreSQL)
 - caching (denormalization in DB)
   - keep recent comments, likes, etc. for each post.
 
