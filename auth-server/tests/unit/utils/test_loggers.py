@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 from app.utils.loggers import init_loggers
 
+
 @pytest.fixture(scope="function")
 def setup_logs(tmp_path_factory, monkeypatch):
     tmp_dir = tmp_path_factory.mktemp("logs_test")
@@ -29,8 +30,10 @@ def setup_logs(tmp_path_factory, monkeypatch):
     finally:
         # Explicit cleanup: remove any logs directory created under the tmp dir
         import shutil
+
         logs_dir = tmp_dir / "logs"
         shutil.rmtree(logs_dir, ignore_errors=True)
+
 
 def test_flow_logger_writes_file(setup_logs):
     logger = logging.getLogger("app_flow")
@@ -40,6 +43,7 @@ def test_flow_logger_writes_file(setup_logs):
     content = flow_log.read_text()
     assert "flow debug test" in content
 
+
 def test_security_logger_respects_json_or_verbose(setup_logs):
     logger = logging.getLogger("security_logger")
     logger.info("security info test")
@@ -48,6 +52,7 @@ def test_security_logger_respects_json_or_verbose(setup_logs):
     content = sec_log.read_text()
     # Check either JSON or verbose contains the message
     assert "security info test" in content
+
 
 def test_db_logger_level(setup_logs):
     logger = logging.getLogger("app_db")

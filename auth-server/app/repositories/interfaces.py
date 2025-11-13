@@ -21,11 +21,15 @@ class UserRepositoryInterface(ABC):
         """Create a new user and return the created id as string."""
 
     @abstractmethod
-    async def get_by_username_or_email(self, identifier: str) -> Optional[UserWithPasswordModel]:
+    async def get_by_username_or_email(
+        self, identifier: str
+    ) -> Optional[UserWithPasswordModel]:
         """Get a user by username or email."""
 
     @abstractmethod
-    async def get_verified(self, username: str, email: str) -> Optional[UserDetailedModel]:
+    async def get_verified(
+        self, username: str, email: str
+    ) -> Optional[UserDetailedModel]:
         """Return a record if username/email exists and is verified."""
 
     @abstractmethod
@@ -43,7 +47,9 @@ class UserRepositoryInterface(ABC):
 
 class RefreshTokenRepositoryInterface(ABC):
     @abstractmethod
-    async def insert(self, user_id: str, refresh_token: str, user_agent: str, session: Any = None) -> None:
+    async def insert(
+        self, user_id: str, refresh_token: str, user_agent: str, session: Any = None
+    ) -> None:
         """Insert a refresh token record."""
 
     @abstractmethod

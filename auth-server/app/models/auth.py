@@ -13,18 +13,22 @@ class BaseMongoModel(BaseModel):
 
 class UserCreate(BaseMongoModel):
     """Used for creating a new user."""
+
     username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
     hashed_password: str
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     is_verified: bool = False
-    last_activity_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    last_activity_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
     suspended_till: Optional[datetime] = None
     delete_at: Optional[datetime] = None
 
 
 class UserId(BaseMongoModel):
     """Used for returning user data (wraps MongoDB _id)."""
+
     id: str = Field(..., alias="_id")
 
     @field_validator("id", mode="before")
@@ -36,6 +40,7 @@ class UserId(BaseMongoModel):
 
 class UserDetailed(UserId):
     """Used for returning user data with additional details."""
+
     username: str
     is_verified: bool
     suspended_till: Optional[datetime] = None
@@ -44,21 +49,27 @@ class UserDetailed(UserId):
 
 class UserWithPassword(UserDetailed):
     """Used for returning user data with password."""
+
     hashed_password: str
 
 
 class UserActivityUpdate(BaseMongoModel):
     """Used for updating user activity."""
-    last_activity_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+    last_activity_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc)
+    )
 
 
 class UserPassword(BaseMongoModel):
     """Used for updating user password."""
+
     hashed_password: str
 
 
 class UserSuspend(BaseMongoModel):
     """Used for updating user suspension."""
+
     suspended_till: datetime
 
 
@@ -68,9 +79,11 @@ class UserDelete(BaseMongoModel):
       - revoking deletion
     Actual deletion is handled by a separate cleanup process.
     """
+
     delete_at: Optional[datetime] = None
 
 
 class UserUsername(BaseMongoModel):
     """Used for updating username."""
+
     username: str = Field(..., min_length=3, max_length=50)

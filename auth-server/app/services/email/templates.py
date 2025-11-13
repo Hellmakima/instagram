@@ -2,6 +2,7 @@
 
 from app.core.config import settings
 
+
 def get_verification_email_body(verification_link: str) -> str:
     """
     Generates the HTML body for the email verification message.

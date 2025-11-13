@@ -27,6 +27,7 @@ from bson import ObjectId
 from app.models.refresh_token import RefreshTokenCreate as RefreshTokenCreateModel
 
 import logging
+
 db_logger = logging.getLogger("app_db")
 
 from app.repositories.interfaces import RefreshTokenRepositoryInterface
@@ -39,14 +40,22 @@ class RefreshToken(RefreshTokenRepositoryInterface):
     async def find_by_token(self, token: str) -> Optional[dict]:
         try:
             return await self.collection.find_one(
-                {"refresh_token": token, "revoked": False, "expires_at": {"$gt": datetime.now(timezone.utc)}}, # shouldn't need expires_at check but good to have.
+                {
+                    "refresh_token": token,
+                    "revoked": False,
+                    "expires_at": {"$gt": datetime.now(timezone.utc)},
+                },  # shouldn't need expires_at check but good to have.
                 projection={"_id": 1, "user_id": 1, "expires_at": 1, "revoked": 1},
             )
         except Exception as e:
-            db_logger.error("Failed to find refresh token for token=%s: %s", token, str(e))
+            db_logger.error(
+                "Failed to find refresh token for token=%s: %s", token, str(e)
+            )
             raise
 
-    async def insert(self, user_id: str, refresh_token: str, user_agent:str, session: Any = None):
+    async def insert(
+        self, user_id: str, refresh_token: str, user_agent: str, session: Any = None
+    ):
         # if user_id is a valid ObjectId string, store as ObjectId for consistency
         try:
             uid: Any = ObjectId(user_id) if ObjectId.is_valid(user_id) else user_id
@@ -64,7 +73,9 @@ class RefreshToken(RefreshTokenRepositoryInterface):
         try:
             return await self.collection.insert_one(doc.model_dump(), session=session)
         except Exception as e:
-            db_logger.error("Failed to insert refresh token for user_id=%s: %s", user_id, str(e))
+            db_logger.error(
+                "Failed to insert refresh token for user_id=%s: %s", user_id, str(e)
+            )
             raise
 
     # TODO: decide what to do with this
@@ -72,13 +83,19 @@ class RefreshToken(RefreshTokenRepositoryInterface):
         try:
             return await self.collection.delete_one({"refresh_token": token})
         except Exception as e:
-            db_logger.error("Failed to delete refresh token for token=%s: %s", token, str(e))
+            db_logger.error(
+                "Failed to delete refresh token for token=%s: %s", token, str(e)
+            )
             raise
 
     async def revoke(self, token_id: Any, session: Any = None):
         # ensure token_id is ObjectId when possible
         try:
-            tid = ObjectId(token_id) if isinstance(token_id, str) and ObjectId.is_valid(token_id) else token_id
+            tid = (
+                ObjectId(token_id)
+                if isinstance(token_id, str) and ObjectId.is_valid(token_id)
+                else token_id
+            )
         except Exception:
             tid = token_id
 
@@ -87,5 +104,7 @@ class RefreshToken(RefreshTokenRepositoryInterface):
                 {"_id": tid}, {"$set": {"revoked": True}}, session=session
             )
         except Exception as e:
-            db_logger.error("Failed to revoke refresh token for token_id=%s: %s", token_id, str(e))
+            db_logger.error(
+                "Failed to revoke refresh token for token_id=%s: %s", token_id, str(e)
+            )
             raise

@@ -14,9 +14,13 @@ def get_user_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> UserRepository:
     # return the Mongo implementation but keep return type as the interface for typing
     return MongoUserRepository(db)
 
-def get_refresh_token_repo(db: AsyncIOMotorDatabase = Depends(get_db)) -> RefreshTokenRepository:
+
+def get_refresh_token_repo(
+    db: AsyncIOMotorDatabase = Depends(get_db),
+) -> RefreshTokenRepository:
     """Provides a RefreshTokenRepository instance with a database connection."""
     return RefreshTokenRepository(db)
+
 
 async def get_session(client: AsyncIOMotorClient = Depends(get_client)):
     async with await client.start_session() as session:

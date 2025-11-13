@@ -5,6 +5,7 @@ from fastapi_csrf_protect.exceptions import CsrfProtectError
 
 from app.core import csrf
 
+
 @pytest.mark.asyncio
 async def test_verify_csrf_success(mock_request, mock_response, mock_csrf):
     mock_csrf.validate_csrf = AsyncMock()

@@ -39,5 +39,6 @@ dependencies = [
     "python-jose[cryptography]>=3.5.0",
     "python-json-logger>=3.3.0",
     "redis>=7.0.0",
+    "schemathesis>=4.4.4",
     "uvicorn[standard]>=0.35.0",
 ]

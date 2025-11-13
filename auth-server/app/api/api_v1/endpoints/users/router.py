@@ -8,16 +8,16 @@ from app.repositories.interfaces import UserRepositoryInterface as UserRepositor
 from app.api.dependencies.db_deps import get_user_repo
 from app.schemas.auth import TokenData
 from app.schemas.responses import (
-    APIErrorResponse, 
-    ErrorDetail, 
+    APIErrorResponse,
+    ErrorDetail,
 )
 
 router = APIRouter()
 
+
 @router.get("/{username}", response_model=TokenData)
 async def get_user_by_username(
-    username: str,
-    user_repo: UserRepository = Depends(get_user_repo)
+    username: str, user_repo: UserRepository = Depends(get_user_repo)
 ):
     """
     Get user_id by username.
