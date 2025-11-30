@@ -10,10 +10,10 @@ multi-ecosystem-groups:
     schedule:
       interval: "cron"
       cron: "0 0 1 * *"
-  npm:
-    schedule:
-      interval: "cron"
-      cron: "0 0 1 * *"
+  # npm:
+  #   schedule:
+  #     interval: "cron"
+  #     cron: "0 0 1 * *"
   docker:
     schedule:
       interval: "cron"
@@ -34,9 +34,9 @@ updates:
     multi-ecosystem-group: "uv"
 
   # Node.js (npm) - Frontend
-  - package-ecosystem: "npm"
-    directory: "/frontend"
-    multi-ecosystem-group: "npm"
+  # - package-ecosystem: "npm"
+  #   directory: "/frontend"
+  #   multi-ecosystem-group: "npm"
 
   # Docker - Auth Server
   - package-ecosystem: "docker"
@@ -49,6 +49,6 @@ updates:
     multi-ecosystem-group: "docker"
 
   # Docker - Frontend
-  - package-ecosystem: "docker"
-    directory: "/frontend"
-    multi-ecosystem-group: "docker"
+  # - package-ecosystem: "docker"
+  #   directory: "/frontend"
+  #   multi-ecosystem-group: "docker"
