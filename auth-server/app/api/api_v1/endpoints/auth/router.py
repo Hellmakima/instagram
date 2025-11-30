@@ -23,17 +23,26 @@ from app.schemas.user import (
     Email as UserEmail,
     Username as UserUsername,
     Password as UserPassword,
-    UserCreate
+    UserCreate,
 )
 from app.services.auth.user_create import create_user as create_user_service
 from app.services.auth.user_login import login_user as login_user_service
 from app.services.auth.user_logout import logout_user as logout_user_service
-from app.services.auth.user_refresh_token import refresh_access_token as refresh_access_token_service
-from app.repositories.interfaces import RefreshTokenRepositoryInterface as RefreshTokenRepository
+from app.services.auth.user_refresh_token import (
+    refresh_access_token as refresh_access_token_service,
+)
+from app.repositories.interfaces import (
+    RefreshTokenRepositoryInterface as RefreshTokenRepository,
+)
 from app.repositories.interfaces import UserRepositoryInterface as UserRepository
-from app.api.dependencies.db_deps import get_user_repo, get_refresh_token_repo, get_session
+from app.api.dependencies.db_deps import (
+    get_user_repo,
+    get_refresh_token_repo,
+    get_session,
+)
 
 import logging
+
 request_logger = logging.getLogger("app_requests")
 # TODO: remove below loggers
 flow_logger = logging.getLogger("app_flow")
@@ -41,24 +50,21 @@ db_logger = logging.getLogger("app_db")
 
 router = APIRouter()
 
+
 # TODO: fix it's place. (decide which file to put this function)
-@router.get(
-    "/csrf-token",
-    response_model=SuccessMessageResponse
-)
+@router.get("/csrf-token", response_model=SuccessMessageResponse)
 async def generate_csrf_token(
-    response: Response,
-    csrf_protect: CsrfProtect = Depends()
+    response: Response, csrf_protect: CsrfProtect = Depends()
 ):
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     csrf_protect.set_csrf_cookie(signed_token, response)
     return SuccessMessageResponse(
-        message="CSRF token generated successfully.",
-        data={"csrf_token": csrf_token}
+        message="CSRF token generated successfully.", data={"csrf_token": csrf_token}
     )
 
 
 # TODO: implement session=Depends(get_session)
+
 
 @router.post(
     "/register",
@@ -68,7 +74,7 @@ async def generate_csrf_token(
         400: {"model": APIErrorResponse, "description": "Bad Request"},
         403: {"model": APIErrorResponse, "description": "Forbidden (CSRF error)"},
         500: {"model": APIErrorResponse, "description": "Internal Server Error"},
-    }
+    },
 )
 async def register(
     form_data: UserCreate,
@@ -85,15 +91,15 @@ async def register(
 
 
 @router.post(
-        "/login",
-        summary="Login with username/password",
-        response_model=SuccessMessageResponse,
-        status_code=status.HTTP_200_OK,
-        responses={
-            400: {"model": APIErrorResponse, "description": "Bad Request"},
-            401: {"model": APIErrorResponse, "description": "Unauthorized"},
-            500: {"model": APIErrorResponse, "description": "Internal Server Error"},
-        }
+    "/login",
+    summary="Login with username/password",
+    response_model=SuccessMessageResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"model": APIErrorResponse, "description": "Bad Request"},
+        401: {"model": APIErrorResponse, "description": "Unauthorized"},
+        500: {"model": APIErrorResponse, "description": "Internal Server Error"},
+    },
 )
 # TODO: use redis and make this rate limiting only for failed attempts and suspend for a while.
 async def login(
@@ -107,23 +113,22 @@ async def login(
 ):
     flow_logger.info("in login endpoint")
 
-    client_ip = request.headers.get("x-forwarded-for") or (request.client.host if request.client else "unknown")
+    client_ip = request.headers.get("x-forwarded-for") or (
+        request.client.host if request.client else "unknown"
+    )
 
     access_token, refresh_token = await login_user_service(
-        form_data,
-        user_repo,
-        refresh_token_repo,
-        client_ip
+        form_data, user_repo, refresh_token_repo, client_ip
     )
 
     # Set the refresh token as an HttpOnly cookie
     response.set_cookie(
         key="access_token",
         value=access_token,
-        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60, # max_age in seconds
-        httponly=True,       # Prevents client-side JavaScript access
-        secure=True,         # Only send over HTTPS (essential in production)
-        samesite="lax",      # Helps prevent CSRF. "lax" is a good default.
+        max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,  # max_age in seconds
+        httponly=True,  # Prevents client-side JavaScript access
+        secure=True,  # Only send over HTTPS (essential in production)
+        samesite="lax",  # Helps prevent CSRF. "lax" is a good default.
         # TODO: add domain and path
         # domain="yourdomain.com", # Uncomment and set if needed for cross-subdomain
         # path="/"             # Default, usually not needed unless restricting paths
@@ -140,21 +145,19 @@ async def login(
     )
 
     # Return success response
-    return SuccessMessageResponse(
-        message="Login successful."
-    )
+    return SuccessMessageResponse(message="Login successful.")
 
 
 @router.post(
-        "/logout",
-        summary="Logout user",
-        response_model=SuccessMessageResponse,
-        status_code=status.HTTP_200_OK,
-        responses={
-            400: {"model": APIErrorResponse, "description": "Bad Request"},
-            401: {"model": APIErrorResponse, "description": "Unauthorized"},
-            500: {"model": APIErrorResponse, "description": "Internal Server Error"},
-        }
+    "/logout",
+    summary="Logout user",
+    response_model=SuccessMessageResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"model": APIErrorResponse, "description": "Bad Request"},
+        401: {"model": APIErrorResponse, "description": "Unauthorized"},
+        500: {"model": APIErrorResponse, "description": "Internal Server Error"},
+    },
 )
 async def logout(
     request: Request,
@@ -175,23 +178,22 @@ async def logout(
     return SuccessMessageResponse(message="Logout successful.")
 
 
-
 @router.post(
-        "/refresh_token",
-        summary="Rotate access token",
-        response_model=SuccessMessageResponse,
-        status_code=status.HTTP_200_OK,
-        responses={
-            400: {"model": APIErrorResponse, "description": "Bad Request"},
-            401: {"model": APIErrorResponse, "description": "Unauthorized"},
-            500: {"model": APIErrorResponse, "description": "Internal Server Error"},
-        }
+    "/refresh_token",
+    summary="Rotate access token",
+    response_model=SuccessMessageResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"model": APIErrorResponse, "description": "Bad Request"},
+        401: {"model": APIErrorResponse, "description": "Unauthorized"},
+        500: {"model": APIErrorResponse, "description": "Internal Server Error"},
+    },
 )
 async def refresh_access_token(
     request: Request,
     _: None = Depends(verify_csrf),
     refresh_token_repo: RefreshTokenRepository = Depends(get_refresh_token_repo),
-    session=Depends(get_session)
+    session=Depends(get_session),
 ):
     flow_logger.info("in refresh token endpoint")
 
@@ -200,7 +202,7 @@ async def refresh_access_token(
     new_access_token, new_refresh_token = await refresh_access_token_service(
         refresh_token=refresh_token,
         refresh_token_repo=refresh_token_repo,
-        session=session
+        session=session,
     )
 
     response = Response(content="OK", media_type="text/plain")

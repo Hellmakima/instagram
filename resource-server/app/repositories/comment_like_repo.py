@@ -17,15 +17,16 @@ class CommentLikeRepository:
 
     async def create(self, comment_id: str, user_id: str):
         """Create a like relationship where `user_id` likes `comment_id`."""
-        res = await self.collection.insert_one({
-            "comment_id": comment_id, 
-            "user_id": user_id
-        })
+        res = await self.collection.insert_one(
+            {"comment_id": comment_id, "user_id": user_id}
+        )
         return res
 
     async def get_likes(self, comment_id: str) -> List[dict]:
         """Get a list of users who like the given comment."""
-        return await self.collection.find({"comment_id": comment_id}).to_list(length=None)
+        return await self.collection.find({"comment_id": comment_id}).to_list(
+            length=None
+        )
 
     async def get_likes_count(self, comment_id: str) -> int:
         """Get the count of likes for the given comment."""

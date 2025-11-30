@@ -41,13 +41,14 @@ from app.models.auth import (
 from app.repositories.interfaces import UserRepositoryInterface
 
 import logging
+
 flow_logger = logging.getLogger("app_flow")
 db_logger = logging.getLogger("app_db")
+
 
 class User(UserRepositoryInterface):
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db.get_collection(settings.USER_COLLECTION)
-
 
     async def create(self, user_doc: UserCreateModel) -> str:
         flow_logger.info("in insert")
@@ -61,8 +62,9 @@ class User(UserRepositoryInterface):
             db_logger.error("Database error during user insert: %s", str(e))
             raise
 
-
-    async def get_by_username_or_email(self, identifier: str) -> Optional[UserWithPasswordModel]:
+    async def get_by_username_or_email(
+        self, identifier: str
+    ) -> Optional[UserWithPasswordModel]:
         """
         Get user by username or email.
         Used for login.
@@ -83,20 +85,21 @@ class User(UserRepositoryInterface):
             if rec:
                 db_logger.info("User record fetched successfully.")
                 # construct model via Pydantic to leverage validation/aliases
-                return UserWithPasswordModel.model_validate({
-                    "_id": rec["_id"],
-                    "username": rec.get("username"),
-                    "hashed_password": rec.get("hashed_password"),
-                    "is_verified": rec.get("is_verified"),
-                    "delete_at": rec.get("delete_at"),
-                    "suspended_till": rec.get("suspended_till"),
-                })
+                return UserWithPasswordModel.model_validate(
+                    {
+                        "_id": rec["_id"],
+                        "username": rec.get("username"),
+                        "hashed_password": rec.get("hashed_password"),
+                        "is_verified": rec.get("is_verified"),
+                        "delete_at": rec.get("delete_at"),
+                        "suspended_till": rec.get("suspended_till"),
+                    }
+                )
             db_logger.info("User record not found.")
             return None
         except Exception as e:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
-
 
     async def get_verified(self, username: str, email: str) -> Optional[dict]:
         flow_logger.info("in get_verified")
@@ -119,7 +122,6 @@ class User(UserRepositoryInterface):
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
 
-
     async def get_by_id(self, user_id: str) -> Optional[UserDetailedModel]:
         flow_logger.info("in get_by_id")
         try:
@@ -139,18 +141,19 @@ class User(UserRepositoryInterface):
             )
             if rec:
                 db_logger.info("User record fetched successfully.")
-                return UserDetailedModel.model_validate({
-                    "_id": rec["_id"],
-                    "is_verified": rec.get("is_verified"),
-                    "suspended_till": rec.get("suspended_till"),
-                    "delete_at": rec.get("delete_at"),
-                })
+                return UserDetailedModel.model_validate(
+                    {
+                        "_id": rec["_id"],
+                        "is_verified": rec.get("is_verified"),
+                        "suspended_till": rec.get("suspended_till"),
+                        "delete_at": rec.get("delete_at"),
+                    }
+                )
             db_logger.info("User record not found.")
             return None
         except Exception as e:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
-
 
     async def get_by_username(self, username: str) -> Optional[UserIdModel]:
         flow_logger.info("in get_by_username")
@@ -169,7 +172,6 @@ class User(UserRepositoryInterface):
         except Exception as e:
             db_logger.error("Database error during user existence check: %s", str(e))
             raise
-
 
     async def mark_as_verified(self, user_id: str) -> bool:
         """Set is_verified to True for the given user id."""

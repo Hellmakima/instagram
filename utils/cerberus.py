@@ -14,6 +14,7 @@ SALT_SIZE = 16
 NONCE_SIZE = 12
 KEY_LEN = 32
 
+
 def derive_key(password: bytes, salt: bytes) -> bytes:
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -23,6 +24,7 @@ def derive_key(password: bytes, salt: bytes) -> bytes:
     )
     return kdf.derive(password)
 
+
 def write_atomic(path: str, data: bytes):
     tmp = path + ".tmp"
     with open(tmp, "wb") as f:
@@ -30,9 +32,11 @@ def write_atomic(path: str, data: bytes):
     os.replace(tmp, path)
     os.chmod(path, 0o600)
 
+
 @click.group()
 def cli():
     pass
+
 
 @cli.command()
 @click.option("--infile", "-i", default=".env", show_default=True)
@@ -57,6 +61,7 @@ def encrypt(infile, outfile, remove):
         os.remove(infile)
     click.echo(f"Encrypted -> {outfile}")
 
+
 @cli.command()
 @click.option("--infile", "-i", default=".env.enc", show_default=True)
 @click.option("--outfile", "-o", default=".env", show_default=True)
@@ -72,8 +77,8 @@ def decrypt(infile, outfile, remove):
         click.echo("input file looks invalid", err=True)
         sys.exit(1)
     salt = raw[:SALT_SIZE]
-    nonce = raw[SALT_SIZE:SALT_SIZE+NONCE_SIZE]
-    ct = raw[SALT_SIZE+NONCE_SIZE:]
+    nonce = raw[SALT_SIZE : SALT_SIZE + NONCE_SIZE]
+    ct = raw[SALT_SIZE + NONCE_SIZE :]
     key = derive_key(pwd, salt)
     aes = AESGCM(key)
     try:
@@ -85,6 +90,7 @@ def decrypt(infile, outfile, remove):
     if remove:
         os.remove(infile)
     click.echo(f"Decrypted -> {outfile}")
+
 
 if __name__ == "__main__":
     cli()

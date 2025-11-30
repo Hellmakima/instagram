@@ -4,27 +4,31 @@ from datetime import datetime, timezone
 # Assuming your repository and models/schemas are available
 from app.repositories.comment_repo import CommentRepository
 from app.schemas.comment import CommentCreate
-from app.models.comment import CommentModel # Assuming this is the final DB-ready model
+from app.models.comment import CommentModel  # Assuming this is the final DB-ready model
 
-# IMPORTANT NOTE: 
-# The actual database model should use datetime for timestamp and PyObjectId for ID. 
+# IMPORTANT NOTE:
+# The actual database model should use datetime for timestamp and PyObjectId for ID.
 # We assume the CommentRepository interacts with a robust DB model.
 # For demonstration, we will use the CommentCreate input and server-side data.
 
 from bson import ObjectId
+
 
 class CommentService:
     """
     Handles all business logic related to Comments, coordinating
     between the API layer and the data layer (Repository).
     """
+
     def __init__(self, comment_repo: CommentRepository):
         """Initializes the service with a CommentRepository instance."""
         self.repo = comment_repo
 
-    async def create_comment(self, comment_data: CommentCreate, user_id: str) -> ObjectId:
+    async def create_comment(
+        self, comment_data: CommentCreate, user_id: str
+    ) -> ObjectId:
         """
-        Transforms client input and server-injected data into a database document 
+        Transforms client input and server-injected data into a database document
         and persists it.
 
         Args:
@@ -47,7 +51,9 @@ class CommentService:
             comment=comment_data.comment,
             post_id=comment_data.post_id,
             user_id=user_id,  # CRITICAL: Server injects user_id for security
-            timestamp=datetime.now(timezone.utc), # CRITICAL: Server injects immutable timestamp (UTC)
+            timestamp=datetime.now(
+                timezone.utc
+            ),  # CRITICAL: Server injects immutable timestamp (UTC)
             parent_comment_id=comment_data.parent_comment_id,
         )
 
@@ -61,10 +67,7 @@ class CommentService:
         return new_comment_db
 
     async def get_comments_paginated(
-        self, 
-        post_id: str, 
-        limit: int = 20, 
-        skip: int = 0
+        self, post_id: str, limit: int = 20, skip: int = 0
     ) -> List[CommentModel]:
         """
         Fetches comments for a specific post with mandatory pagination.
@@ -81,12 +84,10 @@ class CommentService:
         if limit > 50:
             limit = 50
 
-        # Call the repository to fetch the data. 
+        # Call the repository to fetch the data.
         # The repository should handle the indexing, sorting, and pagination logic.
         comments = await self.repo.get_by_post_id(
-            post_id=post_id,
-            limit=limit,
-            skip=skip
+            post_id=post_id, limit=limit, skip=skip
         )
 
         return comments

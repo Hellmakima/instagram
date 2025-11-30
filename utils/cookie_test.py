@@ -15,24 +15,29 @@ app.add_middleware(
 
 csrf = CsrfProtect()
 
+
 class CsrfSettings(BaseSettings):
     secret_key: str = "CSRF_SECRET_KEY"
     cookie_samesite: str = "lax"
     cookie_secure: bool = False
 
+
 @CsrfProtect.load_config
 def get_csrf_config():
     return CsrfSettings()
 
+
 @app.post("/protected-endpoint")
-async def protected(request: Request, response: Response, csrf_protect: CsrfProtect = Depends()):
+async def protected(
+    request: Request, response: Response, csrf_protect: CsrfProtect = Depends()
+):
     await csrf_protect.validate_csrf(request)
     return {"status": "success", "message": "CSRF validated!"}
 
+
 @app.get("/csrf-token")
 async def generate_csrf_token(
-    response: Response,
-    csrf_protect: CsrfProtect = Depends()
+    response: Response, csrf_protect: CsrfProtect = Depends()
 ):
     csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
     csrf_protect.set_csrf_cookie(signed_token, response)
@@ -46,6 +51,7 @@ async def verify_csrf(
 ):
     await csrf_protect.validate_csrf(request)
     csrf_protect.unset_csrf_cookie(response)
+
 
 """
 # Corresponding nextJS code

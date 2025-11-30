@@ -6,6 +6,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
 
+
 # TODO: collections names are hardcoded, maybe we can use a config file for this.
 @asynccontextmanager
 async def lifespan(app: FastAPI):

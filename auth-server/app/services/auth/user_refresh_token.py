@@ -2,11 +2,13 @@
 
 from typing import Tuple
 from app.schemas.responses import (
-    APIErrorResponse, 
-    ErrorDetail, 
+    APIErrorResponse,
+    ErrorDetail,
     InternalServerError,
 )
-from app.repositories.interfaces import RefreshTokenRepositoryInterface as RefreshTokenRepository
+from app.repositories.interfaces import (
+    RefreshTokenRepositoryInterface as RefreshTokenRepository,
+)
 from app.core.security import verify_token
 from fastapi import (
     HTTPException,
@@ -20,13 +22,13 @@ from app.core.security import (
 )
 
 import logging
+
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
 
+
 async def refresh_access_token(
-    refresh_token: str,
-    refresh_token_repo: RefreshTokenRepository,
-    session
+    refresh_token: str, refresh_token_repo: RefreshTokenRepository, session
 ) -> Tuple[str, str]:
     """
     Validate the existing tokens, revoke the old refresh token,
@@ -43,10 +45,9 @@ async def refresh_access_token(
                 detail=APIErrorResponse(
                     message="Invalid credentials",
                     error=ErrorDetail(
-                        code="INVALID_CREDENTIALS",
-                        details="Invalid access token."
-                    )
-                ).model_dump()
+                        code="INVALID_CREDENTIALS", details="Invalid access token."
+                    ),
+                ).model_dump(),
             )
         user = verify_token(token=refresh_token, token_type="refresh")
         if not user or not getattr(user, "id", None):
@@ -57,8 +58,8 @@ async def refresh_access_token(
                     message="Invalid credentials",
                     error=ErrorDetail(
                         code="INVALID_CREDENTIALS",
-                        details="Invalid refresh token payload."
-                    )
+                        details="Invalid refresh token payload.",
+                    ),
                 ).model_dump(),
             )
         flow_logger.info("refresh token verified: %s", str(user.id))
@@ -69,22 +70,23 @@ async def refresh_access_token(
         flow_logger.error("Refresh token verification failed: %s", str(e))
         raise InternalServerError()
 
-
     async with session.start_transaction():
         try:
             refresh_token_doc = await refresh_token_repo.find_by_token(refresh_token)
 
             if not refresh_token_doc:
-                flow_logger.warning("Revoked or invalid refresh token used for refresh attempt.")
+                flow_logger.warning(
+                    "Revoked or invalid refresh token used for refresh attempt."
+                )
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail=APIErrorResponse(
                         message="Unauthorized",
                         error=ErrorDetail(
                             code="REFRESH_TOKEN_INVALID",
-                            details="Refresh token not found, revoked, or expired."
-                        )
-                    ).model_dump()
+                            details="Refresh token not found, revoked, or expired.",
+                        ),
+                    ).model_dump(),
                 )
             flow_logger.info("Found refresh token.")
 

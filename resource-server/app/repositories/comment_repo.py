@@ -14,7 +14,8 @@ from app.core.config import settings
 from typing import List, Optional
 from pymongo.errors import PyMongoError
 from app.models.comment import CommentModel
-from bson import ObjectId # Import ObjectId for validation (crucial)
+from bson import ObjectId  # Import ObjectId for validation (crucial)
+
 
 class CommentRepository:
     def __init__(self, db: AsyncIOMotorDatabase):
@@ -28,7 +29,6 @@ class CommentRepository:
         except PyMongoError as e:
             # Handle database error (e.g., connection issues, duplicate key errors)
             raise Exception(f"Error creating comment: {e}")
-
 
     async def get_comments(self, post_id: str) -> List[CommentModel]:
         """
@@ -49,14 +49,17 @@ class CommentRepository:
         # Ensure self.collection is the correct MongoDB collection object
         return await self.collection.find({"post_id": post_id}).to_list(length=None)
 
-    async def get_comments_paginated(self, post_id: str, limit: int = 20, skip: int = 0) -> List[CommentModel]:
+    async def get_comments_paginated(
+        self, post_id: str, limit: int = 20, skip: int = 0
+    ) -> List[CommentModel]:
         # ... ID Validation logic ...
 
         # Scalable Query:
-        cursor = self.collection \
-            .find({"post_id": post_id}) \
-            .sort([("timestamp", 1)]) \
-            .skip(skip) \
+        cursor = (
+            self.collection.find({"post_id": post_id})
+            .sort([("timestamp", 1)])
+            .skip(skip)
             .limit(limit)
+        )
 
         return await cursor.to_list(length=limit)

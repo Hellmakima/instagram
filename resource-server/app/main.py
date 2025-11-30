@@ -25,6 +25,7 @@ from app.core.lifespan import lifespan
 from app.api.router import router
 
 from app.utils.loggers import init_loggers
+
 init_loggers()
 
 app = FastAPI(lifespan=lifespan, title="Resource Server", version="0.1")
@@ -32,12 +33,13 @@ app = FastAPI(lifespan=lifespan, title="Resource Server", version="0.1")
 limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler) # type: ignore
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)  # type: ignore
 app.add_exception_handler(CsrfProtectError, csrf_exception_handler)
 
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 app.include_router(router)
+
 
 @app.get("/", include_in_schema=False)
 def root():

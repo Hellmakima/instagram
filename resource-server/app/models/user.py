@@ -3,6 +3,7 @@
 
 Contains the user models for db repositories
 """
+
 from pydantic import BaseModel
 
 
@@ -17,4 +18,3 @@ class User(BaseModel):
 class Follows(BaseModel):
     follower_id: str
     following_id: str
-

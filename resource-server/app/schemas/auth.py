@@ -6,5 +6,6 @@ Contains the auth incomming request schema. Describes JSON Structures for fronte
 
 from pydantic import BaseModel, Field
 
+
 class TokenData(BaseModel):
     id: str = Field(..., description="Unique ID of the user")

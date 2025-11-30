@@ -8,12 +8,14 @@ from datetime import datetime, timezone, timedelta
 from app.repositories import user
 from app.models.auth import UserCreate as UserModel, UserWithPassword as UserOut
 
+
 # Fixtures for user repo tests
 @pytest.fixture
 def mock_user_collection():
     """Provides a mock MongoDB collection for the User repo."""
     collection = AsyncMock()
     return collection
+
 
 @pytest.fixture
 def mock_user_db(mock_user_collection):
@@ -24,7 +26,9 @@ def mock_user_db(mock_user_collection):
 
 
 @pytest.mark.asyncio
-async def test_get_by_username_or_email_returns_user(mock_user_db, mock_user_collection):
+async def test_get_by_username_or_email_returns_user(
+    mock_user_db, mock_user_collection
+):
     # Arrange: setup collection to return a fake user
     fake_id = ObjectId()
     mock_user_collection.find_one.return_value = {
@@ -50,7 +54,9 @@ async def test_get_by_username_or_email_returns_user(mock_user_db, mock_user_col
 
 
 @pytest.mark.asyncio
-async def test_get_by_username_or_email_returns_none(mock_user_db, mock_user_collection):
+async def test_get_by_username_or_email_returns_none(
+    mock_user_db, mock_user_collection
+):
     mock_user_collection.find_one.return_value = None
 
     repo = user.User(db=mock_user_db)
@@ -105,7 +111,9 @@ async def test_create_user_inserts_document(mock_user_db, mock_user_collection):
 
 
 @pytest.mark.asyncio
-async def test_get_by_username_or_email_raises_exception(mock_user_db, mock_user_collection):
+async def test_get_by_username_or_email_raises_exception(
+    mock_user_db, mock_user_collection
+):
     mock_user_collection.find_one.side_effect = Exception("DB failure")
 
     repo = user.User(db=mock_user_db)

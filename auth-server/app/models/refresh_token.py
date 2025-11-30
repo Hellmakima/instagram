@@ -1,14 +1,17 @@
 # app/models/refresh_token.py
 
 from datetime import datetime
+
 # from typing import Optional
 from pydantic import BaseModel, field_validator
 from bson import ObjectId
+
 
 class RefreshTokenCreate(BaseModel):
     """
     Used for creating a new refresh token.
     """
+
     user_id: str
     refresh_token: str
     expires_at: datetime
@@ -21,10 +24,12 @@ class RefreshTokenCreate(BaseModel):
             return str(v)
         return v
 
+
 class RefreshTokenOut(BaseModel):
     """
     Used for returning refresh token data.
     """
+
     id: str
     user_id: str
     refresh_token: str

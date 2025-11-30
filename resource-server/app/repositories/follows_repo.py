@@ -11,6 +11,7 @@ from app.core.config import settings
 from typing import List, Optional
 from app.models.user import Follows
 
+
 class FollowRepository:
     def __init__(self, db: AsyncIOMotorDatabase):
         self.collection = db.get_collection(settings.FOLLOWS_COLLECTION)
@@ -22,7 +23,9 @@ class FollowRepository:
 
     async def get_followers(self, user_id: str) -> List[dict]:
         """Get a list of users who follow the given user (followers)."""
-        return await self.collection.find({"following_id": user_id}).to_list(length=None)
+        return await self.collection.find({"following_id": user_id}).to_list(
+            length=None
+        )
 
     async def get_followers_count(self, user_id: str) -> int:
         """Get the count of followers for the given user."""

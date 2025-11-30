@@ -125,7 +125,6 @@ _Exciting tasks_
   - clean up
     - remove unused imports
     - remove commented code or comments
-    - format code
     - remove trailing whitespace
 
 ## Low Priority Tasks

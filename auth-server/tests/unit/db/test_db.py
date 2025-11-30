@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, AsyncMock
 from app.db import db
 from app.core.config import settings
 
+
 @pytest.fixture
 def mock_motor_client():
     """
@@ -17,6 +18,7 @@ def mock_motor_client():
     client.admin.command = AsyncMock()
     db.__getitem__.return_value = AsyncMock()
     return client
+
 
 @pytest.mark.asyncio
 async def test_get_db_returns_correct_database(mock_request, mock_motor_client):

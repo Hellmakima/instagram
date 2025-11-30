@@ -11,6 +11,7 @@ from motor.motor_asyncio import AsyncIOMotorDatabase, AsyncIOMotorClient
 from app.core.config import settings
 # from config import settings
 
+
 async def get_db(request: Request) -> AsyncIOMotorDatabase:
     # TODO: see why this needs request.
     """
@@ -18,6 +19,7 @@ async def get_db(request: Request) -> AsyncIOMotorDatabase:
     Usage: Depends(get_db)
     """
     return request.app.state.client[settings.MONGODB_DBNAME]
+
 
 async def get_client(request: Request) -> AsyncIOMotorClient:
     return request.app.state.client

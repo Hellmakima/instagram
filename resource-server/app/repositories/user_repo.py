@@ -10,14 +10,15 @@ User Collection:
 * username is not stored here, its from auth server (single source of truth)
 """
 
-
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.config import settings
 from typing import Optional
 from app.models.user import User
 
 import logging
+
 db_logger = logging.getLogger("app_db")
+
 
 class UserRepository:
     def __init__(self, db: AsyncIOMotorDatabase):
@@ -36,8 +37,6 @@ class UserRepository:
     async def get_user(self, user_id: str) -> Optional[dict]:
         """Retrieve the profile information of a user by their ID."""
         profile = await self.collection.find_one(
-            {"_id": user_id}, 
-            projection={"_id": 1, "username": 1, "profile_picture": 1}
+            {"_id": user_id}, projection={"_id": 1, "username": 1, "profile_picture": 1}
         )
         return profile
-

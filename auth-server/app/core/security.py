@@ -4,6 +4,7 @@
 Contains the security related functions like hashing, verifying passwords, creating access and refresh tokens etc.
 JWT is used for authentication.
 """
+
 from fastapi import HTTPException, status
 
 from jose import jwt
@@ -20,9 +21,11 @@ from app.core.config import settings
 from typing import Optional
 
 import logging
+
 flow_logger = logging.getLogger("app_flow")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
 
 async def get_password_hash(password: str) -> str:
     flow_logger.info("in get_password_hash")
@@ -55,7 +58,7 @@ def create_access_token(
         return encoded_jwt
     except JWTError as e:
         flow_logger.error("Error creating access token: %s", str(e))
-        return None    
+        return None
 
 
 def create_refresh_token(
@@ -104,9 +107,10 @@ def create_email_verification_token(token_sub: TokenSub) -> Optional[str]:
     except JWTError as e:
         flow_logger.error("Error creating email verification token: %s", str(e))
         return None
-    
+
+
 def verify_token(
-    token: str, 
+    token: str,
     token_type: str,
 ) -> Optional[TokenSub]:
     """
@@ -117,12 +121,12 @@ def verify_token(
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail=APIErrorResponse(
-                    message="Credentials not valid",
-                    error=ErrorDetail(
-                        code="INVALID_CREDENTIALS",
-                        details="The credentials provided are invalid or expired."
-                    )
-                ).model_dump(),
+            message="Credentials not valid",
+            error=ErrorDetail(
+                code="INVALID_CREDENTIALS",
+                details="The credentials provided are invalid or expired.",
+            ),
+        ).model_dump(),
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
@@ -131,19 +135,19 @@ def verify_token(
             decoded_token = jwt.decode(
                 token=token,
                 key=settings.ACCESS_TOKEN_PUBLIC_JWT_SECRET_KEY,
-                algorithms=[settings.ACCESS_TOKEN_JWT_ALGORITHM]
+                algorithms=[settings.ACCESS_TOKEN_JWT_ALGORITHM],
             )
         elif token_type == "refresh":
             decoded_token = jwt.decode(
                 token=token,
                 key=settings.REFRESH_TOKEN_JWT_SECRET_KEY,
-                algorithms=[settings.REFRESH_TOKEN_JWT_ALGORITHM]
+                algorithms=[settings.REFRESH_TOKEN_JWT_ALGORITHM],
             )
         elif token_type == "email_verification":
             decoded_token = jwt.decode(
                 token=token,
                 key=settings.EMAIL_VERIFICATION_TOKEN_SECRET_KEY,
-                algorithms=[settings.EMAIL_VERIFICATION_TOKEN_JWT_ALGORITHM]
+                algorithms=[settings.EMAIL_VERIFICATION_TOKEN_JWT_ALGORITHM],
             )
         else:
             flow_logger.error("Invalid token type: %s", token_type)
@@ -157,12 +161,12 @@ def verify_token(
     except ExpiredSignatureError:
         flow_logger.error("Token expired")
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, 
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail=APIErrorResponse(
                 message="Token expired",
                 error=ErrorDetail(code="TOKEN_EXPIRED", details="Token expired"),
             ).model_dump(),
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
     except JWTClaimsError as e:
         flow_logger.error("Invalid claims: %s", str(e))

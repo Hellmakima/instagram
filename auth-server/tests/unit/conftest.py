@@ -5,15 +5,18 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from fastapi import Request, Response
 
+
 @pytest.fixture
 def mock_request():
     """Mocked FastAPI Request object."""
     return MagicMock(spec=Request)
 
+
 @pytest.fixture
 def mock_response():
     """Mocked FastAPI Response object."""
     return MagicMock(spec=Response)
+
 
 @pytest.fixture
 def mock_csrf():

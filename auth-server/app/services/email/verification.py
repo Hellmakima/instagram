@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core.security import create_email_verification_token, verify_token
 from app.services.email.send import send_email
 from app.services.email.templates import get_verification_email_body
-from app.schemas.auth import TokenData
+from app.schemas.auth import TokenData, TokenSub
 from app.repositories.interfaces import UserRepositoryInterface as UserRepository
 
 flow_logger = logging.getLogger("app_flow")
@@ -34,14 +34,21 @@ async def send_verification_email(token_sub: TokenSub, email: str) -> bool:
         )
 
         if sent:
-            flow_logger.info("Verification email successfully queued for user %s", token_data.id)
+            flow_logger.info(
+                "Verification email successfully queued for user %s", token_sub.id
+            )
         else:
-            flow_logger.error("Failed to send verification email for user %s", token_data.id)
+            flow_logger.error(
+                "Failed to send verification email for user %s", token_sub.id
+            )
         return sent
 
     except Exception as e:
-        flow_logger.error("Critical error in sending verification email for user %s: %s", str(e))
+        flow_logger.error(
+            "Critical error in sending verification email for user %s: %s", str(e)
+        )
         return False
+
 
 async def verify_email_token(token: str, user_repo: UserRepository) -> str | None:
     """
@@ -62,7 +69,9 @@ async def verify_email_token(token: str, user_repo: UserRepository) -> str | Non
             flow_logger.info("User %s email verified successfully.", user_id)
             return user_id
         else:
-            flow_logger.warning("User %s email verification did not update any record.", user_id)
+            flow_logger.warning(
+                "User %s email verification did not update any record.", user_id
+            )
             return None
     except Exception as e:
         flow_logger.error("Error verifying email token: %s", str(e))

@@ -1,11 +1,13 @@
 # app/services/auth/user_logout.py
 
 from app.schemas.responses import (
-    APIErrorResponse, 
-    ErrorDetail, 
+    APIErrorResponse,
+    ErrorDetail,
     InternalServerError,
 )
-from app.repositories.interfaces import RefreshTokenRepositoryInterface as RefreshTokenRepository
+from app.repositories.interfaces import (
+    RefreshTokenRepositoryInterface as RefreshTokenRepository,
+)
 from app.core.security import verify_token
 from fastapi import (
     HTTPException,
@@ -15,8 +17,10 @@ from app.schemas.auth import TokenData
 
 # TODO: record user last login in db
 import logging
+
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
+
 
 async def logout_user(
     access_token: str,
@@ -32,23 +36,23 @@ async def logout_user(
                 detail=APIErrorResponse(
                     message="Invalid credentials",
                     error=ErrorDetail(
-                        code="INVALID_CREDENTIALS",
-                        details="Invalid access token."
-                    )
-                ).model_dump()
+                        code="INVALID_CREDENTIALS", details="Invalid access token."
+                    ),
+                ).model_dump(),
             )
         user: TokenData | None = verify_token(token=access_token, token_type="access")
         if not user:
-            flow_logger.error("Access token verification failed or returned empty payload")
+            flow_logger.error(
+                "Access token verification failed or returned empty payload"
+            )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=APIErrorResponse(
                     message="Invalid credentials",
                     error=ErrorDetail(
-                        code="INVALID_CREDENTIALS",
-                        details="Invalid access token."
-                    )
-                ).model_dump()
+                        code="INVALID_CREDENTIALS", details="Invalid access token."
+                    ),
+                ).model_dump(),
             )
         flow_logger.info("auth token verified.")
     except Exception as e:

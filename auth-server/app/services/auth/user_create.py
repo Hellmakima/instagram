@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from app.schemas.user import UserCreate as UserCreateSchema
 from app.models.auth import UserCreate as UserCreateModel
 from app.schemas.responses import (
-    APIErrorResponse, 
-    ErrorDetail, 
+    APIErrorResponse,
+    ErrorDetail,
     InternalServerError,
 )
 from app.repositories.interfaces import UserRepositoryInterface as UserRepository
@@ -15,8 +15,10 @@ from fastapi import (
     status,
 )
 import logging
+
 flow_logger = logging.getLogger("app_flow")
 security_logger = logging.getLogger("security_logger")
+
 
 # TODO: maybe break this into smaller functions
 async def create_user(
@@ -30,7 +32,9 @@ async def create_user(
     # Check if user already exists
     try:
         if await user_repo.get_verified(form_data.username, form_data.email):
-            flow_logger.info("Registration failed: User with provided username or email already exists.")
+            flow_logger.info(
+                "Registration failed: User with provided username or email already exists."
+            )
             # Do NOT specify which field is taken.
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -38,9 +42,9 @@ async def create_user(
                     message="Username or email is already in use",
                     error=ErrorDetail(
                         code="USER_EXISTS",
-                        details="An account with this username or email already exists."
-                    )
-                ).model_dump()
+                        details="An account with this username or email already exists.",
+                    ),
+                ).model_dump(),
             )
     except HTTPException:
         raise
@@ -51,7 +55,7 @@ async def create_user(
     # TODO: add email verification
     # currently, users are set as unverified, need to verify them manually
     # After this, call resource-server to create new user.
-    '''
+    """
     Recommendation: Implement an email verification flow:
 
         Upon registration, set is_verified to False.
@@ -63,7 +67,7 @@ async def create_user(
         Send an email to the user's provided address with a link containing the verification token.
 
         Create a new endpoint (e.g., /verify-email) that accepts this token, verifies it, and updates is_verified to True.
-    '''
+    """
 
     hashed_password = await get_password_hash(form_data.password)
 

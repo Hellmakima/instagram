@@ -60,7 +60,10 @@ except Exception as e:
     security_logger.error(f"Failed to start Auth Server: {str(e)}")
     print(f"\033[91mfailed to start server: {str(e)}\033[0m", file=sys.stderr)
     import traceback
+
     print(traceback.format_exc(), file=sys.stderr)
     print("Make sure your .env file is setup correctly and your database is running.")
-    print("If you think this is a bug, please report it at \033[1;34mhttps://github.com/Hellmakima/instagram/issues\033[0m")
+    print(
+        "If you think this is a bug, please report it at \033[1;34mhttps://github.com/Hellmakima/instagram/issues\033[0m"
+    )
     sys.exit(1)

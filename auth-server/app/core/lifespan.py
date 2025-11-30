@@ -7,6 +7,7 @@ from app.core.config import settings
 import redis.asyncio as redis
 from fastapi_limiter import FastAPILimiter
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Mongo client
@@ -16,7 +17,9 @@ async def lifespan(app: FastAPI):
     await create_indexes(client.get_database())
 
     # Redis connection (for fastapi-limiter)
-    redis_conn = redis.from_url(settings.REDIS_URL, encoding="utf-8", decode_responses=True)
+    redis_conn = redis.from_url(
+        settings.REDIS_URL, encoding="utf-8", decode_responses=True
+    )
     await FastAPILimiter.init(redis_conn)
 
     yield

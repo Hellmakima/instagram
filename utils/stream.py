@@ -3,14 +3,17 @@ from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
+
 def stream_data():
-    yield "part 1\n"*10000
-    yield "part 2\n"*10000
-    yield "done\n"*10000
+    yield "part 1\n" * 10000
+    yield "part 2\n" * 10000
+    yield "done\n" * 10000
+
 
 @app.get("/")
 def home():
     return StreamingResponse(stream_data(), media_type="text/plain")
+
 
 """
 # Test it

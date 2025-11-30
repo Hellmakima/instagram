@@ -6,7 +6,10 @@ from email.message import EmailMessage
 
 flow_logger = logging.getLogger("app_flow")
 
-async def send_email(to_email: str, subject: str, body: str, subtype: str = "plain") -> bool:
+
+async def send_email(
+    to_email: str, subject: str, body: str, subtype: str = "plain"
+) -> bool:
     """
     Sends an email using SMTP in the style of the reference example.
     """

@@ -17,10 +17,7 @@ class PostLikeRepository:
 
     async def create(self, user_id: str, post_id: str):
         """Create a like relationship where `user_id` likes `post_id`."""
-        res = await self.collection.insert_one({
-            "user_id": user_id, 
-            "post_id": post_id
-        })
+        res = await self.collection.insert_one({"user_id": user_id, "post_id": post_id})
         return res
 
     async def get_likes(self, post_id: str) -> List[dict]:
