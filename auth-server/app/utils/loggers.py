@@ -157,7 +157,8 @@ def init_loggers():
 
     # Try to add JSON formatter if python-json-logger is available
     try:
-        import pythonjsonlogger
+        # import pythonjsonlogger
+
         LOG_CONFIG["formatters"]["json"] = {
             "()": "pythonjsonlogger.json.JsonFormatter",
             "fmt": "%(asctime)s %(name)s %(levelname)s %(message)s"

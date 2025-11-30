@@ -23,6 +23,7 @@ pytest-asyncio # for async tests eg: motor
 pytest-dotenv # for loading .env.test variables
 pytest-mock # for mock objects
 httpx # for testing
+schemathesis # for testing APIs
 
 ---
 

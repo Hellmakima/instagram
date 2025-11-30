@@ -56,10 +56,10 @@ async def send_verification_email(
         return {"ok": False, "detail": "missing user_id or email"}
 
     # build token data and call service
-    from app.schemas.auth import TokenData
+    from app.schemas.auth import TokenSub
 
-    token_data = TokenData(id=user_id)
-    sent = await send_verification_email_service(token_data, email)
+    token_sub = TokenSub(id=user_id)
+    sent = await send_verification_email_service(token_sub, email)
     return {"ok": bool(sent)}
 
 

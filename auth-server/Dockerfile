@@ -1,7 +1,7 @@
 # this doesn't work as mongodb is not in docker
 
 # Use lightweight Python image
-FROM python:3.14-slim
+FROM python:3.13-slim
 
 # Set working directory
 WORKDIR /app
@@ -19,14 +19,14 @@ COPY devdocs/requirements.txt ./requirements.txt
 # Install dependencies with pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
-COPY backend/auth-server ./auth-server
+# Copy backend code but skip the tests
+COPY auth-server/app ./app
 
 # Expose backend port
 EXPOSE 5001
 
 # Set working directory to backend
-WORKDIR /app/auth-server
+WORKDIR /app
 
 # Run uvicorn when container starts
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5001"]

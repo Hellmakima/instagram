@@ -1,8 +1,13 @@
 """
+
 ### File: **project/rough.md**
 
 Contains rough notes on the project
 """
+
+## Onboarding
+
+- enter email
 
 ### Profile page
 

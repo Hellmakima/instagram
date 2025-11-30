@@ -8,18 +8,22 @@ from fastapi import (
     Response,
     status,
 )
-from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 
 from app.core.config import settings
 from app.core.csrf import CsrfProtect, verify_csrf
 from app.schemas.auth import (
     LoginForm,
-    UserCreate,
 )
 from app.schemas.responses import (
     APIErrorResponse,
     SuccessMessageResponse,
+)
+from app.schemas.user import (
+    Email as UserEmail,
+    Username as UserUsername,
+    Password as UserPassword,
+    UserCreate
 )
 from app.services.auth.user_create import create_user as create_user_service
 from app.services.auth.user_login import login_user as login_user_service
@@ -68,7 +72,7 @@ async def generate_csrf_token(
 )
 async def register(
     form_data: UserCreate,
-    request: Request, # required by verify_csrf
+    request: Request,  # required for verify_csrf
     _: None = Depends(verify_csrf),
     user_repo: UserRepository = Depends(get_user_repo),
     __rate_limiter__: None = Depends(RateLimiter(times=10, seconds=60)),
@@ -76,7 +80,7 @@ async def register(
     request_logger.info("in register endpoint")
     await create_user_service(form_data, user_repo)
     return SuccessMessageResponse(
-        message="User registered successfully. Please proceed to login."
+        message="User email registered successfully. Please proceed to login."
     )
 
 

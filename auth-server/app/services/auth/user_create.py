@@ -1,7 +1,7 @@
 # app/services/auth/user_create.py
 
 from datetime import datetime, timedelta, timezone
-from app.schemas.auth import UserCreate
+from app.schemas.user import UserCreate as UserCreateSchema
 from app.models.auth import UserCreate as UserCreateModel
 from app.schemas.responses import (
     APIErrorResponse, 
@@ -20,7 +20,7 @@ security_logger = logging.getLogger("security_logger")
 
 # TODO: maybe break this into smaller functions
 async def create_user(
-    form_data: UserCreate,
+    form_data: UserCreateSchema,
     user_repo: UserRepository,
 ):
     """

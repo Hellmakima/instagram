@@ -113,6 +113,9 @@ _Exciting tasks_
 
 - search python.analysis.typeCheckingMode in VSCode and enale to look up potential errors
 - update requirements.txt
+- run `uv format`
+- run `schemathesis run --checks all --url http://localhost:5001 openapi.json`
+  - `openapi.json` is the path to the openapi.json file (found at `localhost:5001/openapi.json`)
 - code review
   - proper logging for FE and BE
   - error handling
@@ -130,6 +133,7 @@ _Exciting tasks_
 - separate repository for each server
 - use `requirements.txt` for prod, `requirements-dev.txt` for pytest/locust/dev tools for each server.
 - try out [fastapi-cli](https://github.com/fastapi/fastapi-cli) and [SQLModel](https://github.com/fastapi/sqlmodel) for ORM.
+- or maybe go [SQL-only](https://www.youtube.com/watch?v=bpGvVI7NM_k) without an ORM with t-strings.
 - setup nginx
   - rate limiting
   - route with subdomains

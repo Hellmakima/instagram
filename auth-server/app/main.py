@@ -21,6 +21,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import logging
 from app.utils.loggers import init_loggers
+from pathlib import Path
 
 try:
     init_loggers()
@@ -42,9 +43,6 @@ try:
 
     app.add_exception_handler(CsrfProtectError, csrf_exception_handler)
 
-    # Use an absolute path to the static directory so tests or VS Code runs from a
-    # different working directory don't break finding the static files.
-    from pathlib import Path
     static_dir = Path(__file__).resolve().parent / "static"
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 

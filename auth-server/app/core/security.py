@@ -14,7 +14,7 @@ import asyncio
 from datetime import datetime, timedelta, timezone
 
 from app.core.config import settings
-from app.schemas.auth import TokenData
+from app.schemas.auth import TokenData, TokenSub
 from app.schemas.responses import APIErrorResponse, ErrorDetail
 from app.core.config import settings
 from typing import Optional
@@ -35,16 +35,23 @@ async def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(
-    data: TokenData,
+    data: TokenSub,
 ) -> Optional[str]:
     """
     Creates an access token.
     """
     flow_logger.info("in create_access_token")
     try:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-        to_encode = {"exp": expire, "sub": data.id, "type": "access"}
-        encoded_jwt = jwt.encode(to_encode, settings.ACCESS_TOKEN_PRIVATE_JWT_SECRET_KEY, algorithm=settings.ACCESS_TOKEN_JWT_ALGORITHM)
+        exp = datetime.now(timezone.utc) + timedelta(
+            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+        )
+        # to_encode = {"exp": expire, "sub": data.id, "type": "access"}
+        to_encode = TokenData(exp=exp, sub=data, type="access").model_dump()
+        encoded_jwt = jwt.encode(
+            to_encode,
+            settings.ACCESS_TOKEN_PRIVATE_JWT_SECRET_KEY,
+            algorithm=settings.ACCESS_TOKEN_JWT_ALGORITHM,
+        )
         return encoded_jwt
     except JWTError as e:
         flow_logger.error("Error creating access token: %s", str(e))
@@ -52,32 +59,47 @@ def create_access_token(
 
 
 def create_refresh_token(
-    data: TokenData,
+    data: TokenSub,
 ) -> Optional[str]:
     """
     Creates a refresh token.
     """
     flow_logger.info("in create_refresh_token")
     try:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES)
-        to_encode = {"exp": expire, "sub": data.id, "type": "refresh"}
-        encoded_jwt = jwt.encode(to_encode, settings.REFRESH_TOKEN_JWT_SECRET_KEY, algorithm=settings.REFRESH_TOKEN_JWT_ALGORITHM)
+        exp = datetime.now(timezone.utc) + timedelta(
+            minutes=settings.REFRESH_TOKEN_EXPIRE_MINUTES
+        )
+        to_encode = TokenData(exp=exp, sub=data, type="refresh").model_dump()
+        encoded_jwt = jwt.encode(
+            to_encode,
+            settings.REFRESH_TOKEN_JWT_SECRET_KEY,
+            algorithm=settings.REFRESH_TOKEN_JWT_ALGORITHM,
+        )
         return encoded_jwt
     except JWTError as e:
         flow_logger.error("Error creating refresh token: %s", str(e))
         return None
 
-def create_email_verification_token(
-    token_data: TokenData
-) -> Optional[str]:
+
+def create_email_verification_token(token_sub: TokenSub) -> Optional[str]:
     """
     Generates a time-limited token specifically for email verification.
     """
     flow_logger.info("in create_email_verification_token")
     try:
-        expire = datetime.now(timezone.utc) + timedelta(minutes=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES)
-        to_encode = {"exp": expire, "sub": token_data.id, "type": "email_verification"}
-        encoded_jwt = jwt.encode(to_encode, settings.EMAIL_VERIFICATION_TOKEN_SECRET_KEY, algorithm=settings.EMAIL_VERIFICATION_TOKEN_JWT_ALGORITHM)
+        expire = datetime.now(timezone.utc) + timedelta(
+            minutes=settings.EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES
+        )
+        to_encode = {
+            "exp": expire,
+            "sub": token_sub.model_dump(),
+            "type": "email_verification",
+        }
+        encoded_jwt = jwt.encode(
+            to_encode,
+            settings.EMAIL_VERIFICATION_TOKEN_SECRET_KEY,
+            algorithm=settings.EMAIL_VERIFICATION_TOKEN_JWT_ALGORITHM,
+        )
         return encoded_jwt
     except JWTError as e:
         flow_logger.error("Error creating email verification token: %s", str(e))
@@ -86,7 +108,7 @@ def create_email_verification_token(
 def verify_token(
     token: str, 
     token_type: str,
-) -> Optional[TokenData]:
+) -> Optional[TokenSub]:
     """
     Verify the token and return the user's data.
     Raises HTTPException if the token is invalid or expired.
@@ -129,7 +151,7 @@ def verify_token(
         if decoded_token["type"] != token_type:
             flow_logger.error("Invalid token type: %s", decoded_token["type"])
             raise credentials_exception
-        return TokenData(id=decoded_token["sub"])
+        return TokenSub(**decoded_token["sub"])
     except HTTPException as e:
         raise
     except ExpiredSignatureError:
@@ -138,10 +160,7 @@ def verify_token(
             status_code=status.HTTP_401_UNAUTHORIZED, 
             detail=APIErrorResponse(
                 message="Token expired",
-                error=ErrorDetail(
-                    code="TOKEN_EXPIRED",
-                    details="Token expired"
-                )
+                error=ErrorDetail(code="TOKEN_EXPIRED", details="Token expired"),
             ).model_dump(),
             headers={"WWW-Authenticate": "Bearer"}
         )
