@@ -2,7 +2,10 @@
 
 # <img src="https://github.com/Hellmakima/instagram/raw/main/frontend/public/favicon.ico" alt="favicon" width="32" height="32"> Nmaa (نما)
 
+# <img src="https://github.com/Hellmakima/instagram/raw/main/frontend/public/favicon.ico" alt="favicon" width="32" height="32"> Nmaa (نما)
+
 A full-stack Instagram-like application built using **FastAPI**, **MongoDB**, and **Next.js**
+Designed with modularity, clarity, and scalability
 Designed with modularity, clarity, and scalability
 
 This project is currently in the early stages of development.
@@ -31,11 +34,16 @@ git clone https://github.com/hellmakima/instagram.git
 
 <details>
   <summary><b>Auth Server</b></summary>
+<details>
+  <summary><b>Auth Server</b></summary>
 
+The auth server is responsible for user authentication, password management, and user management.
+It uses JWT for authentication and refresh tokens for session management.
 The auth server is responsible for user authentication, password management, and user management.
 It uses JWT for authentication and refresh tokens for session management.
 
 **MongoDB**
+Database: `instagram_auth`
 Database: `instagram_auth`
 
 ```bash
@@ -48,10 +56,16 @@ uv run uvicorn app.main:app --reload --port 5001
 
 <details>
   <summary><b>Resource Server</b></summary>
+</details>
 
+<details>
+  <summary><b>Resource Server</b></summary>
+
+The resource server handles all media files and their metadata.
 The resource server handles all media files and their metadata.
 
 **MongoDB**
+Database: `instagram_resource`
 Database: `instagram_resource`
 
 ```bash
@@ -68,9 +82,37 @@ uv run uvicorn app.main:app --reload --port 5002
 This is a reverse proxy that routes all frontend requests to the correct backend server.
 Currently implemented with **Caddy**, but will later be replaced by **nginx**.
 
+</details>
+
+<details>
+  <summary><b>Gateway Server</b></summary>
+
+This is a reverse proxy that routes all frontend requests to the correct backend server.
+Currently implemented with **Caddy**, but will later be replaced by **nginx**.
+
 You can skip this and configure `instagram/frontend/.env` to proxy requests directly, along with setting proper CORS headers in each server’s `main.py`.
 
 **Setup:**
+You can skip this and configure `instagram/frontend/.env` to proxy requests directly, along with setting proper CORS headers in each server’s `main.py`.
+
+**Setup:**
+
+1. Download [Caddy Server](https://caddyserver.com/download)
+2. Copy `instagram/utils/caddy.json` to the same folder
+3. Run:
+
+   ```bash
+   caddy_windows_amd64.exe run
+   ```
+
+4. In a new terminal:
+
+   ```bash
+   caddy_windows_amd64.exe reload --config caddy.json
+   ```
+
+**Hosts Configuration (Windows):**
+Edit `C:\Windows\System32\drivers\etc\hosts`:
 
 1. Download [Caddy Server](https://caddyserver.com/download)
 2. Copy `instagram/utils/caddy.json` to the same folder
@@ -99,7 +141,12 @@ Edit `C:\Windows\System32\drivers\etc\hosts`:
 
 <details>
   <summary><b>Frontend</b></summary>
+</details>
 
+<details>
+  <summary><b>Frontend</b></summary>
+
+The frontend is a **Next.js** application.
 The frontend is a **Next.js** application.
 
 ```bash
@@ -108,6 +155,21 @@ npm i
 npm run dev
 ```
 
+Then visit `nmaa.com` in your browser.
+
+</details>
+
+<details>
+  <summary><b>Tests</b></summary>
+
+Each server contains tests in its `test` folder.
+Run them using:
+
+```bash
+uv run pytest
+```
+
+</details>
 Then visit `nmaa.com` in your browser.
 
 </details>
@@ -132,4 +194,5 @@ Developed by [@hellmakima](https://github.com/hellmakima)
 
 ---
 
+Pull requests, suggestions, and collaborations are welcome.
 Pull requests, suggestions, and collaborations are welcome.
