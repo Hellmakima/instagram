@@ -1,54 +1,54 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# # To get started with Dependabot version updates, you'll need to specify which
+# # package ecosystems to update and where the package manifests are located.
+# # Please see the documentation for all configuration options:
+# # https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
-version: 2
+# version: 2
 
-multi-ecosystem-groups:
-  uv:
-    schedule:
-      interval: "cron"
-      cron: "0 0 1 * *"
-  # npm:
-  #   schedule:
-  #     interval: "cron"
-  #     cron: "0 0 1 * *"
-  docker:
-    schedule:
-      interval: "cron"
-      cron: "0 0 1 * *"
+# multi-ecosystem-groups:
+#   uv:
+#     schedule:
+#       interval: "cron"
+#       cron: "0 0 1 * *"
+#   # npm:
+#   #   schedule:
+#   #     interval: "cron"
+#   #     cron: "0 0 1 * *"
+#   docker:
+#     schedule:
+#       interval: "cron"
+#       cron: "0 0 1 * *"
 
-updates:
-  # Python (uv) - Auth Server
-  - package-ecosystem: "uv"
-    directory: "/auth-server"
-    multi-ecosystem-group: "uv"
-    ignore:
-      - dependency-name: "bcrypt"
-        versions: ["*"]
+# updates:
+#   # Python (uv) - Auth Server
+#   - package-ecosystem: "uv"
+#     directory: "/auth-server"
+#     multi-ecosystem-group: "uv"
+#     ignore:
+#       - dependency-name: "bcrypt"
+#         versions: ["*"]
 
-  # Python (uv) - Resource Server
-  - package-ecosystem: "uv"
-    directory: "/resource-server"
-    multi-ecosystem-group: "uv"
+#   # Python (uv) - Resource Server
+#   - package-ecosystem: "uv"
+#     directory: "/resource-server"
+#     multi-ecosystem-group: "uv"
 
-  # Node.js (npm) - Frontend
-  # - package-ecosystem: "npm"
-  #   directory: "/frontend"
-  #   multi-ecosystem-group: "npm"
+#   # Node.js (npm) - Frontend
+#   # - package-ecosystem: "npm"
+#   #   directory: "/frontend"
+#   #   multi-ecosystem-group: "npm"
 
-  # Docker - Auth Server
-  - package-ecosystem: "docker"
-    directory: "/auth-server"
-    multi-ecosystem-group: "docker"
+#   # Docker - Auth Server
+#   - package-ecosystem: "docker"
+#     directory: "/auth-server"
+#     multi-ecosystem-group: "docker"
 
-  # Docker - Resource Server
-  - package-ecosystem: "docker"
-    directory: "/resource-server"
-    multi-ecosystem-group: "docker"
+#   # Docker - Resource Server
+#   - package-ecosystem: "docker"
+#     directory: "/resource-server"
+#     multi-ecosystem-group: "docker"
 
-  # Docker - Frontend
-  # - package-ecosystem: "docker"
-  #   directory: "/frontend"
-  #   multi-ecosystem-group: "docker"
+#   # Docker - Frontend
+#   # - package-ecosystem: "docker"
+#   #   directory: "/frontend"
+#   #   multi-ecosystem-group: "docker"
